@@ -115,3 +115,9 @@ app.get('/matching', async (req, res) => {
     res.status(500).send("Database has an error");
   }
 });
+
+
+
+app.get('/matching', async (req, res) => {
+  console.log(req);
+})

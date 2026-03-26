@@ -12,6 +12,7 @@
     "express-session": "^1.19.0",
     "mongodb": "^7.1.0",
     "mongoose": "^9.3.0",
+    "nouislider": "^15.8.1",
     "terser": "^5.31.0"
   },
   "scripts": {
