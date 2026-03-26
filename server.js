@@ -94,6 +94,54 @@ const getProfiles = async () => {
   return await database.collection("profiles").find().toArray();
 }
 
+// destinct() https://www.mongodb.com/docs/manual/reference/method/db.collection.distinct/
+const getProfileTypes = async () => {
+  const database = client.db("filmcrew");
+  return await database.collection("profiles").distinct('type');
+}
+
+const getProfileGenres = async () => {
+  const database = client.db("filmcrew");
+  return await database.collection("profiles").distinct('genres');
+}
+
+// Find() alleen op een specifieke key https://www.geeksforgeeks.org/mongodb/mongodb-check-the-existence-of-the-fields-in-the-specified-collection/
+const getMinOrMaxValue = async (key, sort) => {
+  const database = client.db("filmcrew");
+  const minOrMaxDocument = await database.collection('profiles')
+    .find({[key]: {$exists: true}})
+    .sort({[key]: sort})
+    .toArray();
+
+  return minOrMaxDocument[0][key];
+}
+
+// Matching
+app.get('/matching', async (req, res) => {
+  try {
+    const profiles = await getProfiles();
+    const profileTypes = await getProfileTypes();
+    const profileGenres = await getProfileGenres();
+    const highestProfileAge = await getMinOrMaxValue('age', -1);
+    const lowestProfileAge = await getMinOrMaxValue('age', 1);
+    const highestExperience = await getMinOrMaxValue('experience', -1);
+    const lowestExperience = await getMinOrMaxValue('experience', 1);
+    res.render('matching', {
+      profiles,
+      profileTypes,
+      profileGenres,
+      highestProfileAge,
+      lowestProfileAge,
+      highestExperience,
+      lowestExperience
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Database has an error");
+  }
+});
+
+
 // Home
 app.get('/', async (req, res) => {
   try {
@@ -104,20 +152,3 @@ app.get('/', async (req, res) => {
     res.status(500).send("Database has an error");
   }
 });
-
-// Matching
-app.get('/matching', async (req, res) => {
-  try {
-    const profiles = await getProfiles();
-    res.render('matching', { profiles });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Database has an error");
-  }
-});
-
-
-
-app.get('/matching', async (req, res) => {
-  console.log(req);
-})

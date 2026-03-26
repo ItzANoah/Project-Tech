@@ -27,51 +27,29 @@
             <aside class="matching__aside">
                 <h2>Filters</h2>
                 <form action="/matching" method="GET">
-                    <fieldset>
-                        <legend>Project type</legend>
-                        <div class="filter-option">
-                            <input type="checkbox" id="shortfilm" name="shortfilm">
-                            <label for="shortfilm">Short film</label>
-                        </div>
+                    <% if (profileTypes.length !== 0) { %>
+                        <fieldset>
+                            <legend>Project type</legend>
+                            <% profileTypes.forEach((type, i) => { %>
+                                <div class="filter-option">
+                                    <input type="checkbox" id="type<%= i %>" name="<%= type %>">
+                                    <label for="type<%= i %>"><%= type %></label>
+                                </div>
+                            <% }) %>
+                        </fieldset>
+                    <% } %>
 
-                        <div class="filter-option">
-                            <input type="checkbox" id="documentary" name="documentary">
-                            <label for="documentary">Documentaire</label>
-                        </div>
-
-                        <div class="filter-option">
-                            <input type="checkbox" id="commercial" name="commercial">
-                            <label for="commercial">Commercial</label>
-                        </div>
-
-                        <div class="filter-option">
-                            <input type="checkbox" id="tv-serie" name="tv-serie">
-                            <label for="tv-serie">TV serie</label>
-                        </div>
-                    </fieldset>
-
+                    <% if (profileGenres.length !== 0) { %>
                     <fieldset>
                         <legend>Genre</legend>
+                        <% profileGenres.forEach((genres, i) => { %>
                         <div class="filter-option">
-                            <input type="checkbox" id="horror" name="genres">
-                            <label for="horror">Horror</label>
+                            <input type="checkbox" id="genres<%= i %>" name="<%= genres %>">
+                            <label for="genres<%= i %>"><%= genres %></label>
                         </div>
-
-                        <div class="filter-option">
-                            <input type="checkbox" id="drama" name="genres">
-                            <label for="drama">Drama</label>
-                        </div>
-
-                        <div class="filter-option">
-                            <input type="checkbox" id="comedy" name="genres">
-                            <label for="comedy">Comedy</label>
-                        </div>
-
-                        <div class="filter-option">
-                            <input type="checkbox" id="thriller" name="genres">
-                            <label for="thriller">Thriller</label>
-                        </div>
+                        <% }) %>
                     </fieldset>
+                    <% } %>
 
                     <fieldset>
                         <legend>Locatie (radius)</legend>
@@ -96,15 +74,26 @@
                         </div>
                     </fieldset>
 
-                    <fieldset>
-                        <legend>Ervaring (jaren)</legend>
-                        <div class="experience-slider"></div>
-                    </fieldset>
+                    <% if (highestExperience && lowestExperience) { %>
+                        <fieldset>
+                            <legend>Ervaring (jaren)</legend>
+                            <div class="filter-slider" data-max="<%= highestExperience %>"  data-min="<%= lowestExperience %>"></div>
 
-                    <fieldset>
-                        <legend>Leeftijd</legend>
-                        <div class="age-slider"></div>
-                    </fieldset>
+    <!--                    hidden input https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/hidden-->
+                            <input type="hidden" name="experienceMin" class="filter-slider__min-value">
+                            <input type="hidden" name="experienceMax" class="filter-slider__max-value">
+                        </fieldset>
+                    <% } %>
+
+                    <% if (highestProfileAge && lowestProfileAge) { %>
+                        <fieldset>
+                            <legend>Leeftijd</legend>
+                            <div class="filter-slider" data-max="<%= highestProfileAge %>"  data-min="<%= lowestProfileAge %>"></div>
+
+                            <input type="hidden" name="experienceMin" class="filter-slider__min-value">
+                            <input type="hidden" name="experienceMax" class="filter-slider__max-value">
+                        </fieldset>
+                    <% } %>
 
 <!--                aanpassingen style van noUIslider-->
                     <style>
@@ -243,15 +232,6 @@
                             </div>
                         </fieldset>
 
-                        <fieldset>
-                            <legend>Ervaring (jaren)</legend>
-                            <div class="experience-slider"></div>
-                        </fieldset>
-
-                        <fieldset>
-                            <legend>Leeftijd</legend>
-                            <div class="age-slider"></div>
-                        </fieldset>
 
                         <fieldset>
                             <legend>Regisseur</legend>
@@ -291,37 +271,31 @@ label.addEventListener('click', () => {
 })
 })
 
+const filterSliders = document.querySelectorAll('.filter-slider');
+console.log(filterSliders);
+filterSliders.forEach(slider => {
+  // dataset http://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/dataset
+  const max = Number(slider.dataset.max || 99);
+  const min = Number(slider.dataset.min || 99);
 
-
-// Sliders met twee handles https://refreshless.com/nouislider/
-const experienceSliders = document.querySelectorAll('.experience-slider');
-experienceSliders.forEach(slider => {
   noUiSlider.create(slider, {
-    start: [0, 40],
+    start: [min, max],
     connect: true,
     step: 1,
-    range: { min: 0, max: 40 },
-    tooltips: true,
-    format: {
-      to: value => Math.round(value),
-      from: value => Number(value)
-    }
-  });
-});
-
-const ageSliders = document.querySelectorAll('.age-slider');
-ageSliders.forEach(slider => {
-  noUiSlider.create(slider, {
-    start: [18, 60],
-    connect: true,
-    step: 1,
-    range: { min: 18, max: 60 },
+    range: { min: min, max: max},
     tooltips: true,
 
     format: {
       to: value => Math.round(value),
       from: value => Number(value)
     }});
+  slider.noUiSlider.on('change', () => {
+    const selectedValue = slider.noUiSlider.get(true);
+    const selectedValueMin = selectedValue[0];
+    const selectedValueMax = selectedValue[1];
+
+    const inputMin = document.querySelector('.filter-slider ') // TODO
+  });
 })
 
 </script>
