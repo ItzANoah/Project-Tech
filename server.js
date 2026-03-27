@@ -89,6 +89,9 @@ app.get('/current-matches', (req, res) => {
   res.render('current-matches');
 });
 
+
+
+
 const getProfiles = async () => {
   const database = client.db("filmcrew");
   return await database.collection("profiles").find().toArray();
@@ -140,7 +143,6 @@ app.get('/matching', async (req, res) => {
     res.status(500).send("Database has an error");
   }
 });
-
 
 // Home
 app.get('/', async (req, res) => {

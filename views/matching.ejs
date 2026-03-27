@@ -74,14 +74,15 @@
                         </div>
                     </fieldset>
 
-                    <% if (highestExperience && lowestExperience) { %>
+<!--                    true als het niet null en undefined is-->
+                    <% if ((highestExperience != null && lowestExperience != null)) { %>
                         <fieldset>
                             <legend>Ervaring (jaren)</legend>
                             <div class="filter-slider" data-max="<%= highestExperience %>"  data-min="<%= lowestExperience %>"></div>
 
     <!--                    hidden input https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/hidden-->
-                            <input type="hidden" name="experienceMin" class="filter-slider__min-value">
-                            <input type="hidden" name="experienceMax" class="filter-slider__max-value">
+                            <input type="hidden" name="ageMin" class="filter-slider__min-value">
+                            <input type="hidden" name="ageMax" class="filter-slider__max-value">
                         </fieldset>
                     <% } %>
 
@@ -289,12 +290,25 @@ filterSliders.forEach(slider => {
       to: value => Math.round(value),
       from: value => Number(value)
     }});
+
+  // Events callbacks https://refreshless.com/nouislider/events-callbacks/
+  // Getting slider values https://refreshless.com/nouislider/slider-read-write/
   slider.noUiSlider.on('change', () => {
-    const selectedValue = slider.noUiSlider.get(true);
+    const selectedValue = slider.noUiSlider.get(true); // selectedValue returns [min, max]
     const selectedValueMin = selectedValue[0];
     const selectedValueMax = selectedValue[1];
 
-    const inputMin = document.querySelector('.filter-slider ') // TODO
+    const minInput = slider.parentElement.querySelector('.filter-slider__min-value')
+    const maxInput = slider.parentElement.querySelector('.filter-slider__max-value')
+
+    // TODO parentElement uitleggen + Value
+
+    minInput.value = selectedValueMin;
+    maxInput.value = selectedValueMax;
+
+    console.log(selectedValueMin, selectedValueMax);
+
+
   });
 })
 
