@@ -76,7 +76,7 @@
 
 <!--                    true als het niet null en undefined is-->
                     <% if ((highestExperience != null && lowestExperience != null)) { %>
-                        <fieldset>
+                        <fieldset class="filter-slider__fieldset">
                             <legend>Ervaring (jaren)</legend>
                             <div class="filter-slider" data-max="<%= highestExperience %>"  data-min="<%= lowestExperience %>"></div>
 
@@ -87,7 +87,7 @@
                     <% } %>
 
                     <% if (highestProfileAge && lowestProfileAge) { %>
-                        <fieldset>
+                        <fieldset class="filter-slider__fieldset">
                             <legend>Leeftijd</legend>
                             <div class="filter-slider" data-max="<%= highestProfileAge %>"  data-min="<%= lowestProfileAge %>"></div>
 
@@ -272,9 +272,11 @@ label.addEventListener('click', () => {
 })
 })
 
-const filterSliders = document.querySelectorAll('.filter-slider');
-console.log(filterSliders);
-filterSliders.forEach(slider => {
+const filterSliderFieldsets = document.querySelectorAll('.filter-slider__fieldset');
+
+filterSliderFieldsets.forEach(fieldset => {
+  const slider = fieldset.querySelector('.filter-slider');
+
   // dataset http://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/dataset
   const max = Number(slider.dataset.max || 99);
   const min = Number(slider.dataset.min || 99);
@@ -295,20 +297,14 @@ filterSliders.forEach(slider => {
   // Getting slider values https://refreshless.com/nouislider/slider-read-write/
   slider.noUiSlider.on('change', () => {
     const selectedValue = slider.noUiSlider.get(true); // selectedValue returns [min, max]
-    const selectedValueMin = selectedValue[0];
-    const selectedValueMax = selectedValue[1];
 
-    const minInput = slider.parentElement.querySelector('.filter-slider__min-value')
-    const maxInput = slider.parentElement.querySelector('.filter-slider__max-value')
+    const minInput = fieldset.querySelector('.filter-slider__min-value')
+    const maxInput = fieldset.querySelector('.filter-slider__max-value')
 
     // TODO parentElement uitleggen + Value
 
-    minInput.value = selectedValueMin;
-    maxInput.value = selectedValueMax;
-
-    console.log(selectedValueMin, selectedValueMax);
-
-
+    minInput.value = selectedValue[0];
+    maxInput.value = selectedValue[1];
   });
 })
 
