@@ -92,7 +92,7 @@
     height: 40px;
   }
   
-  .header__login-btn {
+  .header__login-btn, .header__logout-btn {
     background: var(--accentColorRed);
     color: var(--accentColorWhite);
     font-family: var(--montserratFont);
@@ -102,9 +102,23 @@
     padding: 10px 25px;
     border-radius: 20px;
     transition: all 0.2s;
-  }.header__login-btn:hover { 
+  }.header__login-btn:hover, .header__logout-btn:hover { 
     opacity: 0.9; 
     padding: 12px 27px;
+  }
+  .header__welcome{
+    font-family: var(--montserratFont);
+    font-size: var(--headerTextSize);
+    font-weight: var(--fontWeightBold);
+    color: var(--accentColorGrey);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+  .header__welcome:hover{
+      color: var(--accentColorRed);
+      text-decoration: none;
+      font-size: 1.4rem;
   }
 
   .header__end-cap {

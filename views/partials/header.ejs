@@ -3,16 +3,31 @@
   
   <nav class="nav__container">
     <ul class="nav__list">
-      <li class="nav__link dark"><a href="#">Find Projects</a></li>
-      <li class="nav__link light"><a href="#">Find Talents</a></li>
+      <li class="nav__link dark"><a href="/crew-profile">My Projects</a></li>
+      <li class="nav__link light"><a href="/matching">Find Talents</a></li>
       <li class="nav__link dark"><a href="/current-matches">Matches</a></li>
     </ul>
     
-    <div class="header__actions">
+    <!-- <div class="header__actions"> oude
       <button class="header__search-btn">
         <svg  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
       </button>
       <a href="/login" class="header__login-btn">Login</a>
+    </div> -->
+    <div class="header__actions">
+      <button class="header__search-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </button>
+    
+      <% if (username) { %>
+        <a href="/profielPaginaIndividueel" class="header__welcome">Hoi, <strong><%= username %></strong></a>
+        <a href="/logout" class="header__logout-btn">Uitloggen</a>
+      <% } else { %>
+        <a href="/login" class="header__login-btn">Login</a>
+      <% } %>
     </div>
   </nav>
   

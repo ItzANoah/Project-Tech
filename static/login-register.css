@@ -15,7 +15,6 @@
 
   display: flex;
   flex-wrap: wrap;
-  
 }
 
 .register__login-redirect{
@@ -32,6 +31,8 @@
 
 .register__volgende-btn, .register__registreer-btn{
   background: var(--accentColorRed);
+  color: var(--accentColorWhite);
+  font-weight: var(--fontWeightBold);
   padding: 10px 25px;
   border-radius: 20px;
   border: none;
@@ -124,19 +125,22 @@
 }
 
 /* ////////// custom notification ///////// */
-.register__error-message {
-  visibility: hidden;
+.register__error-message,.login__error-message {
+  display: none; 
+  
   font-family: var(--instrumentFont);
   font-size: var(--bodyTextSize);
   font-weight: var(--fontWeightLight);
   color: var(--accentColorRed);
-  margin-top: -10px; 
+  margin-top: 5px; 
   margin-bottom: 10px;
+  
   flex-basis: 100%;
 }
-.register__error-message.active {
-  visibility: visible;
+
+.register__error-message.active, .login__error-message.active {
+  display: flex;
 }
-.register__form input.invalid {
+.register__form input.invalid, .login__error-message.invalid {
   border: 2px solid var(--accentColorRed);
 }

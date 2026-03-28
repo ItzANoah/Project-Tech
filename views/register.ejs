@@ -11,26 +11,47 @@
 <%- include('partials/header') %>
 <main>
     <h2 class="register__h2">Nieuw account aanmaken</h2>
-    <form class="register__form" action="/register" method="POST" novalidate>
-        <label for="username">Kies een gebruikersnaam:</label>
-        <input type="text" id="username" name="username" placeholder="gebruikersnaam" required>
-        <span class="register__error-message" id="username-error">Vul a.u.b. je gebruikersnaam in</span>
-
-        <label for="email">Kies jouw mail-address</label>
-        <input type="email" id="email" name="email" placeholder="E-mailadres" required>
-        <span class="register__error-message" id="username-error">Vul a.u.b. je email in</span>
-
-        <label for="leeftijd">Wat is jouw leeftijd? <span id="age-val">20</span> jaar</label>
-        <input type="range" id="age" name="age" min="16" max="70" value="5">
-
-        <label for="password">Kies een wachtwoord:</label>
-        <input type="password" id="password" name="password" placeholder="wachtwoord" required>
-        <span class="register__error-message" id="username-error">Vul a.u.b. je wachtwoord in</span>
-
-        <button class="register__volgende-btn"> <a href="/register2">Volgende stap </a></button>
-    </form>
+    <form class="register__form" id="registrationForm" action="/register" method="POST" novalidate>
+    
+      <div id="step1" class="form-step">
+          <label for="username">Kies een gebruikersnaam:</label>
+          <input type="text" id="username" name="username" placeholder="gebruikersnaam" required>
+          <span class="register__error-message" id="username-error">Kies a.u.b. je gebruikersnaam </span>
+  
+          <label for="email">Kies jouw mail-adres:</label>
+          <input type="email" id="email" name="email" placeholder="E-mailadres" required>
+          <span class="register__error-message" id="email-error">Kies a.u.b. je email </span>
+  
+          <label for="age">Wat is jouw leeftijd? <span id="age-val">20</span> jaar</label>
+          <input type="range" id="age" name="age" min="16" max="70" value="20">
+  
+          <label for="password">Kies een wachtwoord:</label>
+          <input type="password" id="password" name="password" placeholder="wachtwoord" required>
+          <span class="register__error-message" id="password-error">Kies a.u.b. je wachtwoord </span>
+  
+          <button type="button" id="nextBtn" class="register__volgende-btn">Volgende stap</button>
+      </div>
+  
+      <div id="step2" class="form-step" style="display: none;">
+          <label for="function">Wat is jouw functie?</label>
+          <input type="text" id="function" name="function" placeholder="Bijvoorbeeld: Regisseur" required>
+          <span class="register__error-message" id="function-error">Vul a.u.b. je functie in</span>
+  
+          <label for="bio">Vertel een beschrijving over jezelf</label>
+          <input type="text" id="bio" name="bio" placeholder="Bijvoorbeeld: Videographer die aan grote Hollywood films heeft meegewerkt">
+  
+          <label for="experience">Wat is jouw werkervaring: <span id="val">5</span> jaar</label>
+          <input type="range" id="experience" name="experience" min="0" max="40" value="5">
+  
+          <div class="button-group" style="display: flex; gap: 10px; margin-top: 20px;">
+              <button type="button" id="prevBtn" class="register__volgende-btn">Vorige stap</button>
+              <button type="submit" class="register__registreer-btn">Registreer</button>
+          </div>
+      </div>
+  
+  </form>
     <p class="register__login-redirect" >Heb je al een account? <a href="/login">Log hier in</a></p>
 </main>
-<script src="/js/script.js"></script>
+<script src="/js/login-register.js"></script>
 </body>
 </html>
