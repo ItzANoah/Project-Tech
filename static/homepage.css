@@ -50,6 +50,14 @@
     object-fit: cover;
 }
 
+.all-projects {
+    margin: var(--sectionPadding);
+}
+
+
+
+
+
 /* Everything for the matching-slider + filters */
 .matching__filter-bar,
 .matching__filters {
