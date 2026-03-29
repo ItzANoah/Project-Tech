@@ -3,7 +3,7 @@ const fs = require('fs');
 const app = express();
 const port = 4000;
 const session = require('express-session');
-const multer = require('multer');
+// const multer = require('multer');
 
 app.use(express.urlencoded({ extended: true }))
 app.use(express.static("static"));
@@ -202,7 +202,7 @@ const getProfiles = async () => {
   return await database.collection("profiles").find().toArray();
 }
 
-// destinct() https://www.mongodb.com/docs/manual/reference/method/db.collection.distinct/
+// 'Finds the distinct values for a specified field across a single collection' destinct() https://www.mongodb.com/docs/manual/reference/method/db.collection.distinct/
 const getProfileTypes = async () => {
   const database = client.db("filmcrew");
   return await database.collection("profiles").distinct('type');

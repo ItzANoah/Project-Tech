@@ -132,8 +132,8 @@
                             </svg>
                         </button>
                         <div class="filter-dropdown">
-                            <label class="filter__label" for="sort">Sorteren:</label>
-                            <select id="sort">
+                            <label class="filter__label" for="matching-filter__sort">Sorteren:</label>
+                            <select id="matching-filter__sort">
                                 <option value="best-match">Beste match</option>
                                 <option value="most-popular">Meest populair</option>
                                 <option value="a-z">A > Z</option>
@@ -301,8 +301,7 @@ filterSliderFieldsets.forEach(fieldset => {
     const minInput = fieldset.querySelector('.filter-slider__min-value')
     const maxInput = fieldset.querySelector('.filter-slider__max-value')
 
-    // TODO parentElement uitleggen + Value
-
+    // Huidige value van een input element https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/value
     minInput.value = selectedValue[0];
     maxInput.value = selectedValue[1];
   });
