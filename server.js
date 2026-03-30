@@ -21,7 +21,6 @@ const path = require('path'); // Ingebouwd in Node, hoef je niet te installeren
 const uri = process.env.URI;
 const client = new MongoClient(uri);
 
-
 /////////////// register functie ////////////////
 let profileCollection; 
 
@@ -141,17 +140,16 @@ app.get('/matching', (req, res) => {
 // ROUTE 1: De pagina bekijken
 app.get('/profielPaginaIndividueel', checkInlog, async (req, res) => {
   try {
-    // We zoeken de persoon die nu is ingelogd
     const data = await profileCollection.findOne({ name: req.session.username });
 
     if (data) {
-      // We sturen 'deGebruiker' naar de EJS
+      // We gebruiken 'theUser' als naam voor het pakketje
       res.render('profielPaginaIndividueel', { theUser: data });
     } else {
-      res.status(404).send("Gebruiker niet gevonden in de database.");
+      res.status(404).send("Gebruiker niet gevonden.");
     }
   } catch (err) {
-    console.error("Fout bij laden profiel:", err);
+    console.error(err);
     res.status(500).send("Server fout");
   }
 });
@@ -179,6 +177,38 @@ app.post('/update-profile', checkInlog, async (req, res) => {
   } catch (err) {
     console.error("Fout bij opslaan:", err);
     res.status(500).json({ success: false });
+  }
+});
+
+// Instellen waar foto's worden opgeslagen
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'public/uploads/'); // Mapje waar de foto's komen
+  },
+  filename: (req, file, cb) => {
+    // Geef het bestand een unieke naam: gebruikersnaam-datum.jpg
+    cb(null, req.session.username + '-' + Date.now() + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ storage: storage });
+
+// De ROUTE voor het uploaden van de foto
+app.post('/upload-pfp', checkInlog, upload.single('profilePic'), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).send('Geen bestand geüpload.');
+
+    const imagePath = '/uploads/' + req.file.filename;
+
+    // Opslaan in de database bij de huidige gebruiker
+    await profileCollection.updateOne(
+        { name: req.session.username },
+        { $set: { image: imagePath } }
+    );
+
+    res.json({ success: true, newImagePath: imagePath });
+  } catch (err) {
+    res.status(500).send('Fout bij uploaden');
   }
 });
 

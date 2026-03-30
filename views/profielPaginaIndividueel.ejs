@@ -11,38 +11,38 @@
     <%- include('partials/header') %>
     <main>
         <section class="profile-header">
-            <div class="pfpContainer">
-                <img src="/images/producer.jpg" id="userPfp" alt="producer">
-                <input type="file" id="change-pfp-input" style="display: none;">
-                <label for="change-pfp-input" class="edit-photo-label">Foto aanpassen</label>
-                </div>
+    <div class="pfpContainer">
+        <img src="<%= theUser.image || '/images/profilePlaceholder.png' %>" id="userPfp" alt="profielfoto">
+        
+        <input type="file" id="change-pfp-input" style="display: none;">
+        <label for="change-pfp-input" class="edit-photo-label">Foto aanpassen</label>
+    </div>
 
-                <div class="profile-info-box">
-                     <%- include('partials/editMode') %>
-
-                
-                <ul class="profile-content">
-                    <li><h1 id="userName"><%= theUser.name %></h1></li>
-                    <li><h2 id="rol"><%= theUser.role %></h2></li>
-                </ul>
-                
-                <ul class="important-qualities" id="importantQualities">
-                    <li><h4><%= theUser.experience %> jaar werkervaring</h4></li>
-                    <li><h4>Amsterdam</h4></li>
-                </ul>
-                
-                <p id="bio"><%= theUser.bio %></p>
-                
-                <ul class="qualities" id="idQualities">
-    <% if (theUser.skills && theUser.skills.length > 0) { %>
-        <% theUser.skills.forEach(skill => { %>
-            <li><%= skill %></li>
-        <% }); %>
-    <% } %>
-    <button type="button" class="add-quality-btn" onclick="addProfileQuality()">+ Kwaliteit toevoegen</button>
-</ul>
-            </div>
-        </section>
+    <div class="profile-info-box">
+        <%- include('partials/editMode') %>
+        
+        <ul class="profile-content">
+            <li><h1 id="userName"><%= theUser.name %></h1></li>
+            <li><h2 id="rol"><%= theUser.role %></h2></li>
+        </ul>
+        
+        <ul class="important-qualities" id="importantQualities">
+            <li><h4><%= theUser.experience %> jaar werkervaring</h4></li>
+            <li><h4>Amsterdam</h4></li>
+        </ul>
+        
+        <p id="bio"><%= theUser.bio %></p>
+        
+        <ul class="qualities" id="idQualities">
+            <% if (theUser.skills && theUser.skills.length > 0) { %>
+                <% theUser.skills.forEach(skill => { %>
+                    <li><%= skill %></li>
+                <% }); %>
+            <% } %>
+            <button type="button" class="add-quality-btn" onclick="addProfileQuality()">+ Kwaliteit toevoegen</button>
+        </ul>
+    </div>
+</section>
 
         <section class="projects-section">
             <h2>Projecten</h2>

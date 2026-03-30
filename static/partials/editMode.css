@@ -1,6 +1,7 @@
 /* Gouden stippellijntjes als feedback */
-    body.is-editing p,
+    body.is-editing #bio,
     body.is-editing .nameRole,
+    body.is-editing .profile-content,
     body.is-editing .important-qualities li, 
     body.is-editing main{
         outline: 2px dashed var(--accentColorGold);

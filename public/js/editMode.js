@@ -68,3 +68,30 @@ editModeBtn.addEventListener('click', async () => {
         });
     }
 });
+
+const pfpInput = document.getElementById('change-pfp-input');
+
+pfpInput.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // FormData is nodig om bestanden te versturen
+    const formData = new FormData();
+    formData.append('profilePic', file);
+
+    try {
+        const response = await fetch('/upload-pfp', {
+            method: 'POST',
+            body: formData // Let op: GEEN headers instellen, dat doet de browser zelf bij FormData
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            // Update de afbeelding op je scherm direct
+            document.getElementById('userPfp').src = result.newImagePath;
+            alert("Profielfoto bijgewerkt!");
+        }
+    } catch (err) {
+        console.error("Upload fout:", err);
+    }
+});
