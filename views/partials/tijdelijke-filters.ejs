@@ -1,0 +1,22 @@
+<nav class="tag-container" aria-label="Project categories">
+    <ul class="tag-list"> 
+        <% projectTags.forEach((tag) => { %>
+            <li class="tag">
+                <%= tag %>
+                <button type="button" class="remove-tag edit-only" onclick="removeTag(this)">×</button>
+            </li>
+        <% }) %>
+    </ul>
+
+    <div class="edit-only">
+        <select id="tag-select">
+            <option value="" disabled selected>Kies een filter...</option>
+            <option value="Sci-Fi">Sci-Fi</option>
+            <option value="Action">Action</option>
+            <option value="Horror">Horror</option>
+            <option value="Comedy">Comedy</option>
+            <option value="Documentary">Documentary</option>
+        </select>
+        <button type="button" class="button--profile" onclick="addTagFromSelect()">Voeg toe</button>
+    </div>
+</nav>
