@@ -13,7 +13,8 @@ app.set('views', './views');
 require('dotenv').config(); // MOET bovenaan staan voor de database link!
 const { MongoClient } = require('mongodb');
 const bcrypt = require('bcrypt');
-const path = require('path'); // Ingebouwd in Node, hoef je niet te installeren
+const path = require('path');
+const {query} = require("express"); // Ingebouwd in Node, hoef je niet te installeren
 //casper was hier//
 
 // Database connectie variabelen
@@ -196,28 +197,40 @@ app.get('/logout', (req, res) => {
 });
 
 
-
+// Aanroepen collections profiles en projects
 const getProfiles = async () => {
   const database = client.db("filmcrew");
   return await database.collection("profiles").find().toArray();
 }
 
-// 'Finds the distinct values for a specified field across a single collection' destinct() https://www.mongodb.com/docs/manual/reference/method/db.collection.distinct/
-const getProfileTypes = async () => {
+const getProjects = async () => {
   const database = client.db("filmcrew");
-  return await database.collection("profiles").distinct('type');
+  return await database.collection("projects").find().toArray();
 }
 
-const getProfileGenres = async () => {
+
+// Filter soorten aanspreken
+const getProfileRoles = async () => {
   const database = client.db("filmcrew");
-  return await database.collection("profiles").distinct('genres');
+  return await database.collection("profiles").distinct('role');
 }
 
-// Find() alleen op een specifieke key https://www.geeksforgeeks.org/mongodb/mongodb-check-the-existence-of-the-fields-in-the-specified-collection/
+const getProjectTypes = async () => {
+  const database = client.db("filmcrew");
+  return await database.collection("projects").distinct('type');
+  // 'Finds the distinct values for a specified field across a single collection' destinct() https://www.mongodb.com/docs/manual/reference/method/db.collection.distinct/
+}
+
+const getProjectGenres = async () => {
+  const database = client.db("filmcrew");
+  return await database.collection("projects").distinct('genre');
+}
+
 const getMinOrMaxValue = async (key, sort) => {
   const database = client.db("filmcrew");
   const minOrMaxDocument = await database.collection('profiles')
     .find({[key]: {$exists: true}})
+    // Find() alleen op een specifieke key https://www.geeksforgeeks.org/mongodb/mongodb-check-the-existence-of-the-fields-in-the-specified-collection/
     .sort({[key]: sort})
     .toArray();
 
@@ -227,17 +240,74 @@ const getMinOrMaxValue = async (key, sort) => {
 // Matching
 app.get('/matching', async (req, res) => {
   try {
-    const profiles = await getProfiles();
-    const profileTypes = await getProfileTypes();
-    const profileGenres = await getProfileGenres();
+    const profileRoles = await getProfileRoles();
+    const projectTypes = await getProjectTypes();
+    const projectGenres = await getProjectGenres();
     const highestProfileAge = await getMinOrMaxValue('age', -1);
     const lowestProfileAge = await getMinOrMaxValue('age', 1);
     const highestExperience = await getMinOrMaxValue('experience', -1);
     const lowestExperience = await getMinOrMaxValue('experience', 1);
+
+    const filtersQuery = req.query;
+    const viewMode = filtersQuery.view || 'profiles';
+
+    let allProfiles = await getProfiles();
+    let allProjects = await getProjects();
+
+    if (viewMode === "profiles") {
+      // alle profile filters: role - age - experience     - createdAt?
+
+      // roles
+      let allRoles = await getProfileRoles();
+      let selectedRoles = [];
+      allRoles.forEach(role => {
+        if (filtersQuery[role] === 'on') {selectedRoles.push(role);}
+      })
+      if (selectedRoles.length > 0) {
+        allProfiles = allProfiles.filter(profile => selectedRoles.includes(profile.role));
+      }
+
+      // TODO age
+
+      // TODO experience
+
+    }
+
+
+    if (viewMode === "projects") {
+      // alle project filters: type - genre - director     - location? - createdAt?
+
+      // TODO WERKT NIETTT MAAR DIE ANDERE WEL?? types
+      let allTypes = await getProjectTypes();
+      let selectedTypes = [];
+      allTypes.forEach(type => {
+        if (filtersQuery[type] === 'on') {selectedTypes.push(type);}
+      })
+
+      if (selectedTypes.length > 0) {
+        allProjects = allProjects.filter(project => selectedTypes.includes(project.type));
+      }
+
+      // TODO WERKT NIETTT MAAR DIE ANDERE WEL?? genre
+      let allGenres = await getProjectGenres();
+      let selectedGenres = [];
+      allGenres.forEach(genre => {
+        if (filtersQuery[genre] === 'on') {selectedGenres.push(genre);}
+      })
+
+      if (selectedGenres.length > 0) {
+        allProjects = allProjects.filter(project => selectedGenres.includes(project.genre));
+      }
+
+
+    }
+
     res.render('matching', {
-      profiles,
-      profileTypes,
-      profileGenres,
+      profiles: allProfiles,
+      projects: allProjects,
+      profileRoles,
+      projectTypes,
+      projectGenres,
       highestProfileAge,
       lowestProfileAge,
       highestExperience,
@@ -259,3 +329,5 @@ app.get('/', async (req, res) => {
     res.status(500).send("Database has an error");
   }
 });
+
+// Filters

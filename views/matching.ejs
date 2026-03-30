@@ -27,10 +27,14 @@
             <aside class="matching__aside">
                 <h2>Filters</h2>
                 <form action="/matching" method="GET">
-                    <% if (profileTypes.length !== 0) { %>
+
+                    <button type="submit" name="view" value="profiles">Talenten</button>
+                    <button type="submit" name="view" value="projects">Projecten</button>
+
+                    <% if (projectTypes.length !== 0) { %>
                         <fieldset>
                             <legend>Project type</legend>
-                            <% profileTypes.forEach((type, i) => { %>
+                            <% projectTypes.forEach((type, i) => { %>
                                 <div class="filter-option">
                                     <input type="checkbox" id="type<%= i %>" name="<%= type %>">
                                     <label for="type<%= i %>"><%= type %></label>
@@ -39,10 +43,22 @@
                         </fieldset>
                     <% } %>
 
-                    <% if (profileGenres.length !== 0) { %>
+                    <% if (profileRoles.length !== 0) { %>
+                    <fieldset>
+                        <legend>Rollen</legend>
+                        <% profileRoles.forEach((role, i) => { %>
+                        <div class="filter-option">
+                            <input type="checkbox" id="role<%= i %>" name="<%= role %>">
+                            <label for="role<%= i %>"><%= role %></label>
+                        </div>
+                        <% }) %>
+                    </fieldset>
+                    <% } %>
+
+                    <% if (projectGenres.length !== 0) { %>
                     <fieldset>
                         <legend>Genre</legend>
-                        <% profileGenres.forEach((genres, i) => { %>
+                        <% projectGenres.forEach((genres, i) => { %>
                         <div class="filter-option">
                             <input type="checkbox" id="genres<%= i %>" name="<%= genres %>">
                             <label for="genres<%= i %>"><%= genres %></label>
@@ -81,8 +97,8 @@
                             <div class="filter-slider" data-max="<%= highestExperience %>"  data-min="<%= lowestExperience %>"></div>
 
     <!--                    hidden input https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/hidden-->
-                            <input type="hidden" name="ageMin" class="filter-slider__min-value">
-                            <input type="hidden" name="ageMax" class="filter-slider__max-value">
+                            <input type="hidden" name="experienceMin" class="filter-slider__min-value">
+                            <input type="hidden" name="experienceMax" class="filter-slider__max-value">
                         </fieldset>
                     <% } %>
 
@@ -91,8 +107,8 @@
                             <legend>Leeftijd</legend>
                             <div class="filter-slider" data-max="<%= highestProfileAge %>"  data-min="<%= lowestProfileAge %>"></div>
 
-                            <input type="hidden" name="experienceMin" class="filter-slider__min-value">
-                            <input type="hidden" name="experienceMax" class="filter-slider__max-value">
+                            <input type="hidden" name="ageMin" class="filter-slider__min-value">
+                            <input type="hidden" name="ageMax" class="filter-slider__max-value">
                         </fieldset>
                     <% } %>
 
