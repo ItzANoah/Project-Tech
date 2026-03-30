@@ -39,14 +39,13 @@ const client = new MongoClient(uri);
 // connectDB();
 
 /////////////// register functie ////////////////
-let profileCollection; // Dit heb je al goed staan!
+let profileCollection;
 
 async function run() {
   try {
     await client.connect();
     const db = client.db("filmcrew");
     
-    // Zorg dat deze naam overeenkomt met wat je in de app.post gebruikt
     profileCollection = db.collection("profiles"); 
     
     console.log("Database verbinding succesvol!");
