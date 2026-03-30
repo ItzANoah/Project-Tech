@@ -67,23 +67,28 @@
 
 /* --- EDIT MODE: SLIDESHOW KNOPPEN --- */
 
-/* 1. Verberg jouw knoppen standaard op jouw pagina */
-.crew-profile-edit .add-photo-btn, 
-.crew-profile-edit .remove-photo,
-.crew-profile-edit .slideshow__upload {
+/* 1. Verberg de knoppen standaard */
+.add-photo-btn, 
+.remove-photo,
+.slideshow__upload {
     display: none !important;
 }
 
 /* 2. Toon ze alleen als de body 'is-editing' heeft */
-body.is-editing .crew-profile-edit .add-photo-btn, 
-body.is-editing .crew-profile-edit .remove-photo,
-body.is-editing .crew-profile-edit .slideshow__upload {
+body.is-editing .add-photo-btn, 
+body.is-editing .remove-photo,
+body.is-editing .slideshow__upload {
     display: flex !important;
 }
 
-/* 3. De styling (gecombineerd met jouw keuzes) */
-.crew-profile-edit .add-photo-btn, 
-.crew-profile-edit .remove-photo {
+/* 3. Zorg dat de navigatiepijlen altijd verschijnen in edit-mode */
+body.is-editing .slideshow__nav {
+    display: flex !important;
+}
+
+/* 4. De styling van de knoppen zelf */
+.add-photo-btn, 
+.remove-photo {
     position: absolute;
     top: 15px;
     z-index: 100;
@@ -91,29 +96,33 @@ body.is-editing .crew-profile-edit .slideshow__upload {
     cursor: pointer;
     
     background-color: black;
-    color: var(--accentColorWhite);
+    color: white; /* Of gebruik je var(--accentColorWhite) */
     padding: 8px 16px;
     border-radius: 5px;
     border: none;
     
-    font-size: var(--fontWeightRegular);
-    font-weight: var(--fontWeightBold);
+    font-weight: bold;
     text-transform: uppercase;
     letter-spacing: 1px;
-    backdrop-filter: blur(2px);
     box-shadow: 0 2px 10px rgba(0,0,0,0.3);
     transition: all 0.3s ease;
 }
 
-/* Posities en hover-kleuren */
-.crew-profile-edit .add-photo-btn { left: 15px; }
-.crew-profile-edit .remove-photo { right: 15px; }
+/* Posities */
+.add-photo-btn { left: 15px; }
+.remove-photo { right: 15px; }
 
-.crew-profile-edit .add-photo-btn:hover { background-color: green; transform: scale(1.05); }
-.crew-profile-edit .remove-photo:hover { background-color: var(--accentColorRed); transform: scale(1.05); }
-
-/* Voorkom dat de 'stippellijnen' van je teamgenoot jouw main container verpesten */
-body.is-editing .crew-profile-edit {
-    outline: none !important;
+/* Hover effecten */
+.add-photo-btn:hover { 
+    background-color: green; 
+    transform: scale(1.05); 
+}
+.remove-photo:hover { 
+    background-color: #E63946; /* Of je rode variabele */
+    transform: scale(1.05); 
 }
 
+/* Voorkom outline op de body als die de class heeft */
+body.is-editing.crew-profile-edit {
+    outline: none !important;
+}

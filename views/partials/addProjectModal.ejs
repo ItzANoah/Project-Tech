@@ -1,0 +1,21 @@
+<div id="addProjectModal" class="modal">
+    <div class="modal__content">
+        <div class="modal__header">
+            <h3>Nieuw Project Toevoegen</h3>
+            <button type="button" class="modal__close" onclick="closeAddProjectModal()">&times;</button>
+        </div>
+        
+        <div class="modal__tabs">
+            <button type="button" class="tab-btn active" onclick="switchTab('db')">Mijn Database</button>
+            <button type="button" class="tab-btn" onclick="switchTab('tmdb')">TMDB (Zoek online)</button>
+        </div>
+
+        <div class="modal__search">
+            <input type="text" id="modalSearchInput" placeholder="Typ een filmtitel..." oninput="searchProjects(this.value)">
+        </div>
+
+        <ul class="modal__list" id="projectResultsList">
+            <li class="modal__placeholder">Zoek een film om toe te voegen aan je carrousel</li>
+        </ul>
+    </div>
+</div>

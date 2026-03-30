@@ -20,6 +20,11 @@ function openEditMode() {
         const titleText = document.getElementById('projectTitle').innerText.trim();
         const subtitleText = document.getElementById('projectSubtitle').innerText.trim();
         const descText = document.getElementById('projectDescription').innerText.trim();
+        // Zoek de tekst op
+        const productionText = document.getElementById('productionSummary').innerText.trim();
+
+        // Kopieer de tekst naar de hidden input
+        document.getElementById('inputProductionDescription').value = productionText;
 
         // kijken of ze voldoen aan de lengte 
         if (titleText.length > 20 || subtitleText.length > 30 || descText.length > 500) {

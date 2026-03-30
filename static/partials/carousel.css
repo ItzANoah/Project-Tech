@@ -32,10 +32,38 @@ ZELF IETS TOEVOEGEN IN HET CAROUSEL
   align-items: stretch;
 }
 
+/* Zorg dat ALLE items in de lijst hetzelfde formaat hebben */
 .carousel__list-Item {
-  list-style-type: none;
-  scroll-snap-align: center;
-  flex: 0 0 25%;
+    list-style-type: none;
+    scroll-snap-align: center;
+    flex: 0 0 25%; /* Dwingt de breedte op 25% van de carrousel */
+    max-width: 25%; /* Extra veiligheid */
+    display: flex; /* Zorgt dat de kaart binnen de li de volle hoogte pakt */
 }
+
+/* De kaart zelf die we via JS toevoegen */
+.matching__card {
+    display: flex;
+    flex-direction: column;
+    width: 100%; /* Vul de 25% van de li volledig op */
+    background-color: var(--accentColorLightGrey);
+    border-radius: var(--buttonCornerRadius);
+    overflow: hidden; /* Zorgt dat de afbeelding niet buiten de hoeken steekt */
+    box-sizing: border-box;
+}
+
+/* De afbeelding binnen de kaart */
+.matching__image {
+    width: 100%;
+    aspect-ratio: 16 / 9; /* Dit zorgt dat de verhouding altijd hetzelfde blijft */
+    object-fit: cover; /* Zorgt dat de foto niet vervormt */
+}
+
+/* De tekst-container binnen de kaart */
+.matching__card-content {
+    padding: 1rem;
+    flex-grow: 1; /* Duwt de knop naar beneden als er weinig tekst is */
+}
+
 
 

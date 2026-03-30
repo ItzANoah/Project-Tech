@@ -200,10 +200,11 @@ app.post('/save-project', upload.array('projectImages'), async (req, res) => {
 
         // pak alle veranderingen bij elkaar en stop dit in een object
         const updatedProject = {
-            title: req.body.title,
+            title: req.body.name,
             subtitle: req.body.subtitle,
-            description: req.body.description,
+            description: req.body.bio,
             images: finalImagesList, // We overschrijven de oude lijst volledig
+            productionDescription: req.body.productionDescription,
             type: req.body.type,
             genre: req.body.genre, 
             updatedAt: new Date()
@@ -219,6 +220,17 @@ app.post('/save-project', upload.array('projectImages'), async (req, res) => {
     } catch (error) {
         console.error("Opslaan mislukt:", error);
         res.status(500).send("Fout bij opslaan");
+    }
+});
+
+app.get('/api/all-projects', async (req, res) => {
+    try {
+        const db = client.db('filmcrew');
+        // Haal alle projecten op uit de collectie 'projects'
+        const projects = await db.collection('projects').find({}).toArray();
+        res.json(projects); // Stuur ze als JSON naar de browser
+    } catch (err) {
+        res.status(500).json({ error: "Database fout" });
     }
 });
 

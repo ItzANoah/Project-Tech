@@ -2,13 +2,13 @@
 <%- include('partials/header') %> 
     <div class="background--wrapper">
 
-    <main class="project--container crew-profile-edit">
+    <main class="project--container">
     <form id="projectForm" action="/save-project" method="POST" enctype="multipart/form-data">
         
         <header class="project--header">
             <div class="project--title-group">
                 <h1 id="projectTitle" class="project--title" contenteditable="false">
-                    <%= projectData.title || 'Project Titel' %>
+                    <%= projectData.name || 'Project Titel' %>
                 </h1>
                 <span id="titleCounter" class="char-counter edit-only">0/20</span>
                 <input type="hidden" name="title" id="inputTitle">
@@ -23,8 +23,12 @@
             <div class="project--header-info">
                 <%- include('partials/editmode-button') %> 
 
-                <div>
-                    <p>Dir: <a href="/director/d-de-vries"> D. de Vries</a></p>
+               <div>
+                <p>Dir: 
+                <a href="/director/<%= projectData.director ? projectData.director.replace(/\s+/g, '-').toLowerCase() : 'onbekend' %>">
+            <%= projectData.director || 'Onbekende Regisseur' %>
+                </a>
+                 </p>
                 </div>
             </div>
         </header>
@@ -33,36 +37,28 @@
         <%- include('partials/filters') %>
 
          <p id="projectDescription" class="project-text" contenteditable="false">
-        <%= projectData.description || 'Beschrijving van het project' %>
+        <%= projectData.bio || 'Beschrijving van het project' %>
         </p>
         <span id="descCounter" class="char-counter edit-only">0/500</span>
         <input type="hidden" name="description" id="inputDescription">
         
-    </form>
 </main>
+    </div>
 
  <section class="production">
-        <h3 class="production_Title">Productie Informatie</h3>
-        <p class="production_Summary" contenteditable="false">We zijn op zoek naar enthousiaste cast- en crewleden die willen bijdragen aan dit unieke, visuele project.
-
-Geschatte werktijd (totaal): 4 tot 5 maanden.
-
-Fase 1 (Pre-productie): Casting, locatiescouting en repetities (nu t/m Maart).
-Fase 2 (Productie): De daadwerkelijke opnamedagen.
-Fase 3 (Post-productie): Montage, sound design en kleurcorrectie.
-
-Draaiperiode: De film moet uiterlijk juni 2026 volledig geschoten zijn.
-
-Aantal draaidagen: We schatten momenteel 3 tot 5 intensieve draaidagen in (voornamelijk in de weekenden).
-        </p>
-    </section>
+    <h3 class="production_Title">Productie Informatie</h3>
+    <p id="productionSummary" class="production_Summary" contenteditable="false">
+        <%= projectData.productionDescription || 'Standaard productie tekst...' %>
+    </p>
+    <input type="hidden" name="productionDescription" id="inputProductionDescription">
+</section>
 
     <section class="carousel">
         <h2 class="carousel__Title">Andere projecten van de regisseur</h2>
 
-        <ul class="carousel__list">
+        <ul class="carousel__list" id="directorProjectsCarousel">
 
-            <%- include('partials/addProjectCard') %>
+             <%- include('partials/addProject') %>
             
         <% for (let i = 0; i < 5; i++) { %>
             <li class="carousel__list-Item">
@@ -105,11 +101,13 @@ Aantal draaidagen: We schatten momenteel 3 tot 5 intensieve draaidagen in (voorn
     </ul>
     
     </section>
+    </form>
 <script src="js/slideshow.js"></script>
-<script src="js/tijdelijke-filters.js"></script>
+<script src="js/filters.js"></script>
 <script src="js/editmode-button.js"></script>
 <script src="js/tekstcounter.js"></script>
-<script src="/js/addProjectCard.js"></script>
+<script src="/js/carousel-edit.js"></script>
+ <%- include('partials/addProjectModal') %>
 <%- include('partials/footer') %> 
 </body>
 
