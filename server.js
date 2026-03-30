@@ -136,8 +136,31 @@ app.get('/matching', (req, res) => {
   res.render('matching');
 });
 
-app.get('/profielPaginaIndividueel', (req, res) => {
-  res.render('profielPaginaIndividueel');
+app.get('/profielPaginaIndividueel', checkInlog, async (req, res) => {
+  try {
+    // 1. Wie is er ingelogd? We halen de naam uit de sessie.
+    const logedInName = req.session.username;
+    // Haal de data uit de database
+    const data = await profileCollection.findOne({ name: logedInName });
+
+if (data) {
+      // 3. Geef de data van de ingelogde persoon door aan EJS
+      res.render('profielPaginaIndividueel', { theUser: data });
+    } else {
+      res.status(404).send("Gebruiker niet gevonden in de database.");
+    }
+  } catch (err) {
+    console.error("Fout:", err);
+    res.status(500).send("Server fout");
+  }
+});
+
+// De :naam is een variabele (bijv. /profiel/Sanne of /profiel/Casper)
+app.get('/profiel/:naam', async (req, res) => {
+    const searchedName = req.params.naam; // Pakt de naam uit de URL
+    const data = await profileCollection.findOne({ name: searchedName });
+    
+    res.render('profielPaginaIndividueel', { theUser: data });
 });
 
 // crew profile
@@ -204,3 +227,4 @@ app.get('/logout', (req, res) => {
     res.redirect('/login');
   });
 });
+

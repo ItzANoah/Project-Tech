@@ -20,17 +20,16 @@
                 <%- include('partials/editMode') %>
                 
                 <ul class="nameRole">
-                    <li><h1 id="userName">Mooie Naam</h1></li>
-                    <li><h2 id="rol">Producer</h2></li>
+                    <li><h1 id="userName"><%= theUser.name %></h1></li>
+                    <li><h2 id="rol"><%= theUser.role %></h2></li>
                 </ul>
                 
                 <ul class="important-qualities" id="importantQualities">
-                    <li><h4>4 jaar werkervaring</h4></li>
+                    <li><h4><%= theUser.experience %> jaar werkervaring</h4></li>
                     <li><h4>Amsterdam</h4></li>
                 </ul>
                 
-                <p id="bio">Mijn naam is Mooie naam, ik werk al vier jaar als regisseur/ producer. Ik ben bekend met verschillende genres waaronder: 
-                Thriller, drama & indie. Het liefste werk ik aan comedies en romantische films. Ik heb gestudeerd aan de filmacedemie in Utrecht. In mijn vrije tijd doe ik schaatsen en koken. Ik zou mijzelf omschrijven als een sociaal persoon. Ik hou van samenwerken, of dat nou met de acteurs, schrijvers of kostuum ontwerpers is. Denk je dat wij een echte match zijn? Stuur mij gerust een bericht.</p>
+                <p id="bio"><%= theUser.bio %></p>
                 
                 <ul class="qualities" id="idQualities">
                     <li>Color grading</li>
