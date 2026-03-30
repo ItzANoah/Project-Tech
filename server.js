@@ -311,7 +311,7 @@ app.get('/matching', async (req, res) => {
 // Home
 app.get('/', async (req, res) => {
   try {
-    const profiles = await getProfiles();
+    const profiles = await getCollection('profiles');
     res.render('index', { profiles });
   } catch (error) {
     console.error(error);

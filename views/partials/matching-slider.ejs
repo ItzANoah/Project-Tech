@@ -1,7 +1,7 @@
 <ul class="matching-slider carousel__list">
-    <% profiles.forEach(profile => { %>
+    <% profiles.forEach(item => { %>
         <li class="matching-slider__item carousel__list-Item">
-            <%- include('matching', { profile }) %>
+            <%- include('matching', { item }) %>
         </li>
     <% }) %>
 </ul>

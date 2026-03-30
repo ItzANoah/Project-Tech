@@ -23,10 +23,12 @@
     font-weight: var(--fontWeightBold);
 }
 
-.hero__container button {
+.hero__container a {
     width: fit-content;
     padding: var(--buttonPadding);
 
+    box-shadow: var(--buttonShadow);
+    text-decoration: none;
     color:  var(--textColorWhite);
     background-color: var(--accentColorRed);
     border-radius: var(--buttonCornerRadius);
