@@ -9,6 +9,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use(express.static("static"));
 app.set('view engine', 'ejs');
 app.set('views', './views');
+app.use(express.json()); 
 
 require('dotenv').config(); // MOET bovenaan staan voor de database link!
 const { MongoClient } = require('mongodb');
@@ -136,31 +137,49 @@ app.get('/matching', (req, res) => {
   res.render('matching');
 });
 
+// profielpagina individueel
+// ROUTE 1: De pagina bekijken
 app.get('/profielPaginaIndividueel', checkInlog, async (req, res) => {
   try {
-    // 1. Wie is er ingelogd? We halen de naam uit de sessie.
-    const logedInName = req.session.username;
-    // Haal de data uit de database
-    const data = await profileCollection.findOne({ name: logedInName });
+    // We zoeken de persoon die nu is ingelogd
+    const data = await profileCollection.findOne({ name: req.session.username });
 
-if (data) {
-      // 3. Geef de data van de ingelogde persoon door aan EJS
+    if (data) {
+      // We sturen 'deGebruiker' naar de EJS
       res.render('profielPaginaIndividueel', { theUser: data });
     } else {
       res.status(404).send("Gebruiker niet gevonden in de database.");
     }
   } catch (err) {
-    console.error("Fout:", err);
+    console.error("Fout bij laden profiel:", err);
     res.status(500).send("Server fout");
   }
 });
 
-// De :naam is een variabele (bijv. /profiel/Sanne of /profiel/Casper)
-app.get('/profiel/:naam', async (req, res) => {
-    const searchedName = req.params.naam; // Pakt de naam uit de URL
-    const data = await profileCollection.findOne({ name: searchedName });
-    
-    res.render('profielPaginaIndividueel', { theUser: data });
+// ROUTE 2: De data opslaan (vangen van de fetch)
+app.post('/update-profile', checkInlog, async (req, res) => {
+  try {
+    const { name, role, bio, skills } = req.body;
+    const oldName = req.session.username; // De naam waarmee je bent ingelogd
+
+    // VEILIGHEID: Als de naam leeg is, stop dan direct!
+    if (!name || name.trim() === "") {
+        return res.status(400).json({ error: "Naam mag niet leeg zijn" });
+    }
+
+    await profileCollection.updateOne(
+      { name: oldName }, 
+      { $set: { name, role, bio, skills } }
+    );
+
+    // We updaten de sessie alleen als de naam echt veranderd is
+    req.session.username = name;
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Fout bij opslaan:", err);
+    res.status(500).json({ success: false });
+  }
 });
 
 // crew profile

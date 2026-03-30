@@ -15,11 +15,13 @@
                 <img src="/images/producer.jpg" id="userPfp" alt="producer">
                 <input type="file" id="change-pfp-input" style="display: none;">
                 <label for="change-pfp-input" class="edit-photo-label">Foto aanpassen</label>
-            </div>
-            <div class="profile-content">
-                <%- include('partials/editMode') %>
+                </div>
+
+                <div class="profile-info-box">
+                     <%- include('partials/editMode') %>
+
                 
-                <ul class="nameRole">
+                <ul class="profile-content">
                     <li><h1 id="userName"><%= theUser.name %></h1></li>
                     <li><h2 id="rol"><%= theUser.role %></h2></li>
                 </ul>
@@ -32,12 +34,13 @@
                 <p id="bio"><%= theUser.bio %></p>
                 
                 <ul class="qualities" id="idQualities">
-                    <li>Color grading</li>
-                    <li>Producen</li>
-                    <li>Samenwerken</li>
-                    <li>Schrijven</li>
-                    <li>Engelse taal</li>
-                </ul>
+    <% if (theUser.skills && theUser.skills.length > 0) { %>
+        <% theUser.skills.forEach(skill => { %>
+            <li><%= skill %></li>
+        <% }); %>
+    <% } %>
+    <button type="button" class="add-quality-btn" onclick="addProfileQuality()">+ Kwaliteit toevoegen</button>
+</ul>
             </div>
         </section>
 

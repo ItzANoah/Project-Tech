@@ -39,3 +39,12 @@
     body.is-editing .add-quality-btn {
         display: inline-block;
     }
+
+/* De knop (zorg dat de ID matcht met je partial) */
+#edit-mode-toggle {
+    position: absolute;
+    top: 20px;    /* 20px van de bovenkant van de BOX */
+    right: 20px;  /* 20px van de rechterkant van de BOX */
+    padding: 10px 20px;
+    cursor: pointer;
+}

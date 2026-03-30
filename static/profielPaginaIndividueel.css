@@ -1,16 +1,13 @@
 
 
 .profile-header {
-    display: flex;
-    align-items: flex-start; 
-    gap: var(--gapMedium);
-    padding-top: var(--gapLarge);
+display: flex; /* Zet foto en tekst naast elkaar */
+    gap: 20px;
+    align-items: flex-start;
 }
 
 .profile-content {
-    position: relative; /* Dit is het anker voor de knop */
-    display: flex;
-    flex-direction: column;
+    list-style: none;
 }
 
 .profile-content h1 {
@@ -18,6 +15,14 @@
     font-weight: var(--fontWeightBold);
     font-size: 4em;
     margin-bottom: -0.1em;
+}
+
+.profile-info-box {
+    position: relative; /* DIT IS DE SLEUTEL: de box is nu het referentiepunt */
+    flex-grow: 1;       /* Laat de box de rest van de breedte vullen */
+    border-radius: 8px;
+    min-height: 250px;  /* Zorgt dat de box altijd groot genoeg is */
+    padding-left: var(--gapSmall);
 }
 
 .admin-toggle-btn {
@@ -41,7 +46,7 @@
 }
 
 .nameRole {
-    list-style: none;
+    margin-right: 120px; /* Ruimte reserveren aan de rechterkant voor de knop */
 }
 
 .important-qualities {
