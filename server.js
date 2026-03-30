@@ -198,32 +198,14 @@ app.get('/logout', (req, res) => {
 
 
 // Aanroepen collections profiles en projects
-const getProfiles = async () => {
+const getCollection = async (collection) => {
   const database = client.db("filmcrew");
-  return await database.collection("profiles").find().toArray();
+  return await database.collection(collection).find().toArray();
 }
 
-const getProjects = async () => {
+const getDistinctValues = async (collection, key) => {
   const database = client.db("filmcrew");
-  return await database.collection("projects").find().toArray();
-}
-
-
-// Filter soorten aanspreken
-const getProfileRoles = async () => {
-  const database = client.db("filmcrew");
-  return await database.collection("profiles").distinct('role');
-}
-
-const getProjectTypes = async () => {
-  const database = client.db("filmcrew");
-  return await database.collection("projects").distinct('type');
-  // 'Finds the distinct values for a specified field across a single collection' destinct() https://www.mongodb.com/docs/manual/reference/method/db.collection.distinct/
-}
-
-const getProjectGenres = async () => {
-  const database = client.db("filmcrew");
-  return await database.collection("projects").distinct('genre');
+  return await database.collection(collection).distinct(key);
 }
 
 const getMinOrMaxValue = async (key, sort) => {
@@ -240,71 +222,78 @@ const getMinOrMaxValue = async (key, sort) => {
 // Matching
 app.get('/matching', async (req, res) => {
   try {
-    const profileRoles = await getProfileRoles();
-    const projectTypes = await getProjectTypes();
-    const projectGenres = await getProjectGenres();
-    const highestProfileAge = await getMinOrMaxValue('age', -1);
-    const lowestProfileAge = await getMinOrMaxValue('age', 1);
-    const highestExperience = await getMinOrMaxValue('experience', -1);
-    const lowestExperience = await getMinOrMaxValue('experience', 1);
+    let matchingItems = [];
+    let profileRoles = [];
+    let projectTypes = [];
+    let projectGenres = [];
+    let highestProfileAge = null;
+    let lowestProfileAge = null;
+    let highestExperience = null;
+    let lowestExperience = null;
 
     const filtersQuery = req.query;
-    const viewMode = filtersQuery.view || 'profiles';
+    const viewMode = filtersQuery.view || 'all';
 
-    let allProfiles = await getProfiles();
-    let allProjects = await getProjects();
+    if (viewMode === "all") {
+      let profiles = await getCollection('profiles');
+      let projects = await getCollection('projects');
 
-    if (viewMode === "profiles") {
-      // alle profile filters: role - age - experience     - createdAt?
-
-      // roles
-      let allRoles = await getProfileRoles();
-      let selectedRoles = [];
-      allRoles.forEach(role => {
-        if (filtersQuery[role] === 'on') {selectedRoles.push(role);}
-      })
-      if (selectedRoles.length > 0) {
-        allProfiles = allProfiles.filter(profile => selectedRoles.includes(profile.role));
-      }
-
-      // TODO age
-
-      // TODO experience
-
+      // Gebruik voor mergen meerdere arrays https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat
+      matchingItems = profiles.concat(projects);
     }
 
+    if (viewMode === "profiles") {
+      matchingItems = await getCollection('profiles');
 
+      profileRoles = await getDistinctValues('profiles', 'role');
+      highestProfileAge = await getMinOrMaxValue('age', -1);
+      lowestProfileAge = await getMinOrMaxValue('age', 1);
+      highestExperience = await getMinOrMaxValue('experience', -1);
+      lowestExperience = await getMinOrMaxValue('experience', 1);
+
+      const hasFilteredRoles = profileRoles.some(role => filtersQuery[role] === 'on')
+      if (hasFilteredRoles) {
+        matchingItems = matchingItems.filter(item => filtersQuery[item.role] === 'on');
+      }
+
+      const hasFilteredAge = (filtersQuery['ageMin'] && filtersQuery['ageMax']);
+      if (hasFilteredAge) {
+        matchingItems = matchingItems.filter(item => item.age >= filtersQuery['ageMin'] && item.age <= filtersQuery['ageMax']);
+      }
+
+      const hasFilteredExperience = (filtersQuery['experienceMin'] && filtersQuery['experienceMax']);
+      if (hasFilteredExperience) {
+        matchingItems = matchingItems.filter(item => item.experience >= filtersQuery['experienceMin'] && item.experience <= filtersQuery['experienceMax']);
+      }
+    }
+
+    // alle project filters: type - genre - director - location? - sorteren(createdAt?, a > z)
     if (viewMode === "projects") {
-      // alle project filters: type - genre - director     - location? - createdAt?
+      matchingItems = await getCollection('projects');
+      projectTypes = await getDistinctValues('projects', 'type');
+      projectGenres = await getDistinctValues('projects', 'genre');
 
-      // TODO WERKT NIETTT MAAR DIE ANDERE WEL?? types
-      let allTypes = await getProjectTypes();
-      let selectedTypes = [];
-      allTypes.forEach(type => {
-        if (filtersQuery[type] === 'on') {selectedTypes.push(type);}
-      })
-
-      if (selectedTypes.length > 0) {
-        allProjects = allProjects.filter(project => selectedTypes.includes(project.type));
+      const hasFilteredTypes = projectTypes.some(type => filtersQuery[type] === 'on')
+      if (hasFilteredTypes) {
+        matchingItems = matchingItems.filter(item => filtersQuery[item.type] === 'on');
       }
 
-      // TODO WERKT NIETTT MAAR DIE ANDERE WEL?? genre
-      let allGenres = await getProjectGenres();
-      let selectedGenres = [];
-      allGenres.forEach(genre => {
-        if (filtersQuery[genre] === 'on') {selectedGenres.push(genre);}
-      })
-
-      if (selectedGenres.length > 0) {
-        allProjects = allProjects.filter(project => selectedGenres.includes(project.genre));
+      const hasFilteredGenres = projectGenres.some(genre => filtersQuery[genre] === 'on')
+      if (hasFilteredGenres) {
+        matchingItems = matchingItems.filter(item => filtersQuery[item.genre] === 'on');
       }
 
-
+      const hasFilteredDirector = filtersQuery['director'];
+      if (hasFilteredDirector) {
+        // Includes is case sensitive https://www.reddit.com/r/learnjavascript/comments/qa5ur6/how_do_i_use_includes_and_tolowerccase_in_same_if/
+        matchingItems = matchingItems.filter(item => item.director.toLowerCase().includes(filtersQuery['director'].toLowerCase()));
+      }
     }
 
     res.render('matching', {
-      profiles: allProfiles,
-      projects: allProjects,
+      viewMode,
+      filtersQuery,
+      matchingItems,
       profileRoles,
       projectTypes,
       projectGenres,
@@ -329,5 +318,3 @@ app.get('/', async (req, res) => {
     res.status(500).send("Database has an error");
   }
 });
-
-// Filters

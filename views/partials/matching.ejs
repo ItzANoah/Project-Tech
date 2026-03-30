@@ -2,10 +2,10 @@
 
 <article class="matching__card">
     <header>
-        <img src="<%= profile.image || '/images/image-not-found.png' %>" width="335" alt="<%= profile.name %>">
-        <h3 class="matching__card-body"><%= profile.name%> - <%= profile.role%> <%= profile.type%></h3>
+        <img src="<%= item.image || '/images/image-not-found.png' %>" width="335" alt="<%= item.name %>">
+        <h3 class="matching__card-body"><%= item.name%> - <%= item.role%> <%= item.type %></h3>
     </header>
-    <p class="matching__card-body"> <%= profile.bio%></p>
+    <p class="matching__card-body"><%= item.bio %></p>
     <div class=" matching__card-link">
         <a href="#">Bekijk details</a>
     </div>
