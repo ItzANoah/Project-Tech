@@ -238,10 +238,11 @@ app.get('/matching', async (req, res) => {
       let profiles = await getCollection('profiles');
       let projects = await getCollection('projects');
 
-      // Gebruik voor mergen meerdere arrays https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat
+      // Concat() voor mergen meerdere arrays https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat
       matchingItems = profiles.concat(projects);
     }
 
+    // Alle profiles filters
     if (viewMode === "profiles") {
       matchingItems = await getCollection('profiles');
 
@@ -267,7 +268,7 @@ app.get('/matching', async (req, res) => {
       }
     }
 
-    // alle project filters: type - genre - director - location? - sorteren(createdAt?, a > z)
+    // alle project filters
     if (viewMode === "projects") {
       matchingItems = await getCollection('projects');
       projectTypes = await getDistinctValues('projects', 'type');
@@ -288,6 +289,27 @@ app.get('/matching', async (req, res) => {
         // Includes is case sensitive https://www.reddit.com/r/learnjavascript/comments/qa5ur6/how_do_i_use_includes_and_tolowerccase_in_same_if/
         matchingItems = matchingItems.filter(item => item.director.toLowerCase().includes(filtersQuery['director'].toLowerCase()));
       }
+    }
+
+
+    // Alle sorteer opties
+    if (filtersQuery['sort'] === 'a-z' || filtersQuery['sort'] === 'z-a') {
+      let directionSort;
+      if (filtersQuery['sort'] === 'a-z') {
+        directionSort = 1;
+      } else {
+        directionSort = -1;
+      }
+
+      // sorteren namen op alfabetische volgorde, sort() https://www.freecodecamp.org/news/how-to-sort-alphabetically-in-javascript/
+      // Uitleg video van sort met comparison function https://www.youtube.com/watch?v=CTHhlx25X-U
+      matchingItems = matchingItems.sort((item1, item2) => {
+        const aName = item1.name.toLowerCase();
+        const bName = item2.name.toLowerCase();
+        if (aName < bName) return -1 * directionSort;
+        if (aName > bName) return 1 * directionSort;
+        return 0;
+      })
     }
 
     res.render('matching', {
