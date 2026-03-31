@@ -143,7 +143,7 @@ app.get('/profielPaginaIndividueel', checkInlog, async (req, res) => {
     const data = await profileCollection.findOne({ name: req.session.username });
 
     if (data) {
-      // We gebruiken 'theUser' als naam voor het pakketje
+
       res.render('profielPaginaIndividueel', { theUser: data });
     } else {
       res.status(404).send("Gebruiker niet gevonden.");

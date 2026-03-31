@@ -3,6 +3,7 @@
 .profile-header {
 display: flex; /* Zet foto en tekst naast elkaar */
     gap: 20px;
+    padding-top: var(--gapLarge);
     align-items: flex-start;
 }
 
@@ -84,7 +85,7 @@ display: flex; /* Zet foto en tekst naast elkaar */
 }
 
 .projects-section {
-    padding: var(--sectionPadding);
+    padding-top: var(--gapLarge);
     margin-top: var(--gapSmall)
 }
 
