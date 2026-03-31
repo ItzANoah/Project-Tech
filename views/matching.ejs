@@ -159,8 +159,8 @@
                                 <option value="best-match">Beste match</option>
                                 <option value="a-z" <%= filtersQuery.sort === 'a-z' && 'selected' %>>A > Z</option>
                                 <option value="z-a" <%= filtersQuery.sort === 'z-a' && 'selected' %>>Z > A</option>
-                                <option value="most-recent">Meest recent</option>
-                                <option value="oldest-first">Oudste eerst</option>
+                                <option value="newest-first" <%= filtersQuery.sort === 'newest-first' && 'selected' %>>Nieuwste eerst</option>
+                                <option value="oldest-first" <%= filtersQuery.sort === 'oldest-first' && 'selected' %>>Oudste eerst</option>
                             </select>
                         </div>
                     </div>

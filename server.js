@@ -300,14 +300,30 @@ app.get('/matching', async (req, res) => {
       } else {
         directionSort = -1;
       }
-
-      // sorteren namen op alfabetische volgorde, sort() https://www.freecodecamp.org/news/how-to-sort-alphabetically-in-javascript/
+      // sorteren op een volgorde, sort() https://www.freecodecamp.org/news/how-to-sort-alphabetically-in-javascript/
       // Uitleg video van sort met comparison function https://www.youtube.com/watch?v=CTHhlx25X-U
       matchingItems = matchingItems.sort((item1, item2) => {
         const aName = item1.name.toLowerCase();
         const bName = item2.name.toLowerCase();
         if (aName < bName) return -1 * directionSort;
         if (aName > bName) return 1 * directionSort;
+        return 0;
+      })
+    }
+
+    if (filtersQuery['sort'] === 'newest-first' || filtersQuery['sort'] === 'oldest-first') {
+      let directionSort;
+      if (filtersQuery['sort'] === 'newest-first') {
+        directionSort = 1;
+      } else {
+        directionSort = -1;
+      }
+
+      matchingItems = matchingItems.sort((item1, item2) => {
+        const newest = item1.createdAt;
+        const oldest = item2.createdAt;
+        if (newest < oldest) return 1 * directionSort;
+        if (newest > oldest) return -1 * directionSort;
         return 0;
       })
     }
