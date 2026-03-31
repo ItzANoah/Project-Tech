@@ -63,7 +63,7 @@ app.use((req, res, next) => {
 //////// checkt of je bent ingelogd /////////
 function checkInlog(req, res, next) {
   if (req.session.username) {
-    next(); // ga maar door naar de volgende stap
+    next(); // ga door naar de volgende stap
   } else {
     res.redirect('/login'); // Terug naar de login pagina
   }
@@ -101,10 +101,10 @@ app.post('/register', async (req, res) => {
       return res.send('Deze naam is al bezet.');
     }
 
-    // Wachtwoord versleutelen
+    // Wachtwoord versleutelen, voor deze keer geen variabele van de saltrounds gemaakt omdat het maar 1 keer gebruikt wordt.
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // volledige profiel opbouwen
+    // volledige profiel
     const newUser = {
       name: username,
       email: email,
