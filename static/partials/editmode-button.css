@@ -1,0 +1,31 @@
+/* Edit buttons  */ 
+
+.button--profile {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: var(--accentColorGrey); 
+    color: var(--accentColorWhite);
+    padding: 8px 16px;  /* vervangen met percentage */
+    border: none;           
+    border-radius: 5px;
+    cursor: pointer;        
+    font-family: inherit;  
+    font-size: var(--bodyTextSize);
+    transition: background 0.3s ease;
+    margin-bottom: 30px; /* aanpassen percentage */  
+}
+
+.button--profile:hover {
+      background-color: var(--accentColorRed);
+}
+
+/* Verberg edit-elementen standaard */
+.crew-profile-edit.edit-only {
+    display: none !important;
+}
+
+/* Toon edit-elementen alleen als de body de class 'is-editing' heeft */
+body.is-editing .crew-profile-edit .edit-only {
+    display: flex !important;
+}

@@ -1,0 +1,32 @@
+<section class="slideshow" aria-label="Project visuals">
+    <button type="button" class="slideshow__nav slideshow__nav--prev">&#10094;</button>
+    
+    <div class="slideshow__container">
+        <div class="slideshow__upload edit-only">
+            <label for="file-upload" class="add-photo-btn">
+                Foto toevoegen 📸
+            </label>
+            <input type="file" 
+                   name="projectImages" 
+                   id="file-upload" 
+                   accept="image/*" 
+                   multiple 
+                   onchange="previewImages(this)" 
+                   style="display:none;">
+        </div>
+
+        <% if (projectData.images && projectData.images.length > 0) { %>
+            <% projectData.images.forEach((img, index) => { %>
+                <div class="slideshow__item <%= index === 0 ? 'slideshow__item--active' : '' %>">
+                    <img src="<%= img %>" alt="Project visual" class="slideshow__image">
+                    <button type="button" class="remove-photo edit-only" onclick="removePhotoFromSlideshow(this)">
+                        Verwijderen
+                    </button>
+                </div>
+            <% }) %>
+        <% } %>
+    </div>
+
+    <button type="button" class="slideshow__nav slideshow__nav--next">&#10095;</button>
+    <input type="hidden" name="remainingImages" id="inputRemainingImages">
+</section>
