@@ -34,7 +34,8 @@ const client = new MongoClient(uri);
 
 
 /////////////// register functie ////////////////
-let profileCollection; 
+let profileCollection;
+let matchRequestcollection; 
 
 async function run() {
   try {
@@ -42,6 +43,7 @@ async function run() {
     const db = client.db("filmcrew");
 
     profileCollection = db.collection("profiles"); 
+    matchRequestcollection = db.collection("verzoeken"); 
     
     console.log("Database verbinding succesvol!");
   } catch (error) {
@@ -222,13 +224,31 @@ app.post('/save-project', upload.array('projectImages'), async (req, res) => {
     }
 });
 
-app.get('/current-matches', (req, res) => {
-  res.render('current-matches');
-});
-
 app.get('/current-matches', checkInlog, async (req, res) => {
-  
-  res.render('current-matches');
+  try {
+    // matches ophalen uit de database
+    // controleren met de username of de verzoeken voor de gebruiker zijn die is ingelogd
+    const matchdata = await matchRequestcollection.find({ 
+      receiverId: req.session.userID,
+      status: "pending" 
+    }).toArray();
+     // voor elke match zoeken we van de senderID de username op in de DB.
+     const matchesMetNamen = await Promise.all(matchdata.map(async (match) => {
+      const afzender = await profileCollection.findOne({ _id: new ObjectId(match.senderId) });
+      
+      return {
+        ...match,
+        senderName: afzender ? afzender.name : "Onbekende Gebruiker"
+      };
+    }));
+    res.render('current-matches', { 
+      matches: matchdata // dit is wat gebruikt wordt in de ejs 
+    });
+    
+  } catch (error) {
+    console.error("Fout bij het ophalen van matches:", error);
+    res.status(500).send("Kon de matches niet laden.");
+  }
 });
 
 ///////////////// inlog functies ////////////////////
@@ -244,9 +264,10 @@ app.post('/login', async (req, res) => {
 
       if (match) {
         // Sessie vullen
-        req.session.userID = user._id;
+        // Bij het succesvol inloggen:
         req.session.username = user.name;
-        
+        req.session.userID = user._id.toString(); 
+
         console.log(`Gebruiker ${user.name} is ingelogd.`);
         return res.redirect('/current-matches');
       }

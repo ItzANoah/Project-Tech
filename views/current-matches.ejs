@@ -30,12 +30,16 @@
             </select>
         </div>
         <ul class="carousel__list">
-            <% for (let i = 0; i < 5; i++) { %>
+            <% if (matches && matches.length > 0) { %>
+              <% matches.forEach(item => { %>
                 <li class="carousel__list-Item">
-                    <%- include('partials/matching') %>
+                  <%- include('partials/matching-request', { match: item }) %>
                 </li>
-                <% } %>
-        </ul> 
+              <% }) %>
+            <% } else { %>
+              <p>Je hebt momenteel geen nieuwe aanvragen.</p>
+            <% } %>
+          </ul>
     </div>
     <div>
             <h2 class="current__h2">Huidige Projecten</h2>
