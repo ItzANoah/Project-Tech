@@ -262,3 +262,10 @@ body:has(.filter-dialog[open]) {
     justify-content: space-between;
 }
 
+.noUi-tooltip {
+    bottom: -150% !important;
+}
+
+:root .noUi-connect {
+    background-color: var(--accentColorGold);
+}

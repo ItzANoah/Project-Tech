@@ -294,12 +294,7 @@ app.get('/matching', async (req, res) => {
 
     // Alle sorteer opties
     if (filtersQuery['sort'] === 'a-z' || filtersQuery['sort'] === 'z-a') {
-      let directionSort;
-      if (filtersQuery['sort'] === 'a-z') {
-        directionSort = 1;
-      } else {
-        directionSort = -1;
-      }
+      let directionSort = filtersQuery['sort'] === 'a-z' ? 1 : -1;
       // sorteren op een volgorde, sort() https://www.freecodecamp.org/news/how-to-sort-alphabetically-in-javascript/
       // Uitleg video van sort met comparison function https://www.youtube.com/watch?v=CTHhlx25X-U
       matchingItems = matchingItems.sort((item1, item2) => {
@@ -312,18 +307,13 @@ app.get('/matching', async (req, res) => {
     }
 
     if (filtersQuery['sort'] === 'newest-first' || filtersQuery['sort'] === 'oldest-first') {
-      let directionSort;
-      if (filtersQuery['sort'] === 'newest-first') {
-        directionSort = 1;
-      } else {
-        directionSort = -1;
-      }
+      const directionSort = filtersQuery['sort'] ? 1 : -1;
 
       matchingItems = matchingItems.sort((item1, item2) => {
-        const newest = item1.createdAt;
-        const oldest = item2.createdAt;
-        if (newest < oldest) return 1 * directionSort;
-        if (newest > oldest) return -1 * directionSort;
+        const aDate = item1.createdAt || item1.updatedAt;
+        const bDate = item2.createdAt || item2.updatedAt;
+        if (aDate < bDate) return 1 * directionSort;
+        if (aDate > bDate) return -1 * directionSort;
         return 0;
       })
     }
