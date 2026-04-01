@@ -1,0 +1,22 @@
+<div id="applicationModal" class="modal">
+    <div class="modal__content">
+        <div class="modal__header">
+            <h3>Nieuwe Applicatie Aanmaken</h3>
+            <button type="button" class="modal__close" onclick="closeApplicationModal()">&times;</button>
+        </div>
+        
+        <form id="applicationForm" class="modal__form">
+            <div class="form-group">
+                <label for="appTitle">Functie Titel</label>
+                <input type="text" id="appTitle" placeholder="bijv. Sound Designer" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="appDesc">Beschrijving</label>
+                <textarea id="appDesc" placeholder="Wat voor iemand zoek je?" required></textarea>
+            </div>
+            
+            <button type="button" class="btn-save" onclick="saveNewApplication()">Toevoegen</button>
+        </form>
+    </div>
+</div>

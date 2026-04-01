@@ -1,0 +1,14 @@
+<section class="carousel <%= extraClass || '' %>">
+    <h2 class="carousel__Title"><%= title %></h2>
+    <ul class="carousel__list" id="<%= carouselId %>">
+    <% if (items && items.length > 0) { %>
+        <% items.forEach(item => { %>
+            <li class="carousel__list-Item">
+                <%- include('partials/projectenCarouselCard', { project: item }) %>
+            </li>
+        <% }) %>
+    <% } else { %>
+        <p class="no-data-msg">Geen projecten gevonden.</p>
+    <% } %>
+</ul>
+</section>

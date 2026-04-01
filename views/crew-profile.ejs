@@ -53,60 +53,26 @@
     <input type="hidden" name="productionDescription" id="inputProductionDescription">
 </section>
 
-    <section class="carousel">
-        <h2 class="carousel__Title">Andere projecten van de regisseur</h2>
+<input type="hidden" name="relatedProjects" id="inputSelectedProjectIds" 
+       value="<%= projectData.relatedProjects ? projectData.relatedProjects.join(',') : '' %>">
 
-        <ul class="carousel__list" id="directorProjectsCarousel">
-
-             <%- include('partials/addProject') %>
-            
-        <% for (let i = 0; i < 5; i++) { %>
-            <li class="carousel__list-Item">
-
-        <%- include('partials/matching') %>
-        
-        
-        </li>
-        <% } %>
-    </ul>
+ <%- include('projectenCarousel', { 
+    title: 'Andere projecten van de regisseur', 
+    items: directorProjects, 
+    carouselId: 'directorProjectsCarousel',
+    extraClass: '' 
+}) %>
     
-    </section>
+    <%- include('partials/applicationSection', { applications: applications }) %>
+    <%- include('partials/applicationModal') %>
 
-    <section class="carousel">
-        <h2 class="carousel__Title">Crew die meewerkt aan de film</h2>
-        
-        <ul class="carousel__list">
-        <% for (let i = 0; i < 5; i++) { %>
-            <li class="carousel__list-Item">
-
-        <%- include('partials/matching') %>
-        
-        </li>
-        <% } %>
-    </ul>
-    
-    </section>
-
-    <section class="carousel open sollicitaties">
-        <h2 class="carousel__Title">Open sollicitaties</h2>
-        
-        <ul class="carousel__list">
-        <% for (let i = 0; i < 5; i++) { %>
-            <li class="carousel__list-Item">
-
-        <%- include('partials/matching') %>
-        
-        </li>
-        <% } %>
-    </ul>
-    
-    </section>
     </form>
 <script src="js/slideshow.js"></script>
 <script src="js/filters.js"></script>
 <script src="js/editmode-button.js"></script>
 <script src="js/tekstcounter.js"></script>
 <script src="/js/carousel-edit.js"></script>
+<script src="/js/applicationSection.js"></script>
  <%- include('partials/addProjectModal') %>
 <%- include('partials/footer') %> 
 </body>

@@ -22,41 +22,42 @@ ZELF IETS TOEVOEGEN IN HET CAROUSEL
     padding-top: 1rem;
 }
 
+/* Dwing de carrousel om items naast elkaar te houden */
 .carousel__list {
-  width: 100%;
-  padding: 20px;
-  display: flex;
-  gap: 2vw;
-  overflow-x: scroll;
-  scroll-snap-type: x mandatory;
-  align-items: stretch;
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 20px;
+    overflow-x: auto;
+    padding: 20px 0;
+    align-items: stretch; /* Zorgt dat alle kaarten even hoog zijn */
 }
 
-/* Zorg dat ALLE items in de lijst hetzelfde formaat hebben */
+/* De container van de kaart (li) */
 .carousel__list-Item {
-    list-style-type: none;
-    scroll-snap-align: center;
-    flex: 0 0 25%; /* Dwingt de breedte op 25% van de carrousel */
-    max-width: 25%; /* Extra veiligheid */
-    display: flex; /* Zorgt dat de kaart binnen de li de volle hoogte pakt */
+    flex: 0 0 250px; /* Of de breedte die jij mooi vindt */
+    list-style: none;
 }
 
-/* De kaart zelf die we via JS toevoegen */
+/* De kaart zelf */
 .matching__card {
+    width: 100%;
+    height: 100%;
+    background-color: #e0e0e0; /* De grijze kleur van je screenshot */
+    border-radius: 30px; /* Mooie ronde hoeken zoals op je screenshot */
     display: flex;
     flex-direction: column;
-    width: 100%; /* Vul de 25% van de li volledig op */
-    background-color: var(--accentColorLightGrey);
-    border-radius: var(--buttonCornerRadius);
-    overflow: hidden; /* Zorgt dat de afbeelding niet buiten de hoeken steekt */
-    box-sizing: border-box;
+    overflow: hidden;
+    position: relative;
 }
 
-/* De afbeelding binnen de kaart */
+/* De afbeelding bovenin de kaart */
 .matching__image {
     width: 100%;
-    aspect-ratio: 16 / 9; /* Dit zorgt dat de verhouding altijd hetzelfde blijft */
-    object-fit: cover; /* Zorgt dat de foto niet vervormt */
+    height: 100%;
+    /* 'contain' zorgt dat de hele afbeelding zichtbaar blijft binnen de box */
+    object-fit: contain; 
+    /* Voeg een achtergrondkleur toe voor als de poster smal is */
+    background-color: #1a1a1a; 
 }
 
 /* De tekst-container binnen de kaart */
@@ -65,5 +66,73 @@ ZELF IETS TOEVOEGEN IN HET CAROUSEL
     flex-grow: 1; /* Duwt de knop naar beneden als er weinig tekst is */
 }
 
+.delete-project-btn {
+    display: none; /* Standaard onzichtbaar */
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: red;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    z-index: 10;
+}
 
+/* Alleen tonen als de body de class 'is-editing' heeft */
+.is-editing .delete-project-btn {
+    display: block;
+}
 
+/* Verberg de melding zodra we in edit-modus gaan */
+.is-editing .no-data-msg {
+    display: none;
+}
+
+/* Het zwarte vlak als er geen foto is */
+.matching__image-placeholder {
+    width: 100%;
+    height: 200px;
+    background-color: #000; /* Zwart vlak */
+}
+
+/* De Verwijderknop */
+.delete-project-btn {
+    display: none; /* Standaard onzichtbaar */
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #ff4d4d;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 10;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* TOVERWOORD: Toon de knop alleen als de body 'is-editing' heeft */
+.is-editing .delete-project-btn {
+    display: block;
+}
+
+.delete-project-btn:hover {
+    background: #cc0000;
+    transform: scale(1.1);
+}
+
+.matching__card-image-container {
+    width: 100%;
+    height: 250px; /* Iets hoger voor film-posters */
+    background-color: #000;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

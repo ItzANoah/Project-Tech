@@ -1,64 +1,57 @@
 function openEditMode() {
     const body = document.body;
-    // checkt of we aan het editen zijn 
     const isEditing = body.classList.contains('is-editing');
     
-    const btn = document.querySelector('.button--profile'); // de opslaan knop 
-    const form = document.getElementById('projectForm'); // het formulier wat we gaan verzenden
-    const editableElements = document.querySelectorAll('[contenteditable]'); //alle editable secties
+    const directorCarousel = document.getElementById('directorProjectsCarousel');
+    const applicationsContainer = document.getElementById('applicationsContainer'); // Je nieuwe grid
 
     if (!isEditing) {
-        // edit mode aan 
+        body.classList.add('is-editing');
 
-        body.classList.add('is-editing'); // classlist toevoegen 
-        editableElements.forEach(el => el.contentEditable = "true"); // alle editable content word true 
-        btn.innerHTML = 'Opslaan <span>&#10003;</span>'; // wijzigen knop veranderd in opslaan
-        
+        // --- 1. PROJECT CAROUSEL PLUS-KAART ---
+        if (directorCarousel && !document.getElementById('add-card-placeholder')) {
+            const addCardHTML = `
+                <li class="carousel__list-Item" id="add-card-placeholder">
+                    <div class="matching__card add-project-trigger" onclick="openAddProjectModal()" style="border: 2px dashed var(--accentColorGrey); cursor: pointer; display: flex; align-items: center; justify-content: center; min-height: 200px;">
+                        <div style="text-align: center;">
+                            <span style="font-size: 2rem;">+</span>
+                            <p>Project Toevoegen</p>
+                        </div>
+                    </div>
+                </li>`;
+            directorCarousel.insertAdjacentHTML('afterbegin', addCardHTML);
+        }
+
+        // --- 2. APPLICATION GRID PLUS-KAART ---
+        if (applicationsContainer && !document.getElementById('add-app-placeholder')) {
+            const addAppHTML = `
+                <div class="application-card add-application-card" id="add-app-placeholder" onclick="openApplicationModal()" style="border: 2px dashed #ccc; cursor: pointer; display: flex; align-items: center; justify-content: center; min-height: 160px;">
+                    <div style="text-align: center;">
+                        <span style="font-size: 2rem;">+</span>
+                        <p>Functie Toevoegen</p>
+                    </div>
+                </div>`;
+            applicationsContainer.insertAdjacentHTML('beforeend', addAppHTML);
+        }
+
+        // Tekstvelden bewerkbaar maken
+        document.querySelectorAll('[contenteditable]').forEach(el => el.contentEditable = "true");
+        document.querySelector('.button--profile').innerHTML = 'Opslaan <span>&#10003;</span>';
+
     } else {
+        // --- MODUS: OPSLAAN & SLUITEN ---
+        
+        // Verwijder beide Plus-kaarten
+        const addCard = document.getElementById('add-card-placeholder');
+        const addApp = document.getElementById('add-app-placeholder');
+        if (addCard) addCard.remove();
+        if (addApp) addApp.remove();
 
-        // Haal de teksten op uit de input velden
-        const titleText = document.getElementById('projectTitle').innerText.trim();
-        const subtitleText = document.getElementById('projectSubtitle').innerText.trim();
-        const descText = document.getElementById('projectDescription').innerText.trim();
-        // Zoek de tekst op
-        const productionText = document.getElementById('productionSummary').innerText.trim();
-
-        // Kopieer de tekst naar de hidden input
-        document.getElementById('inputProductionDescription').value = productionText;
-
-        // kijken of ze voldoen aan de lengte 
-        if (titleText.length > 20 || subtitleText.length > 30 || descText.length > 500) {
-            alert("Oeps! Een van je teksten is te lang. Maak het korter om op te slaan.");
-    
-            return; // De rest van de code wordt niet uitgevoerd.
-        }
-
-        // als alles voldoet aan de lengtes 
-
-        // teksten kopiëren naar hidden inputs
-        document.getElementById('inputTitle').value = titleText;
-        document.getElementById('inputSubtitle').value = subtitleText;
-        document.getElementById('inputDescription').value = descText;
-
-        // edit mode uitzetten
         body.classList.remove('is-editing');
-        editableElements.forEach(el => el.contentEditable = "false");
-        btn.innerHTML = 'Wijzig profiel ✎';
+        document.querySelectorAll('[contenteditable]').forEach(el => el.contentEditable = "false");
+        document.querySelector('.button--profile').innerHTML = 'Wijzig profiel ✎';
 
-        // Zoek alle afbeeldingen die momenteel in de DOM staan
-        const currentImages = [];
-        document.querySelectorAll('.slideshow__item img').forEach(img => {
-        const path = img.getAttribute('src');
-        // We slaan alleen paden op die al van de server komen (beginnen met /uploads/)
-        // Nieuwe previews (beginnen met data:image) worden via de file-input verstuurd
-        if (path.startsWith('/uploads/')) {
-        currentImages.push(path);
-        }
-});
-
-// Zet de overgebleven paden in de hidden input van de partial
-document.getElementById('inputRemainingImages').value = currentImages.join(',');
-
-        form.submit();
+        // Formulier verzenden
+        document.getElementById('projectForm').submit();
     }
 }

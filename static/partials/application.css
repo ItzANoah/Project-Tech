@@ -1,0 +1,85 @@
+/* Zorg dat de sectie zelf gecentreerd is en 75% breed */
+.applications-section {
+    max-width: 75%; 
+    margin: 0 auto;
+    padding: 2rem 0; /* Wat ruimte boven en onder */
+}
+
+/* Je grid staat hier nu binnen en zal automatisch de 75% volgen */
+.application-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    list-style: none;
+    padding: 0;
+}
+
+/* De kaart zelf */
+.application-card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 15px;
+    padding: 20px;
+    position: relative; /* Nodig voor het kruisje rechtsboven */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 180px;
+}
+
+/* Het kruisje in edit-mode */
+.delete-app-btn {
+    display: none; /* Standaard weg */
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: #ff4d4d;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+}
+
+.is-editing .delete-app-btn {
+    display: block;
+}
+
+/* De 'Plus' kaart voor het toevoegen */
+.add-application-card {
+    border: 2px dashed #bbb;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: #888;
+}
+
+/* Mobiel: op kleine schermen maar 1 kolom */
+@media (max-width: 600px) {
+    .application-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* De verwijder-kruisjes zijn standaard verborgen */
+.delete-app-btn {
+    display: none;
+}
+
+/* De solliciteer-knop is standaard zichtbaar */
+.btn-apply {
+    display: block;
+}
+
+/* Alleen als JOUW specifieke container de class is-editing krijgt (via JS of CSS) */
+.is-editing .delete-app-btn {
+    display: block;
+}
+
+.is-editing .btn-apply {
+    display: none;
+}

@@ -1,0 +1,19 @@
+<div class="matching__card" data-id="<%= project._id %>">
+    <button type="button" class="delete-project-btn" onclick="removeProjectFromCarousel('<%= project._id %>')">×</button>
+
+    <div class="matching__card-image-container">
+        <% if (project.images && project.images[0]) { %>
+            <img src="<%= project.images[0] %>" alt="<%= project.name %>" class="matching__image">
+        <% } else { %>
+            <div class="matching__image-placeholder"></div>
+        <% } %>
+    </div>
+
+    <div class="matching__card-content">
+        <h3 class="matching__card-title"><%= project.name || 'Naamloos Project' %></h3>
+        <p class="matching__card-subtitle"><%= project.subtitle || 'Geen rol opgegeven' %></p>
+        <p class="matching__card-description">
+            <%= project.bio ? project.bio.substring(0, 60) + '...' : 'Geen beschrijving beschikbaar.' %>
+        </p>
+    </div>
+</div>

@@ -31,17 +31,20 @@ async function fetchDatabaseProjects() {
 
 function displayResults(projects) {
     const list = document.getElementById('projectResultsList');
-    if (!list) return;
+    const inputIds = document.getElementById('inputSelectedProjectIds');
+    const currentIds = inputIds.value ? inputIds.value.split(',') : [];
 
-    if (projects.length === 0) {
-        list.innerHTML = "<li>Geen projecten gevonden.</li>";
+    // Filter projecten die al in de carrousel staan
+    const filtered = projects.filter(p => !currentIds.includes(String(p._id)));
+
+    if (filtered.length === 0) {
+        list.innerHTML = "<li>Geen nieuwe projecten gevonden.</li>";
         return;
     }
 
-    list.innerHTML = projects.map(project => {
-        // GEBRUIK DIT: we checken eerst of de waarde bestaat voordat we .replace doen
+    list.innerHTML = filtered.map(project => {
         const id = project._id;
-        const title = (project.title || 'Naamloze film').replace(/'/g, "\\'");
+        const title = (project.title || 'Naamloos').replace(/'/g, "\\'");
         const director = (project.director || 'Onbekend').replace(/'/g, "\\'");
         const img = (project.images && project.images[0]) ? project.images[0] : '/img/placeholder.jpg';
 
@@ -50,66 +53,106 @@ function displayResults(projects) {
                 <img src="${img}" alt="${title}">
                 <div>
                     <strong>${title}</strong>
-                    <p style="font-size: 0.8rem; color: #666;">Regie: ${director}</p>
+                    <p>Regie: ${director}</p>
                 </div>
             </li>
         `;
     }).join('');
 }
 
-function searchProjects(query) {
-    const filtered = allDbProjects.filter(p => {
-        // Zorg dat p.title bestaat voordat je toLowerCase doet
-        const title = p.title || ""; 
-        return title.toLowerCase().includes(query.toLowerCase());
-    });
-    displayResults(filtered);
-}
-
-function selectProjectForCarousel(id, title, director, imageUrl) {
-    console.log("Project geselecteerd:", title);
+async function searchProjects(query) {
+    const list = document.getElementById('projectResultsList');
     
-    // 1. Zoek de juiste carrousel en de hidden input
-    const carouselList = document.getElementById('directorProjectsCarousel');
-    const inputIds = document.getElementById('inputSelectedProjectIds');
-
-    if (!carouselList) {
-        console.error("Fout: Kon carrousel #directorProjectsCarousel niet vinden.");
+    if (query.length < 2) {
+        list.innerHTML = "<li>Typ minstens 2 letters om te zoeken...</li>";
         return;
     }
 
-    // 2. Visueel toevoegen aan de carrousel (HTML structuur)
-    const newListItem = document.createElement('li');
-    newListItem.className = 'carousel__list-Item';
-    newListItem.innerHTML = `
-        <div class="matching__card">
-            <img src="${imageUrl}" alt="${title}" class="matching__image">
-            <div class="matching__card-content">
-                <h3 class="matching__card-title">${title}</h3>
-                <p class="matching__card-director">Regie: ${director}</p>
-                <p class="matching__card-text">Nieuw toegevoegd project.</p>
-            </div>
-            <div class="matching__card-link">
-                <a href="/project/${id}">Ga naar project</a>
-            </div>
-        </div> 
-    `;
-    
-    // Voeg toe aan het einde van de lijst
-    carouselList.appendChild(newListItem);
-
-    // 3. ID opslaan in de hidden input (Optie B)
-    if (inputIds) {
-        let currentIds = inputIds.value ? inputIds.value.split(',') : [];
-        if (!currentIds.includes(id)) {
-            currentIds.push(id);
-            inputIds.value = currentIds.join(',');
-            console.log("ID toegevoegd aan hidden input:", inputIds.value);
+    try {
+        let response;
+        if (currentTab === 'db') {
+            // Zoeken in eigen database
+            response = await fetch(`/api/all-projects`);
+            const allProjects = await response.json();
+            // Filter lokaal op titel
+            const filtered = allProjects.filter(p => 
+                (p.title || "").toLowerCase().includes(query.toLowerCase())
+            );
+            displayResults(filtered);
+        } else {
+            // Zoeken in TMDB via de server
+            list.innerHTML = "<li>Zoeken in TMDB...</li>";
+            response = await fetch(`/api/search-tmdb?q=${encodeURIComponent(query)}`);
+            const results = await response.json();
+            displayResults(results);
         }
+    } catch (err) {
+        console.error("Zoekfout:", err);
+        list.innerHTML = "<li>Er ging iets mis bij het zoeken.</li>";
+    }
+}
+
+function selectProjectForCarousel(id, title, director, imageUrl, bio) {
+    const inputIds = document.getElementById('inputSelectedProjectIds');
+    const carouselList = document.getElementById('directorProjectsCarousel');
+
+    // 1. Voeg ID toe aan hidden input
+    let currentIds = inputIds.value ? inputIds.value.split(',').filter(i => i !== "") : [];
+    if (!currentIds.includes(id)) {
+        currentIds.push(id);
+        inputIds.value = currentIds.join(',');
     }
 
-    // 4. Sluit de modal
+    // 2. Maak het kaartje (EXACT dezelfde structuur als EJS)
+    const newListItem = document.createElement('li');
+    newListItem.className = 'carousel__list-Item';
+    
+    // We korten de bio in voor het kaartje (max 60 tekens)
+    const shortBio = bio ? bio.substring(0, 60) + '...' : 'Geen beschrijving beschikbaar.';
+
+    newListItem.innerHTML = `
+        <div class="matching__card" data-id="${id}">
+            <button type="button" class="delete-project-btn" style="display: block;" onclick="removeProjectFromCarousel('${id}')">×</button>
+            
+            <div class="matching__card-image-container">
+                ${imageUrl && imageUrl !== '/img/placeholder.jpg' 
+                    ? `<img src="${imageUrl}" alt="${title}" class="matching__image">` 
+                    : `<div class="matching__image-placeholder"></div>`
+                }
+            </div>
+
+            <div class="matching__card-content">
+                <h3 class="matching__card-title">${title}</h3>
+                <p class="matching__card-subtitle">${director}</p>
+                <p class="matching__card-description">${shortBio}</p>
+            </div>
+        </div>
+    `;
+
+    carouselList.appendChild(newListItem);
     closeAddProjectModal();
+}
+
+// Functie om een project uit de selectie te halen (werkt alleen lokaal tot je op 'Opslaan' drukt)
+function removeProjectFromCarousel(id) {
+    // 1. Zoek de hidden input met alle ID's
+    const inputIds = document.getElementById('inputSelectedProjectIds');
+    if (!inputIds) return;
+
+    // 2. Haal de huidige lijst op en filter het ID eruit
+    let currentIds = inputIds.value.split(',').filter(itemId => itemId !== "" && itemId !== id);
+    
+    // 3. Update de hidden input met de nieuwe lijst (zonder het verwijderde ID)
+    inputIds.value = currentIds.join(',');
+
+    // 4. Verwijder het kaartje visueel van het scherm
+    const cardElement = document.querySelector(`.matching__card[data-id="${id}"]`);
+    if (cardElement) {
+        // We verwijderen het ouder-element (de <li>)
+        cardElement.parentElement.remove();
+    }
+    
+    console.log("Project verwijderd. Nieuwe lijst:", inputIds.value);
 }
 
 /**
@@ -131,17 +174,24 @@ document.addEventListener('DOMContentLoaded', () => {
 /**
  * TAB LOGICA
  */
-function switchTab(tab) {
+let currentTab = 'db'; // We houden bij op welke tab we zitten
+
+async function switchTab(tab) {
+    currentTab = tab;
+    
+    // Visuele feedback voor de tabs
     const tabs = document.querySelectorAll('.tab-btn');
     tabs.forEach(t => t.classList.remove('active'));
-    
-    // Maak de huidige tab visueel actief
     event.currentTarget.classList.add('active');
 
     const list = document.getElementById('projectResultsList');
+    const searchInput = document.getElementById('modalSearchInput');
+    
+    list.innerHTML = ""; // Maak de lijst leeg bij het switchen
+    searchInput.value = ""; // Reset het zoekveld
+    
+    // Als we naar 'db' gaan, laden we direct alle eigen projecten
     if (tab === 'db') {
-        fetchDatabaseProjects();
-    } else {
-        list.innerHTML = "<li class='modal__placeholder'>TMDB koppeling is de volgende stap!</li>";
+        fetchDatabaseProjects(); 
     }
 }

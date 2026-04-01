@@ -1,0 +1,29 @@
+<section class="applications-section">
+    <h2 class="carousel__Title">Openstaande functies</h2>
+    
+    <div class="application-grid" id="applicationsContainer">
+        <% applications.forEach(app => { %>
+            <div class="application-card" data-id="<%= app._id %>">
+                <button type="button" class="delete-app-btn" onclick="removeApplication('<%= app._id %>')">×</button>
+                
+                <div class="application-card__content">
+                    <h3 class="application-card__title"><%= app.title %></h3>
+                    <p class="application-card__description"><%= app.description %></p>
+                </div>
+
+                <div class="application-card__footer edit-hidden">
+                    <button type="button" class="btn-apply" onclick="sendApplication('<%= app._id %>')">
+                        Solliciteer
+                    </button>
+                </div>
+            </div>
+        <% }) %>
+
+        <div class="application-card add-application-card edit-only" onclick="openApplicationModal()">
+            <div class="text-center">
+                <span style="font-size: 2rem;">+</span>
+                <p>Voeg functie toe</p>
+            </div>
+        </div>
+    </div>
+</section>
