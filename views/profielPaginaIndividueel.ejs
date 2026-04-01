@@ -44,38 +44,34 @@
     </div>
 </section>
 
-        <section class="projects-section">
-            <h2>Projecten</h2>
-            <ul class="project-grid">
-                <li class="project-card">
-                    <button class="project-link" data-project-id="project1">
-                        <div class="image-placeholder"><img src="/images/project1.jpg" alt=""></div>
-                        <div class="project-info">
-                            <h3>Boterbloem</h3>
-                            <h4>Korte film</h4>
-                        </div>
-                    </button>
-                </li>
-                <li class="project-card">
-                    <button class="project-link" data-project-id="project2">
-                        <div class="image-placeholder"><img src="/images/project2.jpg" alt=""></div>
-                        <div class="project-info">
-                            <h3>Happy hour</h3>
-                            <h4>Pilot-aflevering</h4>
-                        </div>
-                    </button>
-                </li>
-                <li class="project-card">
-                    <button class="project-link" data-project-id="project3">
-                        <div class="image-placeholder"><img src="/images/project3.jpg" alt=""></div>
-                        <div class="project-info">
-                            <h3>Schoon!</h3>
-                            <h4>Reclamespotje</h4>
-                        </div>
-                    </button>
-                </li>
-                <%- include('partials/addProjectCard') %>
-            </ul>
+        <ul class="project-grid">
+    <% if (typeof projects !== 'undefined' && projects.length > 0) { %>
+        <% projects.forEach(project => { %>
+            <li class="project-card">
+                <button class="project-link" 
+    data-id="<%= project._id %>"
+    data-title="<%= project.title %>"
+    data-type="<%= project.type %>"
+    data-director="<%= project.director || '' %>"
+    data-contribution="<%= project.description %>"
+    data-genres="<%= (project.genres || [project.role || project.type]).join(',') %>"
+    data-all-images="<%= (project.images) ? project.images.join(',') : '' %>>"
+    data-image="<%= project.mainImage || '/images/projectPlaceholder.png' %>">
+    
+    
+    <div class="image-placeholder">
+        <img src="<%= project.mainImage || '/images/projectPlaceholder.png' %>" alt="project foto">
+    </div>
+    <div class="project-info">
+        <h3><%= project.title %></h3>
+        <h4><%= project.type %></h4>
+    </div>
+</button>
+            </li>
+        <% }); %>
+    <% } %>
+    <%- include('partials/addProjectCard') %>
+</ul>
         </section>
     </main>
 
@@ -92,130 +88,132 @@
     <script src="/js/editMode.js"></script>
 
     <script>
-        // --- 1. Database voor deze pagina ---
-        const projectDetails = {
-            project1: { title: "Boterbloem", type: "Korte film", mainImage: "/images/project1.jpg", genres: ["Drama", "Korte film"], contribution: "Planning enzo...", year: "2023" },
-            project2: { title: "Happy hour", type: "Pilot", mainImage: "/images/project2.jpg", genres: ["Komedie", "Pilot"], contribution: "Logistiek...", year: "2024" },
-            project3: { title: "Schoon!", type: "Reclame", mainImage: "/images/project3.jpg", genres: ["Product", "Reclame"], contribution: "Concept...", year: "2024" }
-        };
+       const modal = document.getElementById("project-modal");
+const modalBody = document.getElementById("modal-body");
+const closeBtn = document.querySelector("#project-modal .close-modal");
 
-        const modal = document.getElementById("project-modal");
-        const modalBody = document.getElementById("modal-body");
-        const closeBtn = document.querySelector("#project-modal .close-modal");
+function openModal(projectId) {
+    const btn = document.querySelector(`[data-id="${projectId}"]`);
+    const isEditing = document.body.classList.contains('is-editing');
+    
+    const details = {
+        title: btn.getAttribute('data-title'),
+        type: btn.getAttribute('data-type'),
+        director: btn.getAttribute('data-director'),
+        contribution: btn.getAttribute('data-contribution'),
+        mainImage: btn.getAttribute('data-image'),
+        allImages: btn.getAttribute('data-all-images').split(',').filter(i => i !== ""),
+        genres: btn.getAttribute('data-genres').split(',').filter(g => g !== "")
+    };
 
-        // --- 2. Modal Logica projecten op deze pagina ---
-        function openModal(projectId) {
-            const details = projectDetails[projectId];
-            if (!details) return;
+    if (isEditing) {
+        // ... (hou je huidige edit-code, maar voeg eventueel director-veld toe)
+    } else {
+        const tagList = details.genres.map(g => `<li>${g}</li>`).join('');
+        
+        // Maak HTML voor extra afbeeldingen
+        const extraImagesHTML = details.allImages.slice(1).map(img => 
+            `<img src="${img}" style="width: 30%; aspect-ratio: 16/9; object-fit: cover; border-radius: 5px;">`
+        ).join('');
 
-            const isEditing = document.body.classList.contains('is-editing');
+        modalBody.innerHTML = `
+            <img src="${details.mainImage}" class="modal-image">
+            <h2>${details.title}</h2>
+            <p style="margin-top: -10px; color: gray;">${details.type} ${details.director ? ' | Director: ' + details.director : ''}</p>
+            <ul class="qualities">${tagList}</ul>
+            <p>${details.contribution}</p>
             
-            if (isEditing) {
-                modalBody.innerHTML = `
-                    <div class="edit-modal-wrapper">
-                        <h3>Project aanpassen</h3>
-                        <div class="pfpContainer" style="width: 100%; height: 200px;">
-                            <img src="${details.mainImage}" id="edit-project-img-preview" style="object-fit: cover; width: 100%; height: 100%;">
-                            <input type="file" id="edit-project-file-input" style="display: none;">
-                            <label for="edit-project-file-input" class="edit-photo-label" style="display: block;">Foto aanpassen</label>
-                        </div>
-                        <label>Titel</label>
-                        <input type="text" id="edit-title" value="${details.title}" class="edit-input">
-                        <label>Kwaliteiten / Tags</label>
-                        <ul class="qualities" id="edit-project-tags">
-                            ${details.genres.map(tag => `<li>${tag}<span class="delete-tag" style="display:inline;" onclick="this.parentElement.remove()">×</span></li>`).join('')}
-                            <button type="button" onclick="addNewTagToModal()" class="add-quality-btn" style="display:inline-block;">+ Toevoegen</button>
-                        </ul>
-                        <label>Jouw bijdrage</label>
-                        <textarea id="edit-contribution" class="edit-input" rows="4">${details.contribution}</textarea>
-                        <button onclick="saveProjectChanges('${projectId}')" class="admin-toggle-btn" style="position: static; width: 100%;">Wijzigingen Opslaan</button>
-                        <button onclick="deleteProject('${projectId}')" class="delete-project-btn">Verwijder Project</button>
-                    </div>
-                `;
-                
-                document.getElementById('edit-project-file-input').addEventListener('change', function(e) {
-                    const file = e.target.files[0];
-                    if (file) { document.getElementById('edit-project-img-preview').src = URL.createObjectURL(file); }
-                });
-            } else {
-                const genreList = details.genres.map(g => `<li>${g}</li>`).join('');
-                modalBody.innerHTML = `
-                    <img src="${details.mainImage}" class="modal-image">
-                    <h2>${details.title}</h2>
-                    <ul class="qualities">${genreList}</ul>
-                    <p>${details.contribution}</p>
-                `;
-            }
-            modal.style.display = "block";
-        }
+            ${details.allImages.length > 1 ? `
+                <div style="margin-top: 20px;">
+                    <h4>Meer beelden</h4>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">${extraImagesHTML}</div>
+                </div>
+            ` : ''}
+        `;
+    }
+    modal.style.display = "block";
+}
 
-        // --- 3. Extra Tags toevoegen ---
-        function addNewTagToModal() {
-            const val = prompt("Welke nieuwe tag?");
-            if (val) {
-                const li = document.createElement('li');
-                li.innerHTML = `${val}<span class="delete-tag" style="display:inline;" onclick="this.parentElement.remove()">×</span>`;
-                const list = document.getElementById('edit-project-tags');
-                list.insertBefore(li, list.querySelector('.add-quality-btn'));
-            }
-        }
+// Hulpmiddelen voor de modal
+function addTagToProjectModal() {
+    const val = prompt("Welke nieuwe tag?");
+    if (val) {
+        const li = document.createElement('li');
+        li.innerHTML = `${val} <span class="delete-tag" onclick="this.parentElement.remove()">×</span>`;
+        const list = document.getElementById('edit-project-tags');
+        list.insertBefore(li, list.querySelector('.add-quality-btn'));
+    }
+}
 
-        function addProfileQuality() {
-            const val = prompt("Nieuwe kwaliteit?");
-            if (val) {
-                const li = document.createElement('li');
-                li.innerHTML = `${val}<span class="delete-tag" onclick="this.parentElement.remove()">×</span>`;
-                document.getElementById('idQualities').appendChild(li);
-            }
-        }
+async function saveProjectChanges(projectId) {
+    const formData = new FormData();
+    formData.append('projectId', projectId);
+    formData.append('title', document.getElementById('edit-title').value);
+    formData.append('type', document.getElementById('edit-type').value);
+    formData.append('contribution', document.getElementById('edit-contribution').value);
+    
+    // Tags verzamelen
+    const tagElements = document.querySelectorAll('#edit-project-tags li');
+    const tags = Array.from(tagElements).map(li => li.innerText.replace('×', '').trim());
+    formData.append('genres', JSON.stringify(tags));
 
-        // --- 4. Opslaan & Helpers ---
-        function saveProjectChanges(projectId) {
-            const tagElements = document.querySelectorAll('#edit-project-tags li');
-            const updatedTags = Array.from(tagElements).map(li => li.childNodes[0].textContent.trim());
+    // Foto toevoegen als die is aangepast
+    const fileInput = document.getElementById('edit-project-file-input');
+    if (fileInput && fileInput.files[0]) {
+        formData.append('projectImage', fileInput.files[0]);
+    }
 
-            projectDetails[projectId].title = document.getElementById('edit-title').value;
-            projectDetails[projectId].contribution = document.getElementById('edit-contribution').value;
-            projectDetails[projectId].mainImage = document.getElementById('edit-project-img-preview').src;
-            projectDetails[projectId].genres = updatedTags;
+    const response = await fetch('/update-project-details', {
+        method: 'POST',
+        body: formData // Geen JSON.stringify en geen Headers!
+    });
 
-            const card = document.querySelector(`[data-project-id="${projectId}"]`);
-            if (card) {
-                card.querySelector('h3').textContent = projectDetails[projectId].title;
-                card.querySelector('img').src = projectDetails[projectId].mainImage;
-            }
-            closeModal();
-        }
+    if (response.ok) {
+        location.reload();
+    } else {
+        alert("Fout bij opslaan");
+    }
+}
 
-        function deleteProject(id) { 
-            if (confirm("Project verwijderen?")) { 
-                delete projectDetails[id]; 
-                document.querySelector(`[data-project-id="${id}"]`).closest('.project-card').remove(); 
-                closeModal(); 
-            } 
-        }
+// Klik-events
+document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.project-link');
+    if (btn) openModal(btn.getAttribute('data-id'));
+});
 
-        function closeModal() { modal.style.display = "none"; document.body.style.overflow = "auto"; }
-        closeBtn.onclick = closeModal;
+function closeModal() { modal.style.display = "none"; }
+closeBtn.onclick = closeModal;
 
-        document.querySelectorAll(".project-link").forEach(link => {
-            link.addEventListener("click", () => openModal(link.getAttribute("data-project-id")));
+// Foto preview profielfoto
+document.getElementById('change-pfp-input').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) { document.getElementById('userPfp').src = URL.createObjectURL(file); }
+});
+
+function addProfileQuality() {
+    const val = prompt("Nieuwe kwaliteit?");
+    if (val) {
+        const li = document.createElement('li');
+        li.innerHTML = `${val}<span class="delete-tag" onclick="this.parentElement.remove()">×</span>`;
+        document.getElementById('idQualities').appendChild(li);
+    }
+}
+
+async function deleteProject(projectId) {
+    if (confirm("Weet je zeker dat je dit project wilt verwijderen?")) {
+        const response = await fetch('/delete-project', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ projectId: projectId })
         });
 
-        // Proffielfoto preview 
-        document.getElementById('change-pfp-input').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) { document.getElementById('userPfp').src = URL.createObjectURL(file); }
-        });
-
-        // + Toevoegen voor de profiel qualities
-        if (!document.querySelector('#idQualities .add-quality-btn')) {
-            const btn = document.createElement('button');
-            btn.className = 'add-quality-btn';
-            btn.innerHTML = '+ Kwaliteit toevoegen';
-            btn.onclick = addProfileQuality;
-            document.getElementById('idQualities').appendChild(btn);
+        if (response.ok) {
+            location.reload();
+        } else {
+            alert("Verwijderen mislukt.");
         }
+    }
+}
     </script>
 </body>
 </html>

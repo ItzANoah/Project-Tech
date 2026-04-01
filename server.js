@@ -23,6 +23,7 @@ const client = new MongoClient(uri);
 
 /////////////// register functie ////////////////
 let profileCollection; 
+let projectsCollection;
 
 async function run() {
   try {
@@ -30,8 +31,8 @@ async function run() {
     const db = client.db("filmcrew");
 
     profileCollection = db.collection("profiles"); 
-    
-    console.log("Database verbinding succesvol!");
+    projectsCollection = db.collection("projects");
+    console.log("Database verbinding succesvol voor profielen en projecten!");
   } catch (error) {
     console.error("Verbindingsfout:", error);
   }
@@ -140,11 +141,19 @@ app.get('/matching', (req, res) => {
 // ROUTE 1: De pagina bekijken
 app.get('/profielPaginaIndividueel', checkInlog, async (req, res) => {
   try {
-    const data = await profileCollection.findOne({ name: req.session.username });
+    const user = await profileCollection.findOne({ name: req.session.username });
 
-    if (data) {
+    if (user) {
+      // HAAL HIER DE PROJECTEN OP
+      // We zoeken alle projecten waarvan het ID in de 'myProjects' lijst van de user staat
+      const userProjects = await projectsCollection.find({ 
+        _id: { $in: user.myProjects || [] } 
+      }).toArray();
 
-      res.render('profielPaginaIndividueel', { theUser: data });
+      res.render('profielPaginaIndividueel', { 
+        theUser: user, 
+        projects: userProjects // Geef de echte projecten mee aan EJS!
+      });
     } else {
       res.status(404).send("Gebruiker niet gevonden.");
     }
@@ -210,6 +219,117 @@ app.post('/upload-pfp', checkInlog, upload.single('profilePic'), async (req, res
   } catch (err) {
     res.status(500).send('Fout bij uploaden');
   }
+});
+
+// Projecten toevoegen
+app.post('/add-existing-project', checkInlog, async (req, res) => {
+    try {
+        const { projectId } = req.body;
+        const { ObjectId } = require('mongodb');
+
+        await profileCollection.updateOne(
+            { name: req.session.username },
+            { $addToSet: { myProjects: new ObjectId(projectId) } } // $addToSet voorkomt dubbel toevoegen
+        );
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ success: false });
+    }
+});
+
+// Route voor handmatig toevoegen INCLUSIEF foto en tags
+app.post('/add-project-manual', checkInlog, upload.single('projectImage'), async (req, res) => {
+  try {
+    const { title, type, contribution, role } = req.body;
+    const imagePath = req.file ? '/uploads/' + req.file.filename : '/images/projectPlaceholder.png';
+
+    const newProject = { 
+      title, 
+      type, 
+      description: contribution, 
+      role: role,
+      mainImage: imagePath,
+      genres: [role || type], // Voegt de rol standaard toe als tag
+      createdAt: new Date() 
+    };
+    
+    const projectResult = await projectsCollection.insertOne(newProject);
+    await profileCollection.updateOne(
+      { name: req.session.username },
+      { $push: { myProjects: projectResult.insertedId } }
+    );
+    
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false });
+  }
+});
+
+// Route voor het bijwerken van een project (titel, tekst, tags)
+app.post('/update-project-details', checkInlog, upload.single('projectImage'), async (req, res) => {
+    try {
+        const { projectId, title, type, contribution, genres } = req.body;
+        const { ObjectId } = require('mongodb');
+
+        const updateData = {
+            title: title,
+            type: type,
+            description: contribution,
+            genres: JSON.parse(genres) // We sturen het als string, dus hier even terug naar array
+        };
+
+        // Als er een nieuwe foto is geüpload, voeg die toe aan de update
+        if (req.file) {
+            updateData.mainImage = '/uploads/' + req.file.filename;
+        }
+
+        await projectsCollection.updateOne(
+            { _id: new ObjectId(projectId) },
+            { $set: updateData }
+        );
+        
+        res.json({ success: true });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false });
+    }
+});
+
+app.post('/delete-project', checkInlog, async (req, res) => {
+    try {
+        const { projectId } = req.body;
+        const { ObjectId } = require('mongodb');
+
+        // 1. Verwijder het project uit de projects collectie
+        await projectsCollection.deleteOne({ _id: new ObjectId(projectId) });
+
+        // 2. Verwijder het ID uit de lijst van de gebruiker
+        await profileCollection.updateOne(
+            { name: req.session.username },
+            { $pull: { myProjects: new ObjectId(projectId) } }
+        );
+
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ success: false });
+    }
+});
+
+app.get('/search-db-projects', checkInlog, async (req, res) => {
+    try {
+        const query = req.query.q;
+        if (!query) return res.json([]);
+
+        // Zoek films waarbij de naam de letters bevat (case-insensitive)
+        const results = await projectsCollection.find({
+            name: { $regex: query, $options: 'i' }
+        }).limit(5).toArray();
+
+        res.json(results);
+    } catch (err) {
+        res.status(500).json([]);
+    }
 });
 
 // crew profile
