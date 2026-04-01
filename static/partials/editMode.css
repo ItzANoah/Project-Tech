@@ -49,3 +49,40 @@
     padding: 10px 20px;
     cursor: pointer;
 }
+
+/* Zorg dat de modal zelf een logische volgorde aanhoudt */
+.edit-modal-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+/* De container voor de knoppen onderaan */
+.modal-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 30px; /* Ruimte tussen de omschrijving/galerij en de knoppen */
+    padding-top: 20px;
+    border-top: 1px solid #ddd;
+    width: 100%;
+}
+
+/* Forceer de knoppen om hun eigen plek in te nemen, niet te zweven */
+.save-toggle-btn {
+    position: static !important; /* Haalt 'absolute' weg als dat er ergens op staat */
+    width: 100% !important;
+    height: auto !important;
+    padding: 12px !important;
+    margin: 0 !important;
+    cursor: pointer;
+    background-color: var(--accentColorRed); /* Jouw kleur */
+    color: var(--accentColorWhite);
+    font-family: var(--montserratFont); /* Jouw font */
+    font-weight: var(--fontWeightBold);
+    padding: 0.6em 1.2em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
