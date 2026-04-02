@@ -7,7 +7,12 @@
   margin-top: 7.5rem;
   padding-right: 0.5rem;
 }
-
+.matching__card h4{
+  font-family: var(--montserratFont);
+  font-size: var(--headerTextSize);
+  color: var(--accentColorGray);
+  padding: 0 1rem;
+}
 .current__active-notification{
   position: relative;
   display: inline-flex;
@@ -18,7 +23,6 @@
   bottom: 1.1em;
   right: -0.7em;
   display: flex;
-  visibility: hidden;
   
   background-color: var(--accentColorRed);
   color: var(--textColorWhite);
@@ -30,9 +34,11 @@
   justify-content: center;
   align-items: center;
   z-index: 9;
-} .current__notification:active{
-  visibility: visible;
 }
+
+/* .current__notification:active{
+  visibility: visible;
+} */
 
 /* --- De specifieke styling voor het linker kaartje --- */
 .current__matches li.first-item-active {

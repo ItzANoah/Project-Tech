@@ -5,6 +5,7 @@ const port = 4000;
 const session = require('express-session');
 const multer = require('multer');
 const mongoose = require('mongoose');
+const { ObjectId } = require('mongodb');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -226,23 +227,38 @@ app.post('/save-project', upload.array('projectImages'), async (req, res) => {
 
 app.get('/current-matches', checkInlog, async (req, res) => {
   try {
-    // matches ophalen uit de database
     // controleren met de username of de verzoeken voor de gebruiker zijn die is ingelogd
     const matchdata = await matchRequestcollection.find({ 
       receiverId: req.session.userID,
       status: "pending" 
-    }).toArray();
+    }).sort({ timestamp: -1 }).toArray(); //sorteren op nieuwste
      // voor elke match zoeken we van de senderID de username op in de DB.
-     const matchesMetNamen = await Promise.all(matchdata.map(async (match) => {
-      const afzender = await profileCollection.findOne({ _id: new ObjectId(match.senderId) });
-      
+   
+
+    let showNotification = false;
+    if (matchdata.length > 0) {
+      const nu = new Date();
+      const tweeDagenGeleden = new Date(nu.setDate(nu.getDate() - 2));
+      const nieuwsteMatchDatum = new Date(matchdata[0].timestamp);
+
+      if (nieuwsteMatchDatum > tweeDagenGeleden) {
+        showNotification = true;
+      }
+    }
+    const matchesMetNamen = await Promise.all(matchdata.map(async (match) => {
+      const afzender = await profileCollection.findOne({ 
+        _id: new ObjectId(match.senderId)
+    });
+      console.log("Afzender gevonden in DB:", afzender); // om te checken of ik die naam wel kan vinden
+    
       return {
         ...match,
-        senderName: afzender ? afzender.name : "Onbekende Gebruiker"
+        senderName: afzender ? (afzender.name) : "Onbekend"
       };
     }));
     res.render('current-matches', { 
-      matches: matchdata // dit is wat gebruikt wordt in de ejs 
+      matches: matchesMetNamen,
+      hasNewRequests: showNotification
     });
     
   } catch (error) {
