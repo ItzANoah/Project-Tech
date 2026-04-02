@@ -42,8 +42,9 @@ ZELF IETS TOEVOEGEN IN HET CAROUSEL
 .matching__card {
     width: 100%;
     height: 100%;
-    background-color: #e0e0e0; /* De grijze kleur van je screenshot */
-    border-radius: 30px; /* Mooie ronde hoeken zoals op je screenshot */
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 15px; 
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -64,6 +65,22 @@ ZELF IETS TOEVOEGEN IN HET CAROUSEL
 .matching__card-content {
     padding: 1rem;
     flex-grow: 1; /* Duwt de knop naar beneden als er weinig tekst is */
+}
+
+/* Maak de titel rood en gecentreerd (zoals bij vacatures) */
+.matching__card-title {
+    text-align: center;
+    color: var(--accentColorRed);
+    font-family: var(--montserratFont);
+    margin-bottom: 0.2rem;
+}
+
+.matching__card-subtitle {
+    text-align: center;
+    color: #666;
+    font-weight: bold;
+    font-size: 0.9em;
+    margin-bottom: 0.8rem;
 }
 
 .delete-project-btn {
@@ -135,4 +152,68 @@ ZELF IETS TOEVOEGEN IN HET CAROUSEL
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+/* =========================================
+   ADD PROJECT MODAL (Carousel Zoeken)
+   ========================================= */
+#addProjectModal {
+    text-align: center;
+}
+
+#addProjectModal .tab-btn {
+    background-color: var(--accentColorRed);
+    color: var(--accentColorWhite);
+    border: none;
+    border-radius: 25px;
+    padding: 0.8rem 1.5rem;
+    font-family: var(--montserratFont);
+    font-weight: var(--fontWeightBold);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin: 0 0.5rem;
+    display: inline-block;
+}
+
+#addProjectModal .tab-btn:hover, 
+#addProjectModal .tab-btn.active {
+    background-color: var(--accentColorGold);
+}
+
+#modalSearchInput {
+    width: 80%;
+    max-width: 400px;
+    margin: 1.5rem auto;
+    padding: 0.8rem 1.2rem;
+    border-radius: 25px;
+    border: 2px solid var(--accentColorRed);
+    font-family: var(--montserratFont);
+    display: block;
+}
+
+/* Override voor het kruisje in de carousel modal */
+#addProjectModal .close-modal {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: #ff4d4d !important;
+    color: white !important;
+    border: none;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+#addProjectModal .close-modal:hover {
+    background: #cc0000 !important;
+    transform: scale(1.1);
 }

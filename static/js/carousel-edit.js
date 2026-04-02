@@ -44,7 +44,8 @@ function displayResults(projects) {
 
     list.innerHTML = filtered.map(project => {
         const id = project._id;
-        const title = (project.title || 'Naamloos').replace(/'/g, "\\'");
+        // Kijk of het project een 'name' of 'title' heeft
+        const title = (project.name || project.title || 'Naamloos').replace(/'/g, "\\'");
         const director = (project.director || 'Onbekend').replace(/'/g, "\\'");
         const img = (project.images && project.images[0]) ? project.images[0] : '/img/placeholder.jpg';
 
@@ -131,6 +132,8 @@ function selectProjectForCarousel(id, title, director, imageUrl, bio) {
 
     carouselList.appendChild(newListItem);
     closeAddProjectModal();
+    
+    alert(`Project "${title}" is succesvol toegevoegd! Vergeet niet de pagina op te slaan.`);
 }
 
 // Functie om een project uit de selectie te halen (werkt alleen lokaal tot je op 'Opslaan' drukt)

@@ -1,8 +1,3 @@
-/**
- * APPLICATION CAROUSEL MANAGER
- * Handelt het openen van de modal en het toevoegen van nieuwe applicaties af.
- */
-
 function openApplicationModal() {
     const modal = document.getElementById('applicationModal');
     if (modal) {
@@ -17,46 +12,6 @@ function closeApplicationModal() {
     if (modal) {
         modal.style.display = 'none';
     }
-}
-
-function saveNewApplication() {
-    const title = document.getElementById('appTitle').value.trim();
-    const desc = document.getElementById('appDesc').value.trim();
-
-    if (!title || !desc) {
-        alert("Vul a.u.b. zowel een titel als een beschrijving in.");
-        return;
-    }
-
-    const list = document.getElementById('applicationsCarousel');
-    const plusCard = list.querySelector('.edit-only');
-
-    // Nieuw lijst-item aanmaken
-    const li = document.createElement('li');
-    li.className = 'carousel__list-Item';
-    
-    // De HTML voor de preview (visueel gelijk aan applicationCard.ejs)
-    li.innerHTML = `
-        <div class="application-card new-entry" style="border: 2px dashed var(--accentColor, #333);">
-            <div class="application-card__body">
-                <h3>${title}</h3>
-                <p>${desc}</p>
-                <small style="color: orange;">(Nog niet gepubliceerd)</small>
-            </div>
-            <input type="hidden" name="newAppTitles[]" value="${title}">
-            <input type="hidden" name="newAppDescs[]" value="${desc}">
-        </div>
-    `;
-
-    // Invoegen voor het plus-kaartje
-    if (plusCard) {
-        list.insertBefore(li, plusCard);
-    } else {
-        list.appendChild(li);
-    }
-    
-    closeApplicationModal();
-    document.getElementById('applicationForm').reset();
 }
 
 // Sluit-event voor klikken buiten de modal
@@ -100,45 +55,51 @@ async function sendApplication(button) {
 }
 
 function saveNewApplication() {
-    const title = document.getElementById('appTitle').value.trim();
-    const desc = document.getElementById('appDesc').value.trim();
+    const titleInput = document.getElementById('appTitle');
+    const descInput = document.getElementById('appDesc');
+    const title = titleInput.value.trim();
+    const desc = descInput.value.trim();
+
+    // Check of we het formulier kunnen vinden
+    const form = document.getElementById('projectForm');
+    if (!form) {
+        console.error("FOUT: Formulier 'projectForm' niet gevonden! Staat je JS wel goed?");
+        return;
+    }
 
     if (!title || !desc) return alert("Vul alles in!");
 
     const container = document.getElementById('applicationsContainer');
-    const plusCard = container.querySelector('.add-application-card');
+    const plusCard = document.getElementById('add-app-placeholder');
 
     const newCard = document.createElement('div');
     newCard.className = 'application-card new-entry';
     
+    // Veilige HTML structuur:
     newCard.innerHTML = `
-        <button type="button" class="delete-app-btn" style="display:block" onclick="this.parentElement.remove()">×</button>
+        <button type="button" class="delete-app-btn" onclick="this.parentElement.remove()">×</button>
         <div class="application-card__content">
-            <h3>${title}</h3>
-            <p>${desc}</p>
+            <h3 class="application-card__title"></h3>
+            <p class="application-card__description"></p>
         </div>
-        <input type="hidden" name="newAppTitles[]" value="${title}">
-        <input type="hidden" name="newAppDescs[]" value="${desc}">
+        <input type="hidden" name="jobTitel" class="hidden-title">
+        <input type="hidden" name="jobDescription" class="hidden-desc">
     `;
+
+    // Vul de velden in via javascript, zo maken aanhalingstekens je formulier niet kapot:
+    newCard.querySelector('.application-card__title').textContent = title;
+    newCard.querySelector('.application-card__description').textContent = desc;
+    newCard.querySelector('.hidden-title').value = title;
+    newCard.querySelector('.hidden-desc').value = desc;
 
     container.insertBefore(newCard, plusCard);
     closeApplicationModal();
-    document.getElementById('applicationForm').reset();
-}
-
-function removeApplication(id) {
-    // Voor bestaande applicaties uit de DB
-    if (confirm("Weet je zeker dat je deze vacature wilt verwijderen?")) {
-        // We voegen een hidden input toe die de server vertelt welk ID verwijderd moet worden
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'removeAppIds[]';
-        input.value = id;
-        document.getElementById('projectForm').appendChild(input);
-
-        // Verwijder visueel
-        document.querySelector(`[data-id="${id}"]`).remove();
-    }
+    
+    // Velden leegmaken
+    titleInput.value = "";
+    descInput.value = "";
+    
+    console.log("Kaartje toegevoegd aan formulier. Klaar om op te slaan.");
 }
 
 function submitApplicationRequest(id) {

@@ -1,0 +1,19 @@
+<!-- We laden de styling voor deze modal direct mee -->
+<link rel="stylesheet" href="/partials/modalSolliciteren.css">
+
+<div id="modalSolliciteren" class="modal">
+    <div class="modal__content modal-solliciteren-content">
+        <!-- Het kruisje linksbovenin, zoals gevraagd -->
+        <button type="button" class="modal__close-left" onclick="closeModalSolliciteren()">&times;</button>
+        
+        <h3 style="margin-top: 1rem; color: var(--accentColorRed); font-family: var(--montserratFont);">Solliciteer op deze functie</h3>
+        
+        <div class="form-group" style="text-align: left;">
+            <textarea id="sollicitatieMessage" placeholder="Typ hier je motivatie (maximaal 200 woorden)..."></textarea>
+            <div id="wordCount" style="font-size: 0.85rem; color: #666; margin-top: -10px; margin-bottom: 15px; text-align: right;">0/200 woorden</div>
+        </div>
+        
+        <input type="hidden" id="sollicitatieReceiverId" value="">
+        <button type="button" class="btn-save" onclick="submitSollicitatie()">Versturen</button>
+    </div>
+</div>

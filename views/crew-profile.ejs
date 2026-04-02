@@ -1,9 +1,9 @@
 <%- include('partials/head') %> 
 <%- include('partials/header') %> 
+<form id="projectForm" action="/save-project" method="POST" enctype="multipart/form-data">
     <div class="background--wrapper">
 
     <main class="project--container">
-    <form id="projectForm" action="/save-project" method="POST" enctype="multipart/form-data">
         
         <header class="project--header">
             <div class="project--title-group">
@@ -21,7 +21,9 @@
             </div>
 
             <div class="project--header-info">
-                <%- include('partials/editmode-button') %> 
+                <% if (isOwner) { %>
+                    <%- include('partials/editmode-button') %> 
+                <% } %>
 
                <div>
                 <p>Dir: 
@@ -42,7 +44,7 @@
         <span id="descCounter" class="char-counter edit-only">0/500</span>
         <input type="hidden" name="description" id="inputDescription">
         
-</main>
+    </main>
     </div>
 
  <section class="production">
@@ -64,16 +66,19 @@
 }) %>
     
     <%- include('partials/applicationSection', { applications: applications }) %>
-    <%- include('partials/applicationModal') %>
-
-    </form>
+    
+    <input type="hidden" id="currentProjectId" value="<%= projectData._id %>">
+</form>
+<%- include('partials/applicationModal') %>
+<%- include('partials/modalSolliciteren') %>
+    <%- include('partials/addProjectModal') %> 
 <script src="js/slideshow.js"></script>
 <script src="js/filters.js"></script>
 <script src="js/editmode-button.js"></script>
 <script src="js/tekstcounter.js"></script>
 <script src="/js/carousel-edit.js"></script>
 <script src="/js/applicationSection.js"></script>
- <%- include('partials/addProjectModal') %>
+<script src="/js/ModalSolliciteren.js"></script>
 <%- include('partials/footer') %> 
 </body>
 

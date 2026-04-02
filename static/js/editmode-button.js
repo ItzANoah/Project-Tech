@@ -2,17 +2,29 @@ function openEditMode() {
     const body = document.body;
     const isEditing = body.classList.contains('is-editing');
     
+    // Selecteer de containers waar de "Plus-knoppen" in moeten komen
     const directorCarousel = document.getElementById('directorProjectsCarousel');
-    const applicationsContainer = document.getElementById('applicationsContainer'); // Je nieuwe grid
+    const applicationsContainer = document.getElementById('applicationsContainer');
 
     if (!isEditing) {
+        // --- STAP 1: BEWERK-MODUS AANZETTEN ---
         body.classList.add('is-editing');
 
-        // --- 1. PROJECT CAROUSEL PLUS-KAART ---
+        // 1. Maak alle tekstvelden bewerkbaar
+        document.querySelectorAll('[contenteditable]').forEach(el => {
+            el.contentEditable = "true";
+        });
+
+        // 2. Verander de knoptekst naar "Opslaan"
+        const profileBtn = document.querySelector('.button--profile');
+        if (profileBtn) profileBtn.innerHTML = 'Opslaan <span>&#10003;</span>';
+
+        // 3. Voeg de "Plus-kaart" toe aan de Projecten Carousel
         if (directorCarousel && !document.getElementById('add-card-placeholder')) {
             const addCardHTML = `
                 <li class="carousel__list-Item" id="add-card-placeholder">
-                    <div class="matching__card add-project-trigger" onclick="openAddProjectModal()" style="border: 2px dashed var(--accentColorGrey); cursor: pointer; display: flex; align-items: center; justify-content: center; min-height: 200px;">
+                    <div class="matching__card add-project-trigger" onclick="openAddProjectModal()" 
+                         style="border: 2px dashed #ccc; cursor: pointer; display: flex; align-items: center; justify-content: center; min-height: 200px;">
                         <div style="text-align: center;">
                             <span style="font-size: 2rem;">+</span>
                             <p>Project Toevoegen</p>
@@ -22,10 +34,12 @@ function openEditMode() {
             directorCarousel.insertAdjacentHTML('afterbegin', addCardHTML);
         }
 
-        // --- 2. APPLICATION GRID PLUS-KAART ---
+        // 4. Voeg de "Plus-kaart" toe aan de Sollicitaties Grid
         if (applicationsContainer && !document.getElementById('add-app-placeholder')) {
             const addAppHTML = `
-                <div class="application-card add-application-card" id="add-app-placeholder" onclick="openApplicationModal()" style="border: 2px dashed #ccc; cursor: pointer; display: flex; align-items: center; justify-content: center; min-height: 160px;">
+                <div class="application-card add-application-card" id="add-app-placeholder" 
+                     onclick="openApplicationModal()" 
+                     style="border: 2px dashed #ccc; cursor: pointer; display: flex; align-items: center; justify-content: center; min-height: 160px;">
                     <div style="text-align: center;">
                         <span style="font-size: 2rem;">+</span>
                         <p>Functie Toevoegen</p>
@@ -34,24 +48,51 @@ function openEditMode() {
             applicationsContainer.insertAdjacentHTML('beforeend', addAppHTML);
         }
 
-        // Tekstvelden bewerkbaar maken
-        document.querySelectorAll('[contenteditable]').forEach(el => el.contentEditable = "true");
-        document.querySelector('.button--profile').innerHTML = 'Opslaan <span>&#10003;</span>';
-
     } else {
-        // --- MODUS: OPSLAAN & SLUITEN ---
-        
-        // Verwijder beide Plus-kaarten
+        // --- STAP 2: OPSLAAN & VERZENDEN ---
+
+        // 1. SYNC: Kopieer tekst van de pagina naar de verborgen inputs
+        // Dit is nodig omdat contenteditable velden anders leeg aankomen bij de server
+        const titleEl = document.getElementById('projectTitle');
+        const subtitleEl = document.getElementById('projectSubtitle');
+        const descEl = document.getElementById('projectDescription');
+        const prodEl = document.getElementById('productionSummary');
+
+        if (titleEl) document.getElementById('inputTitle').value = titleEl.innerText.trim();
+        if (subtitleEl) document.getElementById('inputSubtitle').value = subtitleEl.innerText.trim();
+        if (descEl) document.getElementById('inputDescription').value = descEl.innerText.trim();
+        if (prodEl) document.getElementById('inputProductionDescription').value = prodEl.innerText.trim();
+
+        // 2. FOTO SYNC: Verzamel alle overgebleven foto's in de slideshow
+        const remainingImages = [];
+        document.querySelectorAll('.slideshow__image').forEach(img => {
+            const src = img.getAttribute('src');
+            if (src) remainingImages.push(src);
+        });
+        const imgInput = document.getElementById('inputRemainingImages');
+        if (imgInput) imgInput.value = remainingImages.join(',');
+
+        // 3. OPRUIMEN: Verwijder de tijdelijke "Plus-kaarten"
         const addCard = document.getElementById('add-card-placeholder');
         const addApp = document.getElementById('add-app-placeholder');
         if (addCard) addCard.remove();
         if (addApp) addApp.remove();
 
+        // 4. UI herstellen
         body.classList.remove('is-editing');
-        document.querySelectorAll('[contenteditable]').forEach(el => el.contentEditable = "false");
-        document.querySelector('.button--profile').innerHTML = 'Wijzig profiel ✎';
+        document.querySelectorAll('[contenteditable]').forEach(el => {
+            el.contentEditable = "false";
+        });
+        const profileBtn = document.querySelector('.button--profile');
+        if (profileBtn) profileBtn.innerHTML = 'Wijzig profiel ✎';
 
-        // Formulier verzenden
-        document.getElementById('projectForm').submit();
+        // 5. VERZENDEN: Stuur het grote projectForm naar de server
+        const form = document.getElementById('projectForm');
+        if (form) {
+            console.log("Alles gesynchroniseerd. Formulier wordt nu verzonden...");
+            form.submit();
+        } else {
+            console.error("FOUT: Kan 'projectForm' niet vinden in de HTML!");
+        }
     }
 }

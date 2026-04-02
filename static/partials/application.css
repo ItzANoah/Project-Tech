@@ -27,21 +27,36 @@
     min-height: 180px;
 }
 
+.application-card__title {
+    text-align: center;
+    color: var(--accentColorRed);
+    font-family: var(--montserratFont);
+}
+
 /* Het kruisje in edit-mode */
 .delete-app-btn {
     display: none; /* Standaard weg */
     position: absolute;
-    top: -10px;
-    right: -10px;
+    top: 10px;
+    right: 10px;
     background: #ff4d4d;
     color: white;
     border: none;
     border-radius: 50%;
-    width: 25px;
-    height: 25px;
+    width: 28px;
+    height: 28px;
+    font-size: 18px;
+    font-weight: bold;
     cursor: pointer;
+    z-index: 10;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
+.delete-app-btn:hover {
+    background: #cc0000;
+    transform: scale(1.1);
+}
 .is-editing .delete-app-btn {
     display: block;
 }
@@ -73,6 +88,20 @@
 /* De solliciteer-knop is standaard zichtbaar */
 .btn-apply {
     display: block;
+    width: 100%;
+    background-color: var(--accentColorRed);
+    color: var(--accentColorWhite);
+    border: none;
+    border-radius: 25px;
+    padding: 0.8rem;
+    font-family: var(--montserratFont);
+    font-weight: var(--fontWeightBold);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-apply:hover {
+    background-color: var(--accentColorGold);
 }
 
 /* Alleen als JOUW specifieke container de class is-editing krijgt (via JS of CSS) */
@@ -82,4 +111,70 @@
 
 .is-editing .btn-apply {
     display: none;
+}
+
+/* =========================================
+   APPLICATION MODAL STYLING
+   ========================================= */
+#applicationModal input,
+#applicationModal textarea {
+    width: 100%;
+    padding: 0.8rem 1.2rem;
+    margin-bottom: 1rem;
+    border-radius: 15px;
+    border: 2px solid var(--accentColorRed);
+    font-family: var(--montserratFont);
+    box-sizing: border-box;
+}
+
+#applicationModal textarea,
+#appDesc {
+    min-height: 140px;
+    resize: vertical;
+}
+
+#applicationModal .btn-save {
+    display: block;
+    width: 100%;
+    max-width: 300px;
+    margin: 1.5rem auto 0 auto;
+    background-color: var(--accentColorRed);
+    color: var(--accentColorWhite);
+    border: none;
+    border-radius: 25px;
+    padding: 0.8rem;
+    font-family: var(--montserratFont);
+    font-weight: var(--fontWeightBold);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#applicationModal .btn-save:hover {
+    background-color: var(--accentColorGold);
+}
+
+/* Het kruisje in de sollicitatie modal */
+#applicationModal .modal__close {
+    background: #ff4d4d;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+}
+
+#applicationModal .modal__close:hover {
+    background: #cc0000;
+    transform: scale(1.1);
 }

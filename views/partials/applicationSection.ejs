@@ -1,29 +1,25 @@
 <section class="applications-section">
-    <h2 class="carousel__Title">Openstaande functies</h2>
-    
-    <div class="application-grid" id="applicationsContainer">
-        <% applications.forEach(app => { %>
-            <div class="application-card" data-id="<%= app._id %>">
-                <button type="button" class="delete-app-btn" onclick="removeApplication('<%= app._id %>')">×</button>
-                
-                <div class="application-card__content">
-                    <h3 class="application-card__title"><%= app.title %></h3>
-                    <p class="application-card__description"><%= app.description %></p>
+    <h2 class="carousel__Title">Openstaande functies</h2> <div class="application-grid" id="applicationsContainer">
+        <% if (applications && applications.length > 0) { %>
+            <% applications.forEach(app => { %>
+                <div class="application-card">
+                    <button type="button" class="delete-app-btn" onclick="this.parentElement.remove()">×</button>
+                    <div class="application-card__content">
+                        <h3 class="application-card__title"><%= app.title %></h3>
+                        <p class="application-card__description"><%= app.description %></p>
+                    </div>
+                    <!-- De solliciteer knop voor bezoekers -->
+                    <button type="button" class="btn-apply" data-receiver="<%= projectData.ownerId %>" onclick="openModalSolliciteren(this)">Solliciteer</button>
+                    <!-- Verborgen velden om bij opslaan weer mee te sturen -->
+                    <input type="hidden" name="jobTitel" value="<%= app.title %>">
+                    <input type="hidden" name="jobDescription" value="<%= app.description %>">
                 </div>
-
-                <div class="application-card__footer edit-hidden">
-                    <button type="button" class="btn-apply" onclick="sendApplication('<%= app._id %>')">
-                        Solliciteer
-                    </button>
-                </div>
-            </div>
-        <% }) %>
-
-        <div class="application-card add-application-card edit-only" onclick="openApplicationModal()">
-            <div class="text-center">
-                <span style="font-size: 2rem;">+</span>
-                <p>Voeg functie toe</p>
-            </div>
+            <% }) %>
+        <% } %>
+        
+        <!-- Het plus-kaartje (verborgen door .add-project-card) -->
+        <div class="application-card add-application-card add-project-card edit-only" id="add-app-placeholder" onclick="openApplicationModal()">
+            <span class="plus-icon">+</span>
         </div>
-    </div>
+        </div>
 </section>
