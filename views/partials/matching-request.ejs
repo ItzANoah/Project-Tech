@@ -25,18 +25,21 @@
 
             <div class="modal-actions">
                 <form action="/match/accept/<%= match._id %>" method="POST">
-                    <button type="submit" class="btn-accept">Accepteren</button>
+                    <div type="submit" class="btn-accept">Accepteren</div>
                 </form>
                 <form action="/match/decline/<%= match._id %>" method="POST">
-                    <button type="submit" class="btn-decline">Afwijzen</button>
+                    <div type="submit" class="btn-decline">Afwijzen</div>
                 </form>
             </div>
         </div>
     </div>
 
     <div class="matching__card-link">
-        <button class="open-modal-btn" data-target="modal-<%= match._id %>">
+        <div class="matching__btn-open" 
+             data-target="modal-<%= match._id %>" 
+             role="button" 
+             tabindex="0">
             Bekijk details
-        </button>
+        </div>
     </div>
 </article>

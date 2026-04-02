@@ -1,18 +1,34 @@
-document.addEventListener('DOMContentLoaded', () => {  
-const toggleButtons = document.querySelectorAll('.btn--details-toggle');
+document.addEventListener('DOMContentLoaded', () => {
+  const openBtns = document.querySelectorAll('.matching__btn-open');
+  const closeBtns = document.querySelectorAll('.matching__modal-close');
+  const modals = document.querySelectorAll('.matching__modal');
 
-  toggleButtons.forEach(button => {
-      button.addEventListener('click', function() {
-          const card = this.closest('.matching__card');
-          
-          // Toggle de class 'is-open' op die specifieke kaart
-          card.classList.toggle('is-open');
+  // Openen: zoek de modal met het juiste ID en zet display op flex
+  openBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+          const targetId = btn.getAttribute('data-target');
+          const targetModal = document.getElementById(targetId);
+          if (targetModal) {
+              targetModal.style.display = 'flex';
+              document.body.style.overflow = 'hidden'; // Stop scrollen op achtergrond
+          }
+      });
+  });
 
-          // Pas de tekst van de knop aan afhankelijk van de staat
-          if (card.classList.contains('is-open')) {
-              this.textContent = 'Sluit details';
-          } else {
-              this.textContent = 'Bekijk details';
+  // Sluiten: via de X
+  closeBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+          btn.closest('.matching__modal').style.display = 'none';
+          document.body.style.overflow = 'auto'; // Weer kunnen scrollen
+      });
+  });
+
+  // Sluiten: klik buiten het witte vlak
+  window.addEventListener('click', (event) => {
+      modals.forEach(modal => {
+          if (event.target === modal) {
+              modal.style.display = 'none';
+              document.body.style.overflow = 'auto';
           }
       });
   });

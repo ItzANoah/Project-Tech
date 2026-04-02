@@ -1,29 +1,28 @@
-/* .current__new-match{
-  visibility: hidden;
-}.current__new-match:active{
-  visibility: visible;
-} */
-.current__h2{ 
+/* --- Algemene elementen --- */
+.current__h2 { 
   margin-top: 7.5rem;
   padding-right: 0.5rem;
 }
-.matching__card h4{
+
+.matching__card h4 {
   font-family: var(--montserratFont);
   font-size: var(--headerTextSize);
   color: var(--accentColorGray);
   padding: 0 1rem;
 }
-.current__active-notification{
+
+/* --- Notificatie Bolletje --- */
+.current__active-notification {
   position: relative;
   display: inline-flex;
   align-items: center;
 }
-.current__notification{
+
+.current__notification {
   position: absolute;
   bottom: 1.1em;
   right: -0.7em;
   display: flex;
-  
   background-color: var(--accentColorRed);
   color: var(--textColorWhite);
   font-weight: var(--fontWeightBold);
@@ -36,18 +35,16 @@
   z-index: 9;
 }
 
-/* .current__notification:active{
-  visibility: visible;
-} */
-
-/* --- De specifieke styling voor het linker kaartje --- */
+/* --- Kaartje Specifieke Styling --- */
 .current__matches li.first-item-active {
   flex: 0 0 30%;
   margin-right: 6vw;
 }
+
 .current__matches li.first-item-active article {
   width: 100%;  
 }
+
 .current__matches li.first-item-active article img {
   width: 100% !important;
   height: 260px; 
@@ -57,6 +54,7 @@
 .carousel__list-Item {
   position: relative;
 }
+
 .matches__newestmatch-noti {
   position: absolute;
   top: 20px;
@@ -72,7 +70,7 @@
   white-space: nowrap;
 }
 
-/*///////////// filters ////////////*/
+/* --- Filters --- */
 .matches__filter-dropdown {
   display: flex;
   align-items: center;
@@ -92,33 +90,119 @@
   border: 2px solid var(--accentColorGold);
   border-radius: 25px;
   padding: 8px 35px 8px 15px;
-  
   background-color: white;
   font-family: var(--montserratFont);
   font-size: var(--bodyTextSize);
   font-weight: var(--fontWeightRegular);
   cursor: pointer;
   outline: none;
-
   appearance: none;
-
   background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30' fill='none' stroke='%23f9c835' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
   background-repeat: no-repeat;
   background-position: right 6px;
   background-size: 30px;
-  
   transition: border-color 0.2s ease;
-}#sort:hover{
+}
+
+#sort:hover {
  border: 3px solid var(--accentColorRed);
 }
 
-.matches__arrow {
+/* --- MODAL (Het nieuwe schermpje) --- */
+.matching__modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7); 
+  display: none; /* Wordt 'flex' via JS */
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.matching__modal-content {
+  background-color: var(--accentColorWhite);
+  width: 85%;
+  max-width: 450px;
+  padding: 2.5em 2em; /* Meer ademruimte boven/onder */
+  border-radius: 1.5em;
   position: relative;
-  border: solid var(--accentColorGold);
-  border-width: 0 3px 3px 0;
-  display: inline-block;
-  padding: 4px;
-  transform: rotate(45deg);
-  left: 5px;
-  top: -2px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  text-align: left;
+}
+
+.matching__modal-close {
+  position: absolute;
+  top: 0.5em;
+  right: 0.7em;
+  background: none;
+  border: none;
+  font-size: 2em;
+  cursor: pointer;
+  line-height: 1;
+  color: var(--textColorBlack);
+}
+
+.matching__modal-body {
+  margin: 1.5em 0;
+  line-height: 1.5;
+}
+
+.matching__modal-message {
+    background-color: #f5f5f5;
+    padding: 1rem;
+    border-radius: 0.8rem;
+    font-style: italic;
+    margin-top: 1rem;
+}
+
+/* --- MODAL ACTIES & BUTTONS --- */
+.matching__modal-actions {
+  display: flex;
+  gap: 1em;
+  margin-top: 2em;
+}
+
+.matching__form {
+    flex: 1;
+}
+
+/* .matching__btn {
+  width: 100%;
+  padding: 1em;
+  appearance: none;
+  border-radius: 2em;
+  font-family: var(--montserratFont);
+  font-weight: var(--fontWeightBold);
+  cursor: pointer;
+  color: var(--textColorWhite);
+  transition: transform 0.1s ease;
+}
+
+.matching__btn:active {
+    transform: scale(0.96);
+} */
+
+.matching__btn--accept {
+  background-color: #2ecc71; 
+}
+
+.matching__btn--decline {
+  background-color: var(--accentColorRed);
+}
+.matching__btn-open {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accentColorWhite);
+  border-radius: var(--buttonCornerRadius);
+  padding: var(--buttonPadding);
+
+  background-color: var(--accentColorRed);
+}
+.matching__btn-open a {
+  text-decoration: none;
+  color: var(--textColorWhite);
 }
