@@ -1,15 +1,42 @@
 <!--Matching-card-->
-
 <article class="matching__card">
     <header>
         <img src="/images/cameraman.png" width="335" alt="">
-
     </header>
-    <h3><%= match.jobTitel %></h3>
-    <h4><%= match.senderName %></h4>
-    <p><%= match.jobDescription %></p>
-    <p><%= match.message %></p>
+    
+    <div class="matching__card-info">
+        <h3><%= match.jobTitel %></h3>
+        <h4><%= match.senderName %></h4>
+    </div>
+
+    <div class="modal-overlay" id="modal-<%= match._id %>">
+        <div class="modal-content">
+            <button class="modal-close">&times;</button>
+            
+            <h2>Match Details</h2>
+            <hr>
+            
+            <div class="modal-body">
+                <p><strong>Functie:</strong> <%= match.jobTitel %></p>
+                <p><strong>Beschrijving:</strong> <%= match.jobDescription %></p>
+                <p><strong>Bericht van <%= match.senderName %>:</strong></p>
+                <blockquote class="modal-message">"<%= match.message %>"</blockquote>
+            </div>
+
+            <div class="modal-actions">
+                <form action="/match/accept/<%= match._id %>" method="POST">
+                    <button type="submit" class="btn-accept">Accepteren</button>
+                </form>
+                <form action="/match/decline/<%= match._id %>" method="POST">
+                    <button type="submit" class="btn-decline">Afwijzen</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <div class="matching__card-link">
-        <a href="#">Bekijk details</a>
+        <button class="open-modal-btn" data-target="modal-<%= match._id %>">
+            Bekijk details
+        </button>
     </div>
 </article>
