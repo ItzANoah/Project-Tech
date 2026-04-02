@@ -6,7 +6,7 @@
       <li class="nav__link dark"><a href="/crew-profile">My Projects</a></li>
       <li class="nav__link light"><a href="/matching">Find Talents</a></li>
       <li class="nav__link dark"><a href="/current-matches">Matches</a>
-        <% if (hasNewRequests) { %>
+        <% if (locals.globalNotification) { %>
           <div class="current__notification-header">!</div>
         <% } %>
       </li>

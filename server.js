@@ -83,7 +83,40 @@ function checkInlog(req, res, next) {
     res.redirect('/login'); // Terug naar de login pagina
   }
 }
+// voor de noti in de header
+app.use(async (req, res, next) => {
+  // alleen wanneer ingelogd
+  if (req.session.userID) {
+    try {
+      const matchdata = await matchRequestcollection.find({ 
+        receiverId: req.session.userID,
+        status: "pending" 
+      }).sort({ timestamp: -1 }).toArray();
 
+      let hasNewHeaderRequest = false;
+      if (matchdata.length > 0) {
+        const nu = new Date();
+        const tweeDagenGeleden = new Date();
+        tweeDagenGeleden.setDate(nu.getDate() - 2);
+        const nieuwsteMatchDatum = new Date(matchdata[0].timestamp);
+
+        if (nieuwsteMatchDatum > tweeDagenGeleden) {
+          hasNewHeaderRequest = true;
+        }
+      }
+
+      // We slaan het op in res.locals, zodat de header er ALTIJD bij kan
+      res.locals.globalNotification = hasNewHeaderRequest;
+      
+    } catch (err) {
+      console.error("Notificatie check fout:", err);
+      res.locals.globalNotification = false;
+    }
+  } else {
+    res.locals.globalNotification = false;
+  }
+  next(); // Ga door naar de volgende route
+});
 
 // Een test route
 app.get('/', (req, res) => {
@@ -234,17 +267,6 @@ app.get('/current-matches', checkInlog, async (req, res) => {
     }).sort({ timestamp: -1 }).toArray(); //sorteren op nieuwste
      // voor elke match zoeken we van de senderID de username op in de DB.
    
-
-    let showNotification = false;
-    if (matchdata.length > 0) {
-      const nu = new Date();
-      const tweeDagenGeleden = new Date(nu.setDate(nu.getDate() - 2));
-      const nieuwsteMatchDatum = new Date(matchdata[0].timestamp);
-
-      if (nieuwsteMatchDatum > tweeDagenGeleden) {
-        showNotification = true;
-      }
-    }
     const matchesMetNamen = await Promise.all(matchdata.map(async (match) => {
       const afzender = await profileCollection.findOne({ 
         _id: new ObjectId(match.senderId)
@@ -257,8 +279,7 @@ app.get('/current-matches', checkInlog, async (req, res) => {
       };
     }));
     res.render('current-matches', { 
-      matches: matchesMetNamen,
-      hasNewRequests: showNotification
+      matches: matchesMetNamen
     });
     
   } catch (error) {
