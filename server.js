@@ -318,6 +318,34 @@ app.post('/add-existing-project', checkInlog, async (req, res) => {
     }
 });
 
+// Route voor het bekijken van iemands publieke profiel
+app.get('/profiel/:username', async (req, res) => {
+    try {
+        const targetUsername = req.params.username;
+        
+        // Zoek de gebruiker op basis van de naam in de URL
+        const user = await profileCollection.findOne({ name: targetUsername });
+
+        if (!user) {
+            return res.status(404).send("Gebruiker niet gevonden");
+        }
+
+        // Haal de projecten van deze gebruiker op
+        const projects = await projectsCollection.find({ 
+            _id: { $in: user.myProjects || [] } 
+        }).toArray();
+
+        // Render een NIEUWE ejs file: public-profile.ejs
+        res.render('publicProfielPaginaIndividueel', { 
+            theUser: user, 
+            projects: projects 
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Server fout");
+    }
+});
+
 // --- OVERIGE PAGINA'S ---
 
 app.get('/crew-profile', (req, res) => {

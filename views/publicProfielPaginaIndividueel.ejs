@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profiel van <%= theUser.name %></title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+    <%- include('partials/header') %>
+    <main>
+        <section class="profile-header">
+            <div class="pfpContainer">
+                <img src="<%= theUser.image || '/images/profilePlaceholder.png' %>" id="userPfp" alt="profielfoto">
+            </div>
+
+            <div class="profile-info-box">
+                <ul class="profile-content">
+                    <li><h1 id="userName"><%= theUser.name %></h1></li>
+                    <li><h2 id="rol"><%= theUser.role %></h2></li>
+                </ul>
+                
+                <ul class="important-qualities" id="importantQualities">
+                    <li><h4><%= theUser.experience %> jaar werkervaring</h4></li>
+                    <li><h4>Amsterdam</h4></li>
+                </ul>
+                
+                <p id="bio"><%= theUser.bio %></p>
+                
+                <ul class="qualities" id="idQualities">
+                    <% if (theUser.skills && theUser.skills.length > 0) { %>
+                        <% theUser.skills.forEach(skill => { %>
+                            <li><%= skill %></li>
+                        <% }); %>
+                    <% } %>
+                    </ul>
+            </div>
+        </section>
+
+        <ul class="project-grid">
+            <% if (typeof projects !== 'undefined' && projects.length > 0) { %>
+                <% projects.forEach(project => { %>
+                    <li class="project-card">
+                        <button class="project-link" 
+                            data-id="<%= project._id %>"
+                            data-title="<%= project.name || project.title %>"
+                            data-type="<%= project.type %>"
+                            data-director="<%= project.director || '' %>"
+                            data-contribution="<%= project.bio || project.description %>"
+                            data-genres="<%= (project.genres) ? project.genres.join(',') : '' %>"
+                            data-all-images="<%= (project.images) ? project.images.join(',') : '' %>"
+                            data-image="<%= project.mainImage || project.image || '/images/projectPlaceholder.png' %>">
+                            
+                            <div class="image-placeholder">
+                                <img src="<%= project.mainImage || project.image || '/images/projectPlaceholder.png' %>" alt="project foto">
+                            </div>
+                            <div class="project-info">
+                                <h3><%= project.name || project.title %></h3>
+                                <h4><%= project.type %></h4>
+                            </div>
+                        </button>
+                    </li>
+                <% }); %>
+            <% } %>
+            </ul>
+    </main>
+
+    <div id="project-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <%- include('partials/footer') %>
+
+    <script>
+        const modal = document.getElementById("project-modal");
+        const modalBody = document.getElementById("modal-body");
+        const closeBtn = document.querySelector("#project-modal .close-modal");
+
+        function openModal(projectId) {
+            const btn = document.querySelector(`[data-id="${projectId}"]`);
+            if (!btn) return;
+
+            // Alleen de data ophalen voor weergave
+            const details = {
+                title: btn.getAttribute('data-title'),
+                type: btn.getAttribute('data-type'),
+                director: btn.getAttribute('data-director'),
+                contribution: btn.getAttribute('data-contribution'),
+                mainImage: btn.getAttribute('data-image'),
+                genres: btn.getAttribute('data-genres').split(',').filter(g => g.trim() !== ""),
+                allImages: btn.getAttribute('data-all-images').split(',').filter(i => i.trim() !== "")
+            };
+
+            const tagList = details.genres.map(g => `<li>${g}</li>`).join('');
+            
+            // Galerij filteren en voorbereiden
+            const extraImages = details.allImages.filter(img => img !== details.mainImage && img.trim() !== "");
+            let extraImagesHTML = '';
+            
+            if (extraImages.length > 0) {
+                extraImagesHTML = `
+                    <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
+                        <h4 style="margin-bottom: 10px;">Extra beelden</h4>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            ${extraImages.map(img => `
+                                <img src="${img}" style="width: 30%; aspect-ratio: 16/9; object-fit: cover; border-radius: 5px;">
+                            `).join('')}
+                        </div>
+                    </div>`;
+            }
+
+            // Simpele View-only HTML
+            modalBody.innerHTML = `
+                <img src="${details.mainImage}" class="modal-image" style="width: 100%; border-radius: 8px;">
+                <h2 style="margin-top: 15px;">${details.title}</h2>
+                <p style="color: gray; margin-bottom: 10px;">${details.type} ${details.director ? ' | Director: ' + details.director : ''}</p>
+                <ul class="qualities">${tagList}</ul>
+                <p style="margin-top: 15px; line-height: 1.6;">${details.contribution}</p>
+                ${extraImagesHTML}
+            `;
+            
+            modal.style.display = "block";
+        }
+
+        // Klik-events voor de projecten
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest('.project-link');
+            if (btn) openModal(btn.getAttribute('data-id'));
+        });
+
+        // Sluiten modal
+        function closeModal() { 
+            modal.style.display = "none"; 
+        }
+        
+        closeBtn.onclick = closeModal;
+        
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                closeModal();
+            }
+        };
+    </script>
+</body>
+</html>
