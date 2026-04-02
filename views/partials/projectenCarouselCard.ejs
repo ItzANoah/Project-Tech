@@ -11,7 +11,7 @@
 
     <div class="matching__card-content">
         <h3 class="matching__card-title"><%= project.name || 'Naamloos Project' %></h3>
-        <p class="matching__card-subtitle"><%= project.subtitle || 'Geen rol opgegeven' %></p>
+        <p class="matching__card-subtitle"><%= project.director || project.subtitle || 'Onbekend' %></p>
         <p class="matching__card-description">
             <%= project.bio ? project.bio.substring(0, 60) + '...' : 'Geen beschrijving beschikbaar.' %>
         </p>

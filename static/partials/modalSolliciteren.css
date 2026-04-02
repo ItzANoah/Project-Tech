@@ -12,6 +12,7 @@
     top: 15px;
     left: 15px; /* Kruisje zit nu links! */
     background: #ff4d4d;
+    background: var(--accentColorRed);
     color: white;
     border: none;
     border-radius: 50%;
@@ -29,6 +30,7 @@
 
 .modal__close-left:hover {
     background: #cc0000;
+    background: var(--accentColorGold);
     transform: scale(1.1);
 }
 

@@ -114,6 +114,20 @@
 }
 
 /* =========================================
+   EMPTY STATE (Geen vacatures melding)
+   ========================================= */
+.no-apps-msg {
+    grid-column: 1 / -1; /* Zorgt dat hij over de hele breedte van de 2 kolommen gaat */
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* Verberg de melding tijdens het bewerken, we hebben dan immers al de plus-knop! */
+.is-editing .no-apps-msg {
+    display: none;
+}
+
+/* =========================================
    APPLICATION MODAL STYLING
    ========================================= */
 #applicationModal input,

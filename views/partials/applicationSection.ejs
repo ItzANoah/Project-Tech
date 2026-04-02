@@ -16,6 +16,14 @@
                 </div>
             <% }) %>
         <% } %>
+
+        <% if (!applications || applications.length === 0) { %>
+            <div class="application-card no-apps-msg">
+                <div class="application-card__content" style="display: flex; align-items: center; justify-content: center; height: 100%; text-align: center;">
+                    <h3 class="application-card__title">Er zijn op dit moment geen sollicitatie plekken</h3>
+                </div>
+            </div>
+        <% } %>
         
         <!-- Het plus-kaartje (verborgen door .add-project-card) -->
         <div class="application-card add-application-card add-project-card edit-only" id="add-app-placeholder" onclick="openApplicationModal()">

@@ -222,11 +222,17 @@ app.get('/crew-profile', async (req, res) => {
                         if (!response.ok) return null;
                         const movie = await response.json();
                         
+                        // Extra fetch voor de regisseur (credits)
+                        const creditsResponse = await fetch(`https://api.themoviedb.org/3/movie/${id}/credits?api_key=${apiKey}`);
+                        const creditsData = await creditsResponse.json();
+                        const directorInfo = creditsData.crew ? creditsData.crew.find(person => person.job === 'Director') : null;
+                        const directorName = directorInfo ? directorInfo.name : 'Onbekende regisseur';
+
                         return {
                             _id: `tmdb_${id}`, // Zet het prefix weer terug
                             name: movie.title, // Consistentie met EJS (eigen database gebruikt 'name')
                             title: movie.title,
-                            director: 'TMDB Regisseur', // Regisseur kost een extra fetch, we houden het simpel
+                            director: directorName, // Nu de echte naam van de regisseur!
                             images: [movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : '/img/placeholder.jpg'],
                             bio: movie.overview || 'Geen beschrijving beschikbaar.'
                         };
