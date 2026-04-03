@@ -4,6 +4,7 @@ const app = express();
 const port = 4000;
 const session = require('express-session');
 const multer = require('multer');
+const axios = require('axios'); // Voor api
 
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json()); // Nodig voor fetch calls (anna)
@@ -330,4 +331,165 @@ app.post('/add-existing-project', checkInlog, async (req, res) => {
         await projectsCollection.updateOne({ _id: new ObjectId(projectId) }, { $addToSet: { genres: userRole } });
         res.json({ success: true });
     } catch (err) { res.status(500).json({ success: false }); }
+});
+
+// Films van api halen
+
+app.get('/search-api-projects', checkInlog, async (req, res) => {
+    try {
+        const query = req.query.q;
+        const apiKey = process.env.TMDB_API_KEY;
+        
+        // We zoeken naar films op TMDB
+        const response = await axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${encodeURIComponent(query)}&language=nl-NL`);
+        
+        // We sturen alleen de relevante info terug naar de voorkant
+        const results = response.data.results.map(movie => ({
+            apiId: movie.id,
+            title: movie.title,
+            year: movie.release_date ? movie.release_date.split('-')[0] : 'Onbekend',
+            poster: movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : '/images/projectPlaceholder.png',
+            overview: movie.overview
+        }));
+
+        res.json(results);
+    } catch (err) {
+        console.error("API Error:", err);
+        res.json([]);
+    }
+});
+
+// api film importeren naar onze mongo db
+
+app.post('/import-api-project', checkInlog, async (req, res) => {
+    try {
+        const { title, overview, poster, role } = req.body;
+
+        const newProject = {
+            title: title,
+            name: title,
+            description: overview,
+            bio: overview,
+            mainImage: poster,
+            type: "Film (via API)",
+            role: role, // Wat de gebruiker zelf invult (bijv. "Cameraman")
+            createdAt: new Date()
+        };
+
+        const result = await projectsCollection.insertOne(newProject);
+        
+        // Koppel aan de ingelogde gebruiker via hun ID
+        await profileCollection.updateOne(
+            { _id: new ObjectId(req.session.userID) },
+            { $push: { myProjects: result.insertedId } }
+        );
+
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ success: false });
+    }
+});
+
+// --- TMDB API ROUTES (Anna) ---
+
+// 1. Zoeken in de TMDB API
+app.get('/search-api-projects', checkInlog, async (req, res) => {
+    try {
+        const query = req.query.q;
+        const apiKey = process.env.TMDB_API_KEY; 
+        
+        if (!query) return res.json([]);
+
+        const response = await axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${encodeURIComponent(query)}&language=nl-NL`);
+        
+        const results = response.data.results.map(movie => ({
+            title: movie.title,
+            year: movie.release_date ? movie.release_date.split('-')[0] : 'Onbekend',
+            poster: movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : '/images/projectPlaceholder.png',
+            overview: movie.overview,
+            id: movie.id
+        }));
+
+        res.json(results);
+    } catch (err) {
+        console.error("TMDB API Fout:", err.message);
+        res.status(500).json([]);
+    }
+});
+
+// API film verwijderen uit het profiel
+app.post('/delete-api-project', checkInlog, async (req, res) => {
+    try {
+        const { projectTitle } = req.body;
+        
+        await profileCollection.updateOne(
+            { _id: new ObjectId(req.session.userID) },
+            { $pull: { relatedProjects: { title: projectTitle } } }
+        );
+
+        res.json({ success: true });
+    } catch (err) {
+        console.error("Fout bij verwijderen API project:", err);
+        res.status(500).json({ success: false });
+    }
+});
+
+// 2. De gekozen film importeren naar MongoDB
+app.post('/add-api-project', checkInlog, async (req, res) => {
+    try {
+        const { title, description, image, role } = req.body;
+
+        // We maken een objectje met de filmdata
+        const apiProjectData = {
+            title: title,
+            description: description,
+            image: image,
+            role: role,
+            source: "TMDB-API", // Handig om te weten waar het vandaan komt
+            addedAt: new Date()
+        };
+
+        // We voegen dit object DIRECT toe aan de 'relatedProjects' array van de GEBRUIKER
+        await profileCollection.updateOne(
+            { _id: new ObjectId(req.session.userID) },
+            { $push: { relatedProjects: apiProjectData } }
+        );
+
+        res.json({ success: true });
+    } catch (err) {
+        console.error("Fout bij opslaan related project:", err);
+        res.status(500).json({ success: false });
+    }
+});
+
+// Zoeken in EIGEN database naar bestaande projecten
+app.get('/search-db-projects', checkInlog, async (req, res) => {
+    try {
+        const query = req.query.q;
+        const results = await projectsCollection.find({ 
+            $or: [
+                { name: { $regex: query, $options: 'i' } },
+                { title: { $regex: query, $options: 'i' } }
+            ]
+        }).limit(5).toArray();
+        res.json(results);
+    } catch (err) { 
+        res.status(500).json([]); 
+    }
+});
+
+// Bestaand project uit eigen DB toevoegen aan je profiel
+app.post('/add-existing-project', checkInlog, async (req, res) => {
+    try {
+        const { projectId, userRole } = req.body;
+        
+        await profileCollection.updateOne(
+            { _id: new ObjectId(req.session.userID) }, 
+            { $addToSet: { myProjects: new ObjectId(projectId) } }
+        );
+        
+        res.json({ success: true });
+    } catch (err) { 
+        res.status(500).json({ success: false }); 
+    }
 });

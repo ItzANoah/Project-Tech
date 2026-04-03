@@ -412,3 +412,17 @@ body.is-editing .edit-photo-label {
     color: white;
 }
 
+/* Hulpmiddelen voor de modal */
+.modal-image { width: 100%; border-radius: 8px; }
+.modal-title { margin-top: 15px; }
+.modal-subtitle { color: gray; margin-bottom: 10px; }
+.modal-text { margin-top: 15px; line-height: 1.6; }
+.api-tag-notice { font-style: italic; color: #f1c40f; margin-top: 10px; }
+.galerij-wrapper { margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px; }
+.galerij-container { display: flex; gap: 10px; flex-wrap: wrap; }
+.galerij-img { width: 30%; aspect-ratio: 16/9; object-fit: cover; border-radius: 5px; }
+
+/* Edit mode styles */
+.edit-img-wrap { position: relative; width: 30%; aspect-ratio: 16/9; }
+.edit-img-wrap img { width: 100%; height: 100%; object-fit: cover; border-radius: 5px; }
+.delete-img-btn { position: absolute; top: -5px; right: -5px; background: red; color: white; border-radius: 50%; width: 20px; height: 20px; text-align: center; cursor: pointer; line-height: 18px; }
