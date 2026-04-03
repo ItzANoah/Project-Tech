@@ -294,7 +294,7 @@ app.get('/matching', async (req, res) => {
 
     // Alle sorteer opties
     if (filtersQuery['sort'] === 'a-z' || filtersQuery['sort'] === 'z-a') {
-      let directionSort = filtersQuery['sort'] === 'a-z' ? 1 : -1;
+      const directionSort = filtersQuery['sort'] === 'a-z' ? 1 : -1;
       // sorteren op een volgorde, sort() https://www.freecodecamp.org/news/how-to-sort-alphabetically-in-javascript/
       // Uitleg video van sort met comparison function https://www.youtube.com/watch?v=CTHhlx25X-U
       matchingItems = matchingItems.sort((item1, item2) => {
