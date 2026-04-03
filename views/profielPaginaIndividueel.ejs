@@ -3,103 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IndividueelProfielPagina</title>
+    <title>Profiel van <%= theUser.name %></title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
 
 <body>
     <%- include('partials/header') %>
+
     <main>
         <section class="profile-header">
-    <div class="pfpContainer">
-        <img src="<%= theUser.image || '/images/profilePlaceholder.png' %>" id="userPfp" alt="profielfoto">
-        
-        <input type="file" id="change-pfp-input" style="display: none;">
-        <label for="change-pfp-input" class="edit-photo-label">Foto aanpassen</label>
-    </div>
+            <div class="pfpContainer">
+                <img src="<%= theUser.image || '/images/profilePlaceholder.png' %>" id="userPfp" alt="profielfoto">
+                <% if (locals.username === theUser.name) { %>
+                    <input type="file" id="change-pfp-input" style="display: none;">
+                    <label for="change-pfp-input" class="edit-photo-label">Foto aanpassen</label>
+                <% } %>
+            </div>
 
-    <div class="profile-info-box">
-        <%- include('partials/editMode') %>
-        
-        <ul class="profile-content">
-            <li><h1 id="userName"><%= theUser.name %></h1></li>
-            <li><h2 id="rol"><%= theUser.role %></h2></li>
-        </ul>
-        
-        <ul class="important-qualities" id="importantQualities">
-            <li><h4><%= theUser.experience %> jaar werkervaring</h4></li>
-            <li><h4>Amsterdam</h4></li>
-        </ul>
-        
-        <p id="bio"><%= theUser.bio %></p>
-        
-        <ul class="qualities" id="idQualities">
-            <% if (theUser.skills && theUser.skills.length > 0) { %>
-                <% theUser.skills.forEach(skill => { %>
-                    <li><%= skill %></li>
-                <% }); %>
-            <% } %>
-            <button type="button" class="add-quality-btn" onclick="addProfileQuality()">+ Kwaliteit toevoegen</button>
-        </ul>
-    </div>
-</section>
+            <div class="profile-info-box">
+                <% if (locals.username === theUser.name) { %>
+                    <%- include('partials/editMode') %>
+                <% } %>
+                <ul class="profile-content">
+                    <li><h1 id="userName"><%= theUser.name %></h1></li>
+                    <li><h2 id="rol"><%= theUser.role %></h2></li>
+                </ul>
+                <ul class="important-qualities" id="importantQualities">
+                    <li><h4><%= theUser.experience %> jaar werkervaring</h4></li>
+                    <li><h4>Amsterdam</h4></li>
+                </ul>
+                <p id="bio"><%= theUser.bio %></p>
+                <ul class="qualities" id="idQualities">
+                    <% if (theUser.skills && theUser.skills.length > 0) { %>
+                        <% theUser.skills.forEach(skill => { %>
+                            <li><%= skill %></li>
+                        <% }); %>
+                    <% } %>
+                    <% if (locals.username === theUser.name) { %>
+                        <button type="button" class="add-quality-btn" onclick="addProfileQuality()">+ Kwaliteit toevoegen</button>
+                    <% } %>
+                </ul>
+            </div>
+        </section>
 
-        <ul class="project-grid">
-    <% if (typeof projects !== 'undefined' && projects.length > 0) { %>
-        <% projects.forEach(project => { %>
-            <li class="project-card">
-                <button class="project-link" 
-                    data-id="<%= project._id %>"
-                    data-title="<%= project.name || project.title %>"
-                    data-type="<%= project.type %>"
-                    data-contribution="<%= project.bio || project.description %>"
-                    data-genres="<%= (project.genres) ? project.genres.join(',') : '' %>"
-                    data-all-images="<%= (project.images) ? project.images.join(',') : '' %>"
-                    data-image="<%= project.mainImage || project.image || '/images/projectPlaceholder.png' %>">
-                    
-                    <div class="image-placeholder">
-                        <img src="<%= project.mainImage || project.image || '/images/projectPlaceholder.png' %>" alt="project foto">
-                    </div>
-                    <div class="project-info">
-                        <h3><%= project.name || project.title %></h3>
-                        <h4><%= project.type %></h4>
-                    </div>
-                </button>
-            </li>
-        <% }); %>
-    <% } %>
+        <section>
+            <ul class="project-grid">
+                <% if (typeof projects !== 'undefined' && projects.length > 0) { %>
+                    <% projects.forEach(project => { %>
+                        <li class="project-card">
+                            <button class="project-link" 
+                                data-id="<%= project._id %>"
+                                data-title="<%= project.name || project.title %>"
+                                data-type="<%= project.type %>"
+                                data-contribution="<%= project.bio || project.description %>"
+                                data-genres="<%= (project.genres) ? project.genres.join(',') : '' %>"
+                                data-all-images="<%= (project.images) ? project.images.join(',') : '' %>"
+                                data-image="<%= project.mainImage || project.image || '/images/projectPlaceholder.png' %>">
+                                <div class="image-placeholder">
+                                    <img src="<%= project.mainImage || project.image || '/images/projectPlaceholder.png' %>" alt="project foto">
+                                </div>
+                                <div class="project-info">
+                                    <h3><%= project.name || project.title %></h3>
+                                    <h4><%= project.type %></h4>
+                                </div>
+                            </button>
+                        </li>
+                    <% }); %>
+                <% } %>
 
-    <% if (theUser.relatedProjects && theUser.relatedProjects.length > 0) { %>
-    <% theUser.relatedProjects.forEach((apiProj) => { %>
-        <li class="project-card api-card">
-            <button class="project-link" 
-                data-is-api="true"
-                data-title="<%= apiProj.title %>"
-                data-type="Film (Extern)"
-                data-contribution="<%= apiProj.description %>" 
-                data-image="<%= apiProj.image %>"
-                data-genres="<%= apiProj.role %>">
-                
-                <div class="image-placeholder">
-                    <img src="<%= apiProj.image %>" alt="poster">
-                </div>
-                <div class="project-info">
-                    <h3><%= apiProj.title %></h3>
-                    <h4><%= apiProj.role %></h4>
-                </div>
-            </button>
-        </li>
-    <% }); %>
-<% } %>
+                <% if (theUser.relatedProjects && theUser.relatedProjects.length > 0) { %>
+                    <% theUser.relatedProjects.forEach((extProj) => { %>
+                        <li class="project-card api-card">
+                            <button class="project-link" data-is-api="true" data-title="<%= extProj.title %>" data-type="Film (Extern)" data-contribution="<%= extProj.description %>" data-image="<%= extProj.image %>" data-genres="<%= extProj.role %>">
+                                <div class="image-placeholder"><img src="<%= extProj.image %>" alt="poster"></div>
+                                <div class="project-info">
+                                    <h3><%= extProj.title %></h3>
+                                    <p class="api-tag-notice">Bekende Productie</p>
+                                    <h4>Rol: <%= extProj.role %></h4>
+                                </div>
+                            </button>
+                        </li>
+                    <% }); %>
+                <% } %>
 
-    <%- include('partials/addProjectCard') %>
-</ul>
+                <% if (locals.username === theUser.name) { %>
+                    <%- include('partials/addProjectCard') %>
+                <% } %>
+            </ul>
         </section>
     </main>
 
     <div id="project-modal" class="modal">
         <div class="modal-content">
-            <span class="close-modal">&times;</span>
+            <span class="close-modal" onclick="closeModal()">&times;</span>
             <div id="modal-body"></div>
         </div>
     </div>
@@ -110,228 +106,172 @@
     <script src="/js/editMode.js"></script>
 
     <script>
-const modal = document.getElementById("project-modal");
-const modalBody = document.getElementById("modal-body");
-const closeBtn = document.querySelector("#project-modal .close-modal");
+        const modal = document.getElementById("project-modal");
+        const modalBody = document.getElementById("modal-body");
+        const isOwner = "<%= locals.username %>" === "<%= theUser.name %>";
 
-// --- OPEN MODAL FUNCTIE ---
-function openModal(projectId, clickedElement) {
-    let btn;
-    if (projectId && projectId !== "null") {
-        btn = document.querySelector(`[data-id="${projectId}"]`);
-    } else {
-        btn = clickedElement;
-    }
-    
-    if (!btn) return;
-
-    const isEditing = document.body.classList.contains('is-editing');
-    const isApi = btn.getAttribute('data-is-api') === 'true';
-    
-    const details = {
-        title: btn.getAttribute('data-title') || "",
-        type: btn.getAttribute('data-type') || "",
-        contribution: btn.getAttribute('data-contribution') || "",
-        mainImage: btn.getAttribute('data-image') || "/images/projectPlaceholder.png",
-        genres: btn.getAttribute('data-genres') ? btn.getAttribute('data-genres').split(',').filter(g => g.trim() !== "") : [],
-        allImages: btn.getAttribute('data-all-images') ? btn.getAttribute('data-all-images').split(',').filter(i => i.trim() !== "") : []
-    };
-
-    if (isEditing && !isApi) {
-        // --- 100% HERSTELDE EDIT MODE ---
-        modalBody.innerHTML = `
-            <div class="edit-modal-wrapper">
-                <h3>Project aanpassen</h3>
-                
-                <label>Hoofdafbeelding</label>
-                <div class="pfpContainer" style="width: 100%; height: 200px; margin-bottom: 20px; position: relative;">
-                    <img src="${details.mainImage}" id="edit-project-img-preview" style="object-fit: cover; width: 100%; height: 100%; border-radius: 8px;">
-                    <input type="file" id="edit-project-file-input" style="display: none;" accept="image/*">
-                    <label for="edit-project-file-input" class="edit-photo-label" style="display: block; position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.6); color: white; padding: 5px 10px; border-radius: 5px; cursor: pointer;">Hoofdfoto wijzigen</label>
-                </div>
-
-                <label>Titel</label>
-                <input type="text" id="edit-title" value="${details.title}" class="edit-input" style="width: 100%; margin-bottom: 15px;">
-                
-                <label>Type Project</label>
-                <input type="text" id="edit-type" value="${details.type}" class="edit-input" style="width: 100%; margin-bottom: 15px;">
-                
-                <label>Tags / Kwaliteiten</label>
-                <ul class="qualities" id="edit-project-tags" style="margin-bottom: 15px;">
-                    ${details.genres.map(tag => `<li>${tag} <span class="delete-tag" onclick="this.parentElement.remove()" style="cursor:pointer; margin-left:5px;">×</span></li>`).join('')}
-                    <button type="button" onclick="addTagToProjectModal()" class="add-quality-btn">+ Tag</button>
-                </ul>
-
-                <label>Omschrijving</label>
-                <textarea id="edit-contribution" class="edit-input" rows="4" style="width: 100%; margin-bottom: 15px;">${details.contribution}</textarea>
-
-                <label>Extra Beelden (Galerij)</label>
-                <div id="edit-galerij-container" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
-                    ${details.allImages.filter(img => img !== details.mainImage).map(img => `
-                        <div class="edit-img-wrap" style="position: relative; width: 30%; aspect-ratio: 16/9;">
-                            <img src="${img}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 5px;">
-                            <span onclick="this.parentElement.remove()" style="position: absolute; top: -5px; right: -5px; background: red; color: white; border-radius: 50%; width: 20px; height: 20px; text-align: center; cursor: pointer; line-height: 18px;">×</span>
-                        </div>
-                    `).join('')}
-                </div>
-                <button type="button" onclick="addExtraImageToProject()" class="add-quality-btn" style="width: 100%; margin-bottom: 20px;">+ Beeld toevoegen aan galerij</button>
-                
-                <div class="modal-footer" style="display: flex; gap: 10px;">
-                    <button onclick="saveProjectChanges('${projectId}')" class="save-toggle-btn" style="flex: 2; padding: 10px; background: #2ecc71; color: white; border: none; border-radius: 5px; cursor: pointer;">Wijzigingen Opslaan</button>
-                    <button onclick="deleteProject('${projectId}')" class="delete-project-btn" style="flex: 1; padding: 10px; background: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer;">Verwijder</button>
-                </div>
-            </div>
-        `;
-
-        // Event listener voor de foto preview
-        document.getElementById('edit-project-file-input').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                document.getElementById('edit-project-img-preview').src = URL.createObjectURL(file);
-            }
-        });
-
-    } else {
-        // --- VIEW MODE (Voor API en Crew projecten) ---
-        const tagList = details.genres.map(g => `<li>${g}</li>`).join('');
-        const extraImages = details.allImages.filter(img => img !== details.mainImage && img.trim() !== "");
-
-        modalBody.innerHTML = `
-            <img src="${details.mainImage}" class="modal-image" style="width: 100%; border-radius: 8px;">
-            <h2 style="margin-top: 15px;">${details.title}</h2>
-            <p style="color: gray; margin-bottom: 10px;">${details.type}</p>
-            <ul class="qualities">${tagList}</ul>
-            <p style="margin-top: 15px; line-height: 1.6;">${details.contribution}</p>
+        function openModal(projectId, clickedElement) {
+            const btn = projectId && projectId !== "null" ? document.querySelector(`[data-id="${projectId}"]`) : clickedElement;
+            if (!btn) return;
+            const isEditing = document.body.classList.contains('is-editing');
+            const isApi = btn.getAttribute('data-is-api') === 'true';
             
-            ${isApi ? `
-                <p style="font-style: italic; color: #f1c40f; margin-top: 10px;">Dit is een externe productie via de TMDB API.</p>
-                <div class="modal-footer" style="margin-top: 20px;">
-                    <button onclick="deleteApiProject('${details.title}')" class="delete-project-btn" style="width: 100%; padding: 10px; background: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer;">Verwijder uit profiel</button>
-                </div>
-            ` : ''}
-
-            ${extraImages.length > 0 ? `
-                <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px;">
-                    <h4 style="margin-bottom: 10px;">Extra beelden</h4>
-                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                        ${extraImages.map(img => `<img src="${img}" style="width: 30%; aspect-ratio: 16/9; object-fit: cover; border-radius: 5px;">`).join('')}
-                    </div>
-                </div>` : ''}
-        `;
-    }
-    modal.style.display = "block";
-}
-
-// --- CLICK LISTENER ---
-document.addEventListener('click', (e) => {
-    const btn = e.target.closest('.project-link');
-    if (btn) {
-        e.preventDefault();
-        const id = btn.getAttribute('data-id');
-        openModal(id, btn);
-    }
-});
-
-// --- OVERIGE FUNCTIES (Alles weer terug!) ---
-function addTagToProjectModal() {
-    const val = prompt("Welke nieuwe tag?");
-    if (val) {
-        const li = document.createElement('li');
-        li.innerHTML = `${val} <span class="delete-tag" onclick="this.parentElement.remove()">×</span>`;
-        const list = document.getElementById('edit-project-tags');
-        list.insertBefore(li, list.querySelector('.add-quality-btn'));
-    }
-}
-
-function addExtraImageToProject() {
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.accept = 'image/*';
-    fileInput.multiple = true;
-    fileInput.onchange = e => {
-        const container = document.getElementById('edit-galerij-container');
-        Array.from(e.target.files).forEach(file => {
-            const reader = new FileReader();
-            reader.onload = event => {
-                const div = document.createElement('div');
-                div.className = 'edit-img-wrap';
-                div.style.cssText = "position: relative; width: 30%; aspect-ratio: 16/9;";
-                div.innerHTML = `
-                    <img src="${event.target.result}" data-new-file="true" style="width: 100%; height: 100%; object-fit: cover; border-radius: 5px;">
-                    <span onclick="this.parentElement.remove()" style="position: absolute; top: -5px; right: -5px; background: red; color: white; border-radius: 50%; width: 20px; height: 20px; text-align: center; cursor: pointer;">×</span>
-                `;
-                div.fileObject = file; 
-                container.appendChild(div);
+            const details = {
+                title: btn.getAttribute('data-title') || "",
+                type: btn.getAttribute('data-type') || "",
+                contribution: btn.getAttribute('data-contribution') || "",
+                mainImage: btn.getAttribute('data-image') || "/images/projectPlaceholder.png",
+                genres: btn.getAttribute('data-genres') ? btn.getAttribute('data-genres').split(',').filter(g => g.trim() !== "") : [],
+                allImages: btn.getAttribute('data-all-images') ? btn.getAttribute('data-all-images').split(',').filter(i => i.trim() !== "") : []
             };
-            reader.readAsDataURL(file);
-        });
-    };
-    fileInput.click();
-}
 
-async function saveProjectChanges(projectId) {
-    const formData = new FormData();
-    formData.append('projectId', projectId);
-    formData.append('title', document.getElementById('edit-title').value);
-    formData.append('type', document.getElementById('edit-type').value);
-    formData.append('contribution', document.getElementById('edit-contribution').value);
-    
-    const tags = Array.from(document.querySelectorAll('#edit-project-tags li')).map(li => li.innerText.replace('×', '').trim());
-    formData.append('genres', JSON.stringify(tags));
-
-    const existingImgs = Array.from(document.querySelectorAll('#edit-galerij-container img:not([data-new-file])')).map(img => new URL(img.src).pathname);
-    formData.append('existingImages', JSON.stringify(existingImgs));
-
-    const newFileWrappers = document.querySelectorAll('.edit-img-wrap');
-    newFileWrappers.forEach(wrap => { if (wrap.fileObject) formData.append('galerijImages', wrap.fileObject); });
-
-    const mainFileInput = document.getElementById('edit-project-file-input');
-    if (mainFileInput && mainFileInput.files[0]) formData.append('projectImage', mainFileInput.files[0]);
-
-    const response = await fetch('/update-project-details', { method: 'POST', body: formData });
-    if (response.ok) window.location.reload();
-    else alert("Opslaan mislukt.");
-}
-
-async function deleteProject(projectId) {
-    if (confirm("Weet je zeker dat je dit project wilt verwijderen?")) {
-        const response = await fetch('/delete-project', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ projectId: projectId })
-        });
-        if (response.ok) location.reload();
-    }
-}
-
-function closeModal() { modal.style.display = "none"; }
-closeBtn.onclick = closeModal;
-window.onclick = (e) => { if (e.target == modal) closeModal(); };
-
-function addProfileQuality() {
-    const val = prompt("Nieuwe kwaliteit?");
-    if (val) {
-        const li = document.createElement('li');
-        li.innerHTML = `${val}<span class="delete-tag" onclick="this.parentElement.remove()">×</span>`;
-        document.getElementById('idQualities').appendChild(li);
-    }
-}
-
-async function deleteApiProject(title) {
-    if (confirm(`Weet je zeker dat je "${title}" wilt verwijderen van je profiel?`)) {
-        const response = await fetch('/delete-api-project', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ projectTitle: title })
-        });
-
-        if (response.ok) {
-            window.location.reload();
-        } else {
-            alert("Verwijderen mislukt.");
+            if (isOwner && isEditing && !isApi) { renderEditMode(projectId, details); } 
+            else { renderViewMode(isApi, details); }
+            modal.style.display = "block";
         }
-    }
-}
-</script>
+
+        function renderEditMode(projectId, details) {
+            modalBody.innerHTML = `
+                <div class="edit-modal-wrapper">
+                    <h3>Project aanpassen</h3>
+                    <label>Hoofdafbeelding</label>
+                    <div class="modal-main-image-container">
+                        <img src="${details.mainImage}" id="edit-project-img-preview" class="modal-main-image-preview">
+                        <input type="file" id="edit-project-file-input" style="display: none;" accept="image/*">
+                        <label for="edit-project-file-input" class="modal-photo-edit-label">Hoofdfoto wijzigen</label>
+                    </div>
+
+                    <label>Titel</label>
+                    <input type="text" id="edit-title" value="${details.title}" class="edit-input">
+                    
+                    <label>Type Project</label>
+                    <input type="text" id="edit-type" value="${details.type}" class="edit-input">
+                    
+                    <label>Tags / Kwaliteiten</label>
+                    <ul class="qualities" id="edit-project-tags">
+                        ${details.genres.map(tag => `<li>${tag} <span class="delete-tag" onclick="this.parentElement.remove()">×</span></li>`).join('')}
+                        <button type="button" onclick="addTagToProjectModal()" class="add-quality-btn">+ Tag</button>
+                    </ul>
+
+                    <label>Omschrijving</label>
+                    <textarea id="edit-contribution" class="edit-input" rows="4">${details.contribution}</textarea>
+
+                    <label>Extra Beelden (Galerij)</label>
+                    <div id="edit-galerij-container" class="galerij-container">
+                        ${details.allImages.filter(img => img !== details.mainImage).map(img => `
+                            <div class="edit-img-wrap">
+                                <img src="${img}">
+                                <span onclick="this.parentElement.remove()" class="delete-img-btn">×</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <button type="button" onclick="addExtraImageToProject()" class="add-quality-btn">+ Beeld toevoegen</button>
+                    
+                    <div class="modal-footer-buttons">
+                        <button onclick="saveProjectChanges('${projectId}')" class="save-action-btn">Opslaan</button>
+                        <button onclick="deleteProject('${projectId}')" class="delete-action-btn">Verwijder</button>
+                    </div>
+                </div>`;
+
+            document.getElementById('edit-project-file-input').addEventListener('change', (e) => {
+                if (e.target.files[0]) document.getElementById('edit-project-img-preview').src = URL.createObjectURL(e.target.files[0]);
+            });
+        }
+
+        function renderViewMode(isApi, details) {
+            const tagList = details.genres.map(g => `<li>${g}</li>`).join('');
+            const extraImages = details.allImages.filter(img => img !== details.mainImage && img.trim() !== "");
+
+            modalBody.innerHTML = `
+                <img src="${details.mainImage}" class="modal-image">
+                <h2 class="modal-title">${details.title}</h2>
+                <p class="modal-subtitle">${details.type}</p>
+                <ul class="qualities">${tagList}</ul>
+                <p class="modal-text">${details.contribution}</p>
+                ${(isApi && isOwner) ? `<button onclick="deleteApiProject('${details.title}')" class="delete-project-btn">Verwijder van profiel</button>` : ''}
+                ${extraImages.length > 0 ? `
+                    <div class="galerij-wrapper">
+                        <h4 class="galerij-title">Extra beelden</h4>
+                        <div class="galerij-container">
+                            ${extraImages.map(img => `<img src="${img}" class="galerij-img">`).join('')}
+                        </div>
+                    </div>` : ''}`;
+        }
+
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest('.project-link');
+            if (btn) { e.preventDefault(); openModal(btn.getAttribute('data-id'), btn); }
+        });
+
+        function closeModal() { modal.style.display = "none"; }
+        window.onclick = (e) => { if (e.target == modal) closeModal(); };
+
+        function addTagToProjectModal() {
+            const val = prompt("Tag naam?");
+            if (val) {
+                const li = document.createElement('li');
+                li.innerHTML = `${val} <span class="delete-tag" onclick="this.parentElement.remove()">×</span>`;
+                const list = document.getElementById('edit-project-tags');
+                list.insertBefore(li, list.querySelector('.add-quality-btn'));
+            }
+        }
+
+        function addExtraImageToProject() {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file'; fileInput.accept = 'image/*'; fileInput.multiple = true;
+            fileInput.onchange = e => {
+                const container = document.getElementById('edit-galerij-container');
+                Array.from(e.target.files).forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = event => {
+                        const div = document.createElement('div');
+                        div.className = 'edit-img-wrap';
+                        div.innerHTML = `<img src="${event.target.result}" data-new-file="true"><span onclick="this.parentElement.remove()" class="delete-img-btn">×</span>`;
+                        div.fileObject = file; container.appendChild(div);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            };
+            fileInput.click();
+        }
+
+        async function saveProjectChanges(projectId) {
+            const formData = new FormData();
+            formData.append('projectId', projectId);
+            formData.append('title', document.getElementById('edit-title').value);
+            formData.append('type', document.getElementById('edit-type').value);
+            formData.append('contribution', document.getElementById('edit-contribution').value);
+            formData.append('genres', JSON.stringify(Array.from(document.querySelectorAll('#edit-project-tags li')).map(li => li.innerText.replace('×', '').trim())));
+            formData.append('existingImages', JSON.stringify(Array.from(document.querySelectorAll('#edit-galerij-container img:not([data-new-file])')).map(img => new URL(img.src).pathname)));
+            document.querySelectorAll('.edit-img-wrap').forEach(wrap => { if (wrap.fileObject) formData.append('galerijImages', wrap.fileObject); });
+            const mainFile = document.getElementById('edit-project-file-input');
+            if (mainFile && mainFile.files[0]) formData.append('projectImage', mainFile.files[0]);
+            const res = await fetch('/update-project-details', { method: 'POST', body: formData });
+            if (res.ok) window.location.reload();
+        }
+
+        async function deleteProject(projectId) {
+            if (confirm("Project verwijderen?")) {
+                const res = await fetch('/delete-project', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ projectId }) });
+                if (res.ok) location.reload();
+            }
+        }
+
+        async function deleteApiProject(title) {
+            if (confirm(`"${title}" verwijderen?`)) {
+                const res = await fetch('/delete-api-project', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ projectTitle: title }) });
+                if (res.ok) window.location.reload();
+            }
+        }
+
+        function addProfileQuality() {
+            const val = prompt("Nieuwe kwaliteit?");
+            if (val) {
+                const li = document.createElement('li');
+                li.innerHTML = `${val}<span class="delete-tag" onclick="this.parentElement.remove()">×</span>`;
+                document.getElementById('idQualities').appendChild(li);
+            }
+        }
+    </script>
 </body>
 </html>

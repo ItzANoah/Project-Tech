@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Open de modal
     if (addBtn) {
         addBtn.addEventListener('click', () => {
-            formContainer.innerHTML = '<p>Kies hierboven een optie.</p>'; 
+            formContainer.innerHTML = '<p>Kies hierboven een optie om een project toe te voegen.</p>'; 
             addProjectModal.style.display = 'block';
         });
     }
@@ -22,16 +22,16 @@ document.addEventListener('DOMContentLoaded', () => {
         formContainer.innerHTML = `
             <div class="manual-form">
                 <h3>Zoek in Filmcrew Database</h3>
-                <div style="position: relative;">
+                <div class="search-wrapper">
                     <input type="text" id="db-search-input" placeholder="Typ de titel van de film..." autocomplete="off" class="edit-input">
                     <ul id="db-search-results" class="search-dropdown"></ul>
                 </div>
-                <div id="selected-project-confirm" style="display:none; margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
-                    <h4 id="confirm-title" style="margin-bottom:10px; color: #f1c40f;"></h4>
+                <div id="selected-project-confirm" class="confirm-box">
+                    <h4 id="confirm-title"></h4>
                     <label>Wat was jouw rol in dit project? *</label>
                     <input type="text" id="user-role-input" placeholder="Bijv. Cameraman of Editor" class="edit-input">
                     <input type="hidden" id="selected-project-id">
-                    <button type="button" id="final-add-db-btn" class="admin-toggle-btn" style="position: static; width: 100%; margin-top: 10px;">
+                    <button type="button" id="final-add-db-btn" class="admin-toggle-btn modal-full-width-btn">
                         Project toevoegen aan profiel
                     </button>
                 </div>
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <input type="file" id="new-img" accept="image/*" class="edit-input">
                 <label>Beschrijving *</label>
                 <textarea id="new-desc" class="edit-input" rows="4" required></textarea>
-                <button type="submit" class="admin-toggle-btn" style="position: static; margin-top: 1em; width: 100%;">
+                <button type="submit" class="admin-toggle-btn modal-full-width-btn">
                     Project Toevoegen
                 </button>
             </form>
@@ -68,21 +68,20 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- OPTIE 3: API Zoeken (The Movie Database) ---
-    // Let op: 'btnApi' moet exact zo in je HTML staan!
     document.getElementById('btnApi')?.addEventListener('click', () => {
         formContainer.innerHTML = `
             <div class="manual-form">
                 <h3>Zoek in Wereldwijde Database (API)</h3>
-                <div style="position: relative;">
+                <div class="search-wrapper">
                     <input type="text" id="api-search-input" placeholder="Typ een filmtitel..." autocomplete="off" class="edit-input">
                     <ul id="api-search-results" class="search-dropdown"></ul>
                 </div>
-                <div id="selected-api-confirm" style="display:none; margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
-                    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                        <img id="api-confirm-poster" src="" style="width: 80px; border-radius: 4px;">
-                        <div>
-                            <h4 id="api-confirm-title" style="color: #f1c40f;"></h4>
-                            <p id="api-confirm-year" style="font-size: 0.8em; color: gray;"></p>
+                <div id="selected-api-confirm" class="confirm-box">
+                    <div class="api-selection-header">
+                        <img id="api-confirm-poster" src="" class="api-confirm-poster">
+                        <div class="api-info-text">
+                            <h4 id="api-confirm-title"></h4>
+                            <p id="api-confirm-year"></p>
                         </div>
                     </div>
                     <label>Jouw Rol in dit project? *</label>
@@ -92,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <input type="hidden" id="api-data-desc">
                     <input type="hidden" id="api-data-img">
 
-                    <button type="button" id="final-add-api-btn" class="admin-toggle-btn" style="position: static; width: 100%; margin-top: 10px;">
+                    <button type="button" id="final-add-api-btn" class="admin-toggle-btn modal-full-width-btn">
                         Film importeren & toevoegen
                     </button>
                 </div>
@@ -102,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// --- ONDERSTEUNENDE FUNCTIES (BUITEN DE DOMContentLoaded) ---
+// --- LOGICA FUNCTIES ---
 
 function setupDbSearchLogic() {
     const input = document.getElementById('db-search-input');
@@ -124,10 +123,7 @@ function setupDbSearchLogic() {
         resultsUl.innerHTML = '';
         data.forEach(project => {
             const li = document.createElement('li');
-            li.className = "search-result-item"; // Handig voor styling
-            li.style.padding = "10px";
-            li.style.borderBottom = "1px solid #eee";
-            li.style.cursor = "pointer";
+            li.className = "search-result-item";
             li.textContent = `${project.name} (Regie: ${project.director || 'Onbekend'})`;
             
             li.onclick = () => {
@@ -164,9 +160,7 @@ function setupApiSearchLogic() {
         resultsUl.innerHTML = '';
         data.forEach(movie => {
             const li = document.createElement('li');
-            li.style.padding = "10px";
-            li.style.borderBottom = "1px solid #eee";
-            li.style.cursor = "pointer";
+            li.className = "search-result-item";
             li.innerHTML = `<strong>${movie.title}</strong> (${movie.year})`;
             
             li.onclick = () => {

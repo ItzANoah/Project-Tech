@@ -255,6 +255,35 @@ app.get('/logout', (req, res) => {
 
 // --- Project Acties & Uploads (anna) ---
 
+// Route voor het bijwerken van algemene profielgegevens (Naam, Rol, Bio, Skills)
+app.post('/update-profile', checkInlog, async (req, res) => {
+    try {
+        const { name, role, bio, skills } = req.body;
+        
+        // We zoeken op de ObjectId van de ingelogde gebruiker
+        await profileCollection.updateOne(
+            { _id: new ObjectId(req.session.userID) },
+            { 
+                $set: { 
+                    name: name,
+                    role: role,
+                    bio: bio,
+                    skills: skills 
+                } 
+            }
+        );
+
+        // OOK de sessie-naam bijwerken voor de header/overal
+        req.session.username = name;
+
+        console.log("Profiel bijgewerkt voor ID:", req.session.userID);
+        res.json({ success: true });
+    } catch (err) {
+        console.error("Fout bij updaten profiel:", err);
+        res.status(500).json({ success: false, message: "Serverfout bij opslaan" });
+    }
+});
+
 // Project aanpassen (inclusief galerij)
 app.post('/update-project-details', checkInlog, upload.fields([
     { name: 'projectImage', maxCount: 1 },
@@ -284,13 +313,22 @@ app.post('/update-project-details', checkInlog, upload.fields([
     } catch (err) { res.status(500).json({ success: false }); }
 });
 
-// Profielfoto uploaden
+// Profielfoto uploaden 
 app.post('/upload-pfp', checkInlog, upload.single('profilePic'), async (req, res) => {
   try {
     const imagePath = '/uploads/' + req.file.filename;
-    await profileCollection.updateOne({ name: req.session.userID }, { $set: { image: imagePath } });
+    
+    // BELANGRIJK: We zoeken op _id met de ObjectId uit de sessie
+    await profileCollection.updateOne(
+      { _id: new ObjectId(req.session.userID) }, 
+      { $set: { image: imagePath } }
+    );
+    
     res.json({ success: true, newImagePath: imagePath });
-  } catch (err) { res.status(500).send('Fout bij uploaden'); }
+  } catch (err) { 
+    console.error("PFP Upload fout:", err);
+    res.status(500).json({ success: false, message: 'Fout bij uploaden' }); 
+  }
 });
 
 // Handmatig nieuw project toevoegen
@@ -298,11 +336,33 @@ app.post('/add-project-manual', checkInlog, upload.single('projectImage'), async
   try {
     const { title, type, contribution, role } = req.body;
     const imagePath = req.file ? '/uploads/' + req.file.filename : '/images/projectPlaceholder.png';
-    const newProject = { title, name: title, type, description: contribution, bio: contribution, role, mainImage: imagePath, images: [], genres: [role || type], createdAt: new Date() };
+    
+    const newProject = { 
+      title, 
+      name: title, 
+      type, 
+      description: contribution, 
+      bio: contribution, 
+      role, 
+      mainImage: imagePath, 
+      images: [], 
+      genres: [role || type], 
+      createdAt: new Date() 
+    };
+
     const result = await projectsCollection.insertOne(newProject);
-    await profileCollection.updateOne({ name: req.session.userID }, { $push: { myProjects: result.insertedId } });
+    
+    // BELANGRIJK: Gebruik _id en ObjectId om de koppeling te maken
+    await profileCollection.updateOne(
+      { _id: new ObjectId(req.session.userID) }, 
+      { $push: { myProjects: result.insertedId } }
+    );
+    
     res.json({ success: true });
-  } catch (err) { res.status(500).json({ success: false }); }
+  } catch (err) { 
+    console.error("Handmatig toevoegen fout:", err);
+    res.status(500).json({ success: false }); 
+  }
 });
 
 // Project verwijderen
@@ -327,10 +387,24 @@ app.get('/search-db-projects', checkInlog, async (req, res) => {
 app.post('/add-existing-project', checkInlog, async (req, res) => {
     try {
         const { projectId, userRole } = req.body;
-        await profileCollection.updateOne({ name: req.session.userID }, { $addToSet: { myProjects: new ObjectId(projectId) } });
-        await projectsCollection.updateOne({ _id: new ObjectId(projectId) }, { $addToSet: { genres: userRole } });
+        
+        // 1. Voeg het project ID toe aan de lijst van de gebruiker
+        await profileCollection.updateOne(
+            { _id: new ObjectId(req.session.userID) }, 
+            { $addToSet: { myProjects: new ObjectId(projectId) } }
+        );
+
+        // 2. Optioneel: Voeg de rol van de gebruiker toe aan de genres van het project
+        await projectsCollection.updateOne(
+            { _id: new ObjectId(projectId) },
+            { $addToSet: { genres: userRole } }
+        );
+        
         res.json({ success: true });
-    } catch (err) { res.status(500).json({ success: false }); }
+    } catch (err) { 
+        console.error("Bestaand project toevoegen fout:", err);
+        res.status(500).json({ success: false }); 
+    }
 });
 
 // Films van api halen
@@ -356,37 +430,6 @@ app.get('/search-api-projects', checkInlog, async (req, res) => {
     } catch (err) {
         console.error("API Error:", err);
         res.json([]);
-    }
-});
-
-// api film importeren naar onze mongo db
-
-app.post('/import-api-project', checkInlog, async (req, res) => {
-    try {
-        const { title, overview, poster, role } = req.body;
-
-        const newProject = {
-            title: title,
-            name: title,
-            description: overview,
-            bio: overview,
-            mainImage: poster,
-            type: "Film (via API)",
-            role: role, // Wat de gebruiker zelf invult (bijv. "Cameraman")
-            createdAt: new Date()
-        };
-
-        const result = await projectsCollection.insertOne(newProject);
-        
-        // Koppel aan de ingelogde gebruiker via hun ID
-        await profileCollection.updateOne(
-            { _id: new ObjectId(req.session.userID) },
-            { $push: { myProjects: result.insertedId } }
-        );
-
-        res.json({ success: true });
-    } catch (err) {
-        res.status(500).json({ success: false });
     }
 });
 
@@ -434,22 +477,20 @@ app.post('/delete-api-project', checkInlog, async (req, res) => {
     }
 });
 
-// 2. De gekozen film importeren naar MongoDB
 app.post('/add-api-project', checkInlog, async (req, res) => {
     try {
         const { title, description, image, role } = req.body;
 
-        // We maken een objectje met de filmdata
         const apiProjectData = {
             title: title,
             description: description,
             image: image,
             role: role,
-            source: "TMDB-API", // Handig om te weten waar het vandaan komt
+            source: "TMDB-API",
             addedAt: new Date()
         };
 
-        // We voegen dit object DIRECT toe aan de 'relatedProjects' array van de GEBRUIKER
+        // We slaan API films direct op in 'relatedProjects' in de user collectie
         await profileCollection.updateOne(
             { _id: new ObjectId(req.session.userID) },
             { $push: { relatedProjects: apiProjectData } }
@@ -457,7 +498,7 @@ app.post('/add-api-project', checkInlog, async (req, res) => {
 
         res.json({ success: true });
     } catch (err) {
-        console.error("Fout bij opslaan related project:", err);
+        console.error("Fout bij opslaan API project:", err);
         res.status(500).json({ success: false });
     }
 });

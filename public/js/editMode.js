@@ -1,62 +1,89 @@
+/**
+ * EDIT MODE CONFIGURATIE
+ * Beheert het bewerken van profielgegevens en de interactie met de server.
+ */
+
 const editModeBtn = document.getElementById('edit-mode-toggle');
+const pfpInput = document.getElementById('change-pfp-input');
 
-editModeBtn.addEventListener('click', async () => {
-    const isEditing = document.body.classList.toggle('is-editing');
+// --- 1. PROFIEL BEWERKEN EN OPSLAAN ---
+if (editModeBtn) {
+    editModeBtn.addEventListener('click', async () => {
+        // Toggle de 'is-editing' class op de body voor visuele veranderingen (CSS)
+        const isEditing = document.body.classList.toggle('is-editing');
 
-    if (!isEditing) {
-        // --- STAP: DATA VERZAMELEN ---
-        // We halen alle tekst uit de bolletjes en maken er een lijst (Array) van
-        const skillElements = document.querySelectorAll('#idQualities li');
-        const skillsArray = Array.from(skillElements)
-            .map(li => {
-                // We halen het kruisje (x) weg uit de tekst voordat we het opslaan
-                let text = li.innerText.replace('×', '').trim();
-                return text;
-            })
-            .filter(text => text !== "+ Kwaliteit toevoegen" && text !== "");
+        if (!isEditing) {
+            // --- DATA VERZAMELEN ---
+            const skillsArray = Array.from(document.querySelectorAll('#idQualities li'))
+                .map(li => {
+                    // Verwijder alleen het kruisje en de witruimte eromheen
+                    return li.innerText.replace('×', '').trim();
+                })
+                // Zorg dat we de knop "+ Kwaliteit toevoegen" NIET opslaan als skill
+                .filter(text => text !== "" && !text.includes("+ Kwaliteit"));
 
-        const updatedData = {
-            name: document.getElementById('userName').innerText,
-            role: document.getElementById('rol').innerText,
-            bio: document.getElementById('bio').innerText,
-            skills: skillsArray
-        };
+            const updatedProfileData = {
+                name: document.getElementById('userName').innerText.trim(),
+                role: document.getElementById('rol').innerText.trim(),
+                bio: document.getElementById('bio').innerText.trim(),
+                skills: skillsArray
+            };
 
-        // --- STAP: VERSTUREN NAAR SERVER ---
-        try {
-            const response = await fetch('/update-profile', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(updatedData)
-            });
+            // LOG DE DATA: Druk op F12 in je browser om te zien of dit er goed uitziet
+            console.log("Versturen naar server:", updatedProfileData);
 
-            if (response.ok) {
-                console.log("Database succesvol bijgewerkt!");
+            // --- VERSTUREN NAAR SERVER ---
+            try {
+                const response = await fetch('/update-profile', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updatedProfileData)
+                });
+
+                if (response.ok) {
+                    console.log("Database succesvol bijgewerkt!");
+                } else {
+                    // Als de server een fout geeft (bijv. 400 of 500)
+                    const errorData = await response.json();
+                    console.error("Server fout:", errorData);
+                    throw new Error("Server weigert de data.");
+                }
+            } catch (err) {
+                console.error("Opslaan mislukt:", err);
+                alert("Er ging iets mis bij het opslaan. Check de console (F12) voor details.");
             }
-        } catch (err) {
-            console.error("Kon niet opslaan:", err);
         }
-    }
 
-    // --- STAP: VISUELE FEEDBACK ---
+        // --- VISUELE INTERFACE BIJWERKEN ---
+        updateEditUI(isEditing);
+    });
+}
+
+/**
+ * Hulpfunctie om de UI-elementen aan te passen aan de edit-status
+ */
+function updateEditUI(isEditing) {
+    // 1. Tekst en kleur van de knop aanpassen
     editModeBtn.textContent = isEditing ? "Opslaan" : "Aanpassen";
     editModeBtn.style.backgroundColor = isEditing ? "#28a745" : "var(--accentColorRed)";
 
-    // Velden bewerkbaar maken of juist niet
+    // 2. Velden bewerkbaar maken (ContentEditable)
     const editableIds = ['userName', 'rol', 'bio'];
     editableIds.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.contentEditable = isEditing;
     });
 
-    const profileLists = document.querySelectorAll('.qualities li, .important-qualities li, .nameRole li');
+    // 3. Lijstitems (Skills & Ervaring) bewerkbaar maken
+    const profileLists = document.querySelectorAll('.qualities li, .important-qualities li');
     profileLists.forEach(li => {
         li.contentEditable = isEditing;
     });
 
-    // Kruisjes toevoegen aan de skills als we aan het aanpassen zijn
+    // 4. Kruisjes (delete-tags) toevoegen aan skills in edit-mode
     if (isEditing) {
         document.querySelectorAll('.qualities li').forEach(li => {
+            // Alleen toevoegen als er nog geen kruisje staat en het niet de 'toevoeg' knop is
             if (!li.querySelector('.delete-tag') && li.innerText !== "+ Kwaliteit toevoegen") {
                 const span = document.createElement('span');
                 span.className = 'delete-tag';
@@ -67,31 +94,36 @@ editModeBtn.addEventListener('click', async () => {
             }
         });
     }
-});
+}
 
-const pfpInput = document.getElementById('change-pfp-input');
+// --- 2. PROFIELFOTO UPLOADEN ---
+if (pfpInput) {
+    pfpInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
 
-pfpInput.addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+        // FormData gebruiken voor bestandsuploads
+        const formData = new FormData();
+        formData.append('profilePic', file);
 
-    // FormData is nodig om bestanden te versturen
-    const formData = new FormData();
-    formData.append('profilePic', file);
+        try {
+            const response = await fetch('/upload-pfp', {
+                method: 'POST',
+                body: formData // Browser stelt zelf de juiste headers in voor FormData
+            });
 
-    try {
-        const response = await fetch('/upload-pfp', {
-            method: 'POST',
-            body: formData // Let op: GEEN headers instellen, dat doet de browser zelf bij FormData
-        });
-
-        const result = await response.json();
-        if (result.success) {
-            // Update de afbeelding op je scherm direct
-            document.getElementById('userPfp').src = result.newImagePath;
-            alert("Profielfoto bijgewerkt!");
+            const result = await response.json();
+            if (result.success) {
+                // Update de afbeelding in de UI direct
+                const userPfp = document.getElementById('userPfp');
+                if (userPfp) userPfp.src = result.newImagePath;
+                alert("Profielfoto succesvol bijgewerkt!");
+            } else {
+                alert("Uploaden mislukt: " + (result.message || "Onbekende fout"));
+            }
+        } catch (err) {
+            console.error("Upload fout:", err);
+            alert("Er is een technische fout opgetreden bij het uploaden.");
         }
-    } catch (err) {
-        console.error("Upload fout:", err);
-    }
-});
+    });
+}
