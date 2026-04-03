@@ -1,0 +1,36 @@
+
+<header class="project--header">
+            <div class="project--title-group">
+
+                <!-- res render stuurt het object projectData mee naar dit document -->
+                 <!-- de "projectData.name" wordt vervangen door de string uit database -->
+                <h1 id="projectTitle" class="project--title" contenteditable="false">
+                    <%= projectData.name || 'Project Titel' %>
+                </h1>
+                <span id="titleCounter" class="char-counter edit-only">0/20</span>
+                <input type="hidden" name="title" id="inputTitle">
+
+                <!-- in javascript halen we de tekst op uit de h2 en plakken we dit in de hidden input-->
+                <h2 id="projectSubtitle" class="project--subtitle" contenteditable="false">
+                    <%= projectData.subtitle || 'Hoofdrol Speler' %>
+                </h2>
+                <span id="subtitleCounter" class="char-counter edit-only">0/30</span>
+                <input type="hidden" name="subtitle" id="inputSubtitle">
+            </div>
+
+            <div class="project--header-info">
+                <!-- validatie om te kijken of de gebruiker de owner is van het project
+                 als dit niet het geval is dan krijg je de knop niet te zien in je browser-->
+                <% if (isOwner) { %>
+                    <%- include('editmode-button') %> 
+                <% } %>
+                    
+               <div>
+                <p>Dir: 
+                <a href="/director/<%= projectData.director ? projectData.director.replace(/\s+/g, '-').toLowerCase() : 'onbekend' %>">
+            <%= projectData.director || 'Onbekende Regisseur' %>
+                </a>
+                 </p>
+                </div>
+            </div>
+        </header>

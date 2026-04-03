@@ -1,0 +1,16 @@
+<!-- join word gebruikt om de array relatedprojects uit de database naar een string met komma's
+     te maken zodat de html dit kan lezen -->
+
+     <!-- voor functie join uit als relatedprojects niet leeg is, als dit wel leeg is geef een lege string terug-->
+<input type="hidden" name="relatedProjects" id="inputSelectedProjectIds" 
+       value="<%= projectData.relatedProjects ? projectData.relatedProjects.join(',') : '' %>">
+
+    <!-- plaats het carousel en geef mee de titel van het carousel en welke projecten hij moet laten zien
+     directorProjects en geef het carousel een ID dit word gebruikt in JS -->
+<%- include('../projectenCarousel', { 
+    title: 'Andere projecten van de regisseur', 
+    items: directorProjects, 
+    carouselId: 'directorProjectsCarousel',
+    extraClass: '' 
+}) %>
+    <!-- dit staat in deze partials zodat andere teamgenoten mijn projectenCarousel ook kunnen gebruiken-->
