@@ -6,32 +6,24 @@
     max-width: 600px;
 }
 
-/* Het rode kruisje, expliciet links bovenin */
-.modal__close-left {
+/* Kruisje aan de rechterkant zoals afgesproken */
+.modal__close-right {
     position: absolute;
-    top: 15px;
-    left: 15px; /* Kruisje zit nu links! */
-    background: #ff4d4d;
-    background: var(--accentColorRed);
-    color: white;
+    top: 0.5em;
+    right: 0.7em;
+    background: none;
     border: none;
-    border-radius: 50%;
-    width: 35px;
-    height: 35px;
-    font-size: 24px;
-    font-weight: bold;
+    font-size: var(--h2Size, 2em);
+    font-weight: var(--fontWeightBold);
     cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.2s ease, background-color 0.2s ease;
+    line-height: 1;
+    color: var(--accentColorRed);
+    transition: all ease 0.2s;
 }
 
-.modal__close-left:hover {
-    background: #cc0000;
-    background: var(--accentColorGold);
-    transform: scale(1.1);
+.modal__close-right:hover {
+    background: none;
+    color: var(--accentColorGold);
 }
 
 /* Het textarea veld */
@@ -49,8 +41,8 @@
 }
 
 #modalSolliciteren textarea:focus {
-    outline: none;
-    border-color: var(--accentColorGold);
+    outline: 2px solid #005fcc; /* Standaard blauwe outline */
+    border-color: #005fcc;
 }
 
 /* De Versturen knop in de modal */

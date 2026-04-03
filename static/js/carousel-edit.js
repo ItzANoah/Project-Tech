@@ -113,7 +113,7 @@ function selectProjectForCarousel(id, title, director, imageUrl, bio) {
 
     newListItem.innerHTML = `
         <div class="matching__card" data-id="${id}">
-            <button type="button" class="delete-project-btn" style="display: block;" onclick="removeProjectFromCarousel('${id}')">×</button>
+            <button type="button" class="delete-project-btn" style="display: block;" onclick="removeProjectFromCarousel('${id}')">&times;</button>
             
             <div class="matching__card-image-container">
                 ${imageUrl && imageUrl !== '/img/placeholder.jpg' 
@@ -133,7 +133,7 @@ function selectProjectForCarousel(id, title, director, imageUrl, bio) {
     carouselList.appendChild(newListItem);
     closeAddProjectModal();
     
-    alert(`Project "${title}" is succesvol toegevoegd! Vergeet niet de pagina op te slaan.`);
+    showCustomAlert(`Project "${title}" is succesvol toegevoegd! Vergeet niet de pagina op te slaan.`);
 }
 
 // Functie om een project uit de selectie te halen (werkt alleen lokaal tot je op 'Opslaan' drukt)

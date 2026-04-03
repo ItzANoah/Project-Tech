@@ -185,6 +185,14 @@ app.get('/crew-profile', async (req, res) => {
             project = {};
         }
 
+        // 1.5 Haal de naam van de eigenaar op om als regisseur in te vullen
+        if (project.ownerId) {
+            const ownerProfile = await db.collection('profiles').findOne({ _id: new ObjectId(project.ownerId) });
+            if (ownerProfile) {
+                project.director = ownerProfile.name;
+            }
+        }
+
         // 2. Haal de beschikbare filters op voor de dropdowns in de edit-modus
         const projectFilters = await db.collection('filters').find({}).toArray();
 
@@ -250,7 +258,8 @@ app.get('/crew-profile', async (req, res) => {
             projectFilters: projectFilters,      // De dropdown opties
             directorProjects: relatedProjectsData, // De gevulde carousel
             applications: openJobs,              // De gevulde sollicitatie-grid
-            isOwner: isOwner                     // <-- Boolean meegeven aan de frontend!
+            isOwner: isOwner,                    // <-- Boolean meegeven aan de frontend!
+            isLoggedIn: !!req.session.userID     // Check of de bezoeker is ingelogd
         });
 
     } catch (error) {
@@ -313,7 +322,8 @@ app.post('/save-project', checkInlog, upload.array('projectImages'), async (req,
 
         await db.collection('projects').updateOne({ _id: project._id }, { $set: updatedData });
 
-        res.redirect('/crew-profile');
+        // Stuur succes mee terug naar de browser
+        res.redirect('/crew-profile?success=true');
     } catch (error) {
         console.error("Fout bij opslaan:", error);
         res.status(500).send("Fout bij opslaan.");
@@ -362,6 +372,11 @@ app.get('/api/search-tmdb', async (req, res) => {
 });
 
 app.post('/api/submit-application', async (req, res) => {
+    // Extra beveiliging: weiger verzoeken van niet-ingelogde gebruikers
+    if (!req.session.userID) {
+        return res.status(401).json({ error: "Je moet ingelogd zijn om te solliciteren." });
+    }
+
     const db = client.db('filmcrew');
     
     const newApplication = {

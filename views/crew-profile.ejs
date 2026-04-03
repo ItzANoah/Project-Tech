@@ -79,6 +79,20 @@
 <script src="/js/carousel-edit.js"></script>
 <script src="/js/applicationSection.js"></script>
 <script src="/js/ModalSolliciteren.js"></script>
+<%- include('partials/alertModal') %>
+<script src="/js/alertModal.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('success') === 'true') {
+            if (typeof showCustomAlert === 'function') {
+                showCustomAlert("Succesvol profiel opgeslagen!");
+            }
+            // Haal de tekst weer stilletjes weg uit de URL balk
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    });
+</script>
 <%- include('partials/footer') %> 
 </body>
 

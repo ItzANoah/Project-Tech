@@ -86,15 +86,16 @@ ZELF IETS TOEVOEGEN IN HET CAROUSEL
 .delete-project-btn {
     display: none; /* Standaard onzichtbaar */
     position: absolute;
-    top: 10px;
-    right: 10px;
-    background: red;
-    color: white;
+    top: 0.5em;
+    right: 0.7em;
+    background: none;
     border: none;
-    border-radius: 50%;
-    width: 25px;
-    height: 25px;
+    font-size: var(--h2Size, 2em);
+    font-weight: var(--fontWeightBold);
     cursor: pointer;
+    line-height: 1;
+    color: var(--accentColorRed);
+    transition: all ease 0.2s;
     z-index: 10;
 }
 
@@ -119,19 +120,17 @@ ZELF IETS TOEVOEGEN IN HET CAROUSEL
 .delete-project-btn {
     display: none; /* Standaard onzichtbaar */
     position: absolute;
-    top: 10px;
-    right: 10px;
-    background: #ff4d4d;
-    color: white;
+    top: 0.5em;
+    right: 0.7em;
+    background: none;
     border: none;
-    border-radius: 50%;
-    width: 28px;
-    height: 28px;
-    font-size: 18px;
-    font-weight: bold;
+    font-size: var(--h2Size, 2em);
+    font-weight: var(--fontWeightBold);
     cursor: pointer;
+    line-height: 1;
+    color: var(--accentColorRed);
+    transition: all ease 0.2s;
     z-index: 10;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
 /* TOVERWOORD: Toon de knop alleen als de body 'is-editing' heeft */
@@ -140,8 +139,8 @@ ZELF IETS TOEVOEGEN IN HET CAROUSEL
 }
 
 .delete-project-btn:hover {
-    background: #cc0000;
-    transform: scale(1.1);
+    background: none;
+    color: var(--accentColorGold);
 }
 
 .matching__card-image-container {
@@ -151,7 +150,27 @@ ZELF IETS TOEVOEGEN IN HET CAROUSEL
     overflow: hidden;
     display: flex;
     align-items: center;
+        justify-content: center;
+}
+
+/* =========================================
+   ADD PROJECT CARD (CAROUSEL PLUS KAART)
+   ========================================= */
+/* We zetten deze styling veilig in JOUW css bestand met !important voorrang */
+body.is-editing .add-project-card {
+    display: flex !important;
+    border: 0.15em dashed #bbb !important;
     justify-content: center;
+    align-items: center;
+    background-color: transparent !important;
+    color: #888 !important;
+    cursor: pointer;
+    flex-direction: column;
+}
+
+body.is-editing .add-project-card .add-btn,
+body.is-editing .add-project-card h3 {
+    color: inherit !important; /* Zorgt dat de tekst mee kleurt naar goud */
 }
 
 /* =========================================
@@ -159,6 +178,12 @@ ZELF IETS TOEVOEGEN IN HET CAROUSEL
    ========================================= */
 #addProjectModal {
     text-align: center;
+}
+
+/* Forceer de gap van 1rem tussen de titel en de knoppen */
+#addProjectModal h2, 
+#addProjectModal h3 {
+    margin-bottom: 1rem !important;
 }
 
 #addProjectModal .tab-btn {
@@ -171,12 +196,11 @@ ZELF IETS TOEVOEGEN IN HET CAROUSEL
     font-weight: var(--fontWeightBold);
     cursor: pointer;
     transition: background-color 0.3s ease;
-    margin: 0 0.5rem;
+    margin: 0 0.5rem 1rem 0.5rem; /* Marges netjes verdeeld */
     display: inline-block;
 }
 
-#addProjectModal .tab-btn:hover, 
-#addProjectModal .tab-btn.active {
+#addProjectModal .tab-btn:hover {
     background-color: var(--accentColorGold);
 }
 
@@ -191,29 +215,31 @@ ZELF IETS TOEVOEGEN IN HET CAROUSEL
     display: block;
 }
 
-/* Override voor het kruisje in de carousel modal */
-#addProjectModal .close-modal {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: #ff4d4d !important;
-    color: white !important;
-    border: none;
-    border-radius: 50%;
-    width: 35px;
-    height: 35px;
-    font-size: 24px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    transition: transform 0.2s ease, background-color 0.2s ease;
+/* Zorg dat de modal box relative is voor absolute positionering van kruisje */
+#addProjectModal .modal-content,
+#addProjectModal .modal__content {
+    position: relative;
 }
 
-#addProjectModal .close-modal:hover {
-    background: #cc0000 !important;
-    transform: scale(1.1);
+/* Override voor het kruisje in de carousel modal */
+#addProjectModal .close-modal,
+#addProjectModal .modal__close {
+    position: absolute;
+    top: 0.5em;
+    right: 0.7em;
+    background: none !important;
+    border: none;
+    font-size: var(--h2Size, 2em);
+    font-weight: var(--fontWeightBold);
+    cursor: pointer;
+    line-height: 1;
+    color: var(--accentColorRed) !important;
+    transition: all ease 0.2s;
+    z-index: 10;
+}
+
+#addProjectModal .close-modal:hover,
+#addProjectModal .modal__close:hover {
+    background: none !important;
+    color: var(--accentColorGold) !important;
 }

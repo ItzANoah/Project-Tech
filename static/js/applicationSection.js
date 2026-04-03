@@ -27,7 +27,7 @@ async function sendApplication(button) {
     
     // Check of we een receiverId hebben
     if (!receiverId || receiverId === "undefined") {
-        alert("Fout: Geen ontvanger gevonden voor dit project.");
+        showCustomAlert("Fout: Geen ontvanger gevonden voor dit project.");
         return;
     }
 
@@ -46,11 +46,11 @@ async function sendApplication(button) {
             button.disabled = true;
         } else {
             const errData = await response.json();
-            alert("Fout bij versturen: " + (errData.error || "Onbekende fout"));
+            showCustomAlert("Fout bij versturen: " + (errData.error || "Onbekende fout"));
         }
     } catch (err) {
         console.error("Netwerkfout:", err);
-        alert("Kan geen verbinding maken met de server.");
+        showCustomAlert("Kan geen verbinding maken met de server.");
     }
 }
 
@@ -67,7 +67,7 @@ function saveNewApplication() {
         return;
     }
 
-    if (!title || !desc) return alert("Vul alles in!");
+    if (!title || !desc) return showCustomAlert("Vul alles in!");
 
     const container = document.getElementById('applicationsContainer');
     const plusCard = document.getElementById('add-app-placeholder');
@@ -77,7 +77,7 @@ function saveNewApplication() {
     
     // Veilige HTML structuur:
     newCard.innerHTML = `
-        <button type="button" class="delete-app-btn" onclick="this.parentElement.remove()">×</button>
+        <button type="button" class="delete-app-btn" onclick="this.parentElement.remove()">&times;</button>
         <div class="application-card__content">
             <h3 class="application-card__title"></h3>
             <p class="application-card__description"></p>
@@ -99,10 +99,10 @@ function saveNewApplication() {
     titleInput.value = "";
     descInput.value = "";
     
-    console.log("Kaartje toegevoegd aan formulier. Klaar om op te slaan.");
+    showCustomAlert("Succesvol de sollicitatie toegevoegd, vergeet niet om op te slaan!");
 }
 
 function submitApplicationRequest(id) {
-    alert("Sollicitatie verzonden voor vacature ID: " + id);
+    showCustomAlert("Sollicitatie verzonden voor vacature ID: " + id);
     // Hier komt later je fetch naar de 'user_connections' collectie
 }

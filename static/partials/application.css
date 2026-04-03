@@ -37,25 +37,22 @@
 .delete-app-btn {
     display: none; /* Standaard weg */
     position: absolute;
-    top: 10px;
-    right: 10px;
-    background: #ff4d4d;
-    color: white;
+    top: 0.5em;
+    right: 0.7em;
+    background: none;
     border: none;
-    border-radius: 50%;
-    width: 28px;
-    height: 28px;
-    font-size: 18px;
-    font-weight: bold;
+    font-size: var(--h2Size, 2em);
+    font-weight: var(--fontWeightBold);
     cursor: pointer;
+    line-height: 1;
+    color: var(--accentColorRed);
+    transition: all ease 0.2s;
     z-index: 10;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .delete-app-btn:hover {
-    background: #cc0000;
-    transform: scale(1.1);
+    background: none !important;
+    color: var(--accentColorGold) !important;
 }
 .is-editing .delete-app-btn {
     display: block;
@@ -63,14 +60,18 @@
 
 /* De 'Plus' kaart voor het toevoegen */
 .add-application-card {
-    border: 2px dashed #bbb;
+    border: 0.15em dashed #bbb !important;
     background: transparent;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    font-size: 1.2rem;
     color: #888;
+}
+
+.add-application-card .plus-icon {
+    font-size: 3em;
 }
 
 /* Mobiel: op kleine schermen maar 1 kolom */
@@ -147,6 +148,12 @@
     resize: vertical;
 }
 
+/* Exacte spacing tussen de H3 titel en het eerste inputveld */
+#applicationModal h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+
 #applicationModal .btn-save {
     display: block;
     width: 100%;
@@ -169,26 +176,20 @@
 
 /* Het kruisje in de sollicitatie modal */
 #applicationModal .modal__close {
-    background: #ff4d4d;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 35px;
-    height: 35px;
-    font-size: 24px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.2s ease, background-color 0.2s ease;
     position: absolute;
-    top: 15px;
-    right: 15px;
+    top: 0.5em;
+    right: 0.7em;
+    background: none;
+    border: none;
+    font-size: var(--h2Size, 2em);
+    font-weight: var(--fontWeightBold);
+    cursor: pointer;
+    line-height: 1;
+    color: var(--accentColorRed);
+    transition: all ease 0.2s;
 }
 
 #applicationModal .modal__close:hover {
-    background: #cc0000;
-    transform: scale(1.1);
+    background: none !important;
+    color: var(--accentColorGold) !important;
 }

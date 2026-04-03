@@ -180,20 +180,23 @@
 
 /* Het sluitkruisje */
 .close-modal {
-    color: var(--accentColorRed);
     position: absolute;
-    top: 15px;
-    right: 25px;
-    font-size: 35px;
+    top: 0.5em;
+    right: 0.7em;
+    background: none;
+    border: none;
+    font-size: var(--h2Size, 2em);
     font-weight: bold;
     cursor: pointer;
-    transition: color 0.2s;
+    line-height: 1;
+    color: var(--accentColorRed);
+    transition: all ease 0.2s;
 }
 
 .close-modal:hover,
 .close-modal:focus {
+    background: none;
     color: var(--accentColorGold);
-    text-decoration: none;
 }
 
 /* Styling voor de inhoud binnen de modal-body (ingevoegd via JS) */
@@ -278,11 +281,12 @@ body.is-editing main {
 /* ALLEEN als de body de class 'is-editing' heeft, tonen we de kaart */
 body.is-editing .add-project-card {
     display: flex !important;
-    border: 0.2em dashed var(--accentColorRed);
+    border: 0.15em dashed #bbb !important;
     justify-content: center;
     align-items: center;
     min-height: 12em;
-    background-color: var(--accentColorWhite);
+    background-color: transparent;
+    color: #888;
 }
 
 /* Styling voor de knop binnen de kaart */
@@ -291,7 +295,7 @@ body.is-editing .add-project-card {
     border: none;
     cursor: pointer;
     font-family: var(--montserratFont);
-    color: var(--accentColorRed);
+    color: inherit;
 }
 
 /* Maak het plusje groot en gecentreerd */
@@ -311,4 +315,5 @@ body.is-editing .add-project-card {
     font-family: var(--montserratFont);
     font-size: 1.2em;
     margin: 0;
+    color: inherit;
 }

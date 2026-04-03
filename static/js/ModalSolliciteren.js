@@ -3,7 +3,7 @@ let currentApplyBtn = null;
 function openModalSolliciteren(button) {
     const receiverId = button.getAttribute('data-receiver');
     if (!receiverId) {
-        alert("Fout: Geen eigenaar gevonden voor dit project.");
+        showCustomAlert("Fout: Geen eigenaar gevonden voor dit project.");
         return;
     }
     
@@ -39,8 +39,8 @@ async function submitSollicitatie() {
     const receiverId = document.getElementById('sollicitatieReceiverId').value;
     
     const words = message === '' ? 0 : message.split(/\s+/).length;
-    if (words === 0) return alert("Typ alsjeblieft een bericht in.");
-    if (words > 200) return alert("Je motivatie mag maximaal 200 woorden lang zijn.");
+    if (words === 0) return showCustomAlert("Typ alsjeblieft een bericht in.");
+    if (words > 200) return showCustomAlert("Je motivatie mag maximaal 200 woorden lang zijn.");
 
     try {
         const response = await fetch('/api/submit-application', {
@@ -57,10 +57,10 @@ async function submitSollicitatie() {
             currentApplyBtn.innerText = "Verzoek verstuurd! ✓"; // Verander knop
             currentApplyBtn.disabled = true; // Zorg dat ze niet nog een keer klikken
         } else {
-            alert("Er ging iets mis bij het opslaan in de database.");
+            showCustomAlert("Er ging iets mis bij het opslaan in de database.");
         }
     } catch (err) {
         console.error("Fetch fout:", err);
-        alert("Kan niet verbinden met de server.");
+        showCustomAlert("Kan niet verbinden met de server.");
     }
 }
