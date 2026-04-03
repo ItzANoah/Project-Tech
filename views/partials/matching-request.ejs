@@ -11,7 +11,7 @@
 
     <div class="modal-overlay" id="modal-<%= match._id %>">
         <div class="modal-content">
-            <button class="modal-close">&times;</button>
+            <button class="matching__modal-close">&times;</button>
             
             <h2>Match Details</h2>
             <hr>
@@ -25,17 +25,17 @@
 
             <div class="modal-actions">
                 <form action="/match/accept/<%= match._id %>" method="POST">
-                    <div type="submit" class="btn-accept">Accepteren</div>
+                    <button type="submit" class="matching__btn matching__accept">Accepteren</button>
                 </form>
                 <form action="/match/decline/<%= match._id %>" method="POST">
-                    <div type="submit" class="btn-decline">Afwijzen</div>
+                    <button type="submit" class="matching__btn matching__decline">Afwijzen</button>
                 </form>
             </div>
         </div>
     </div>
 
     <div class="matching__card-link">
-        <div class="matching__btn-open" 
+        <div class="matching__btn matching__open" 
              data-target="modal-<%= match._id %>" 
              role="button" 
              tabindex="0">

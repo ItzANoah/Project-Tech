@@ -287,6 +287,33 @@ app.get('/current-matches', checkInlog, async (req, res) => {
     res.status(500).send("Kon de matches niet laden.");
   }
 });
+//accepteren en declinen
+app.post('/match/accept/:id', checkInlog, async (req, res) => {
+  try {
+      const matchId = req.params.id;
+      await matchRequestcollection.updateOne(
+          { _id: new ObjectId(matchId) },
+          { $set: { status: "accepted" } }
+      );
+      res.redirect('/current-matches');
+  } catch (error) {
+      console.error("Fout bij accepteren:", error);
+      res.status(500).send("Er ging iets mis.");
+  }
+});
+app.post('/match/decline/:id', checkInlog, async (req, res) => {
+  try {
+      const matchId = req.params.id;
+      await matchRequestcollection.updateOne(
+          { _id: new ObjectId(matchId) },
+          { $set: { status: "rejected" } }
+      );
+      res.redirect('/current-matches');
+  } catch (error) {
+      console.error("Fout bij afwijzen:", error);
+      res.status(500).send("Er ging iets mis.");
+  }
+});
 
 ///////////////// inlog functies ////////////////////
 

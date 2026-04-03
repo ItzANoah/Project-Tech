@@ -1,35 +1,34 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const openBtns = document.querySelectorAll('.matching__btn-open');
+  const openBtns = document.querySelectorAll('.matching__open');
   const closeBtns = document.querySelectorAll('.matching__modal-close');
-  const modals = document.querySelectorAll('.matching__modal');
+  const overlays = document.querySelectorAll('.modal-overlay');
 
-  // Openen: zoek de modal met het juiste ID en zet display op flex
+  // Open functie
   openBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-          const targetId = btn.getAttribute('data-target');
-          const targetModal = document.getElementById(targetId);
-          if (targetModal) {
-              targetModal.style.display = 'flex';
-              document.body.style.overflow = 'hidden'; // Stop scrollen op achtergrond
-          }
-      });
+    btn.addEventListener('click', () => {
+      const targetId = btn.getAttribute('data-target');
+      const targetModal = document.getElementById(targetId);
+      if (targetModal) {
+        targetModal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+      }
+    });
   });
-
-  // Sluiten: via de X
   closeBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-          btn.closest('.matching__modal').style.display = 'none';
-          document.body.style.overflow = 'auto'; // Weer kunnen scrollen
-      });
+    btn.addEventListener('click', () => {
+      const modal = btn.closest('.modal-overlay');
+      if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+      }
+    });
   });
-
-  // Sluiten: klik buiten het witte vlak
   window.addEventListener('click', (event) => {
-      modals.forEach(modal => {
-          if (event.target === modal) {
-              modal.style.display = 'none';
-              document.body.style.overflow = 'auto';
-          }
-      });
+    overlays.forEach(overlay => {
+      if (event.target === overlay) {
+        overlay.style.display = 'none';
+        document.body.style.overflow = 'auto';
+      }
+    });
   });
 });

@@ -108,7 +108,7 @@
  border: 3px solid var(--accentColorRed);
 }
 
-/* --- MODAL (Het nieuwe schermpje) --- */
+
 .matching__modal {
   position: fixed;
   top: 0;
@@ -139,10 +139,14 @@
   right: 0.7em;
   background: none;
   border: none;
-  font-size: 2em;
+  font-size: var(--h2Size);
+  font-weight: var(--fontWeightBold);
   cursor: pointer;
   line-height: 1;
-  color: var(--textColorBlack);
+  color: var(--accentColorRed);
+  transition: all ease 0.2s ;
+}.matching__modal-close:hover{
+  color: var(--accentColorGold);
 }
 
 .matching__modal-body {
@@ -158,51 +162,60 @@
     margin-top: 1rem;
 }
 
-/* --- MODAL ACTIES & BUTTONS --- */
-.matching__modal-actions {
+.modal-actions {
   display: flex;
   gap: 1em;
   margin-top: 2em;
+  width: 100%;
 }
 
-.matching__form {
-    flex: 1;
+.modal-actions form {
+  flex: 1;
 }
 
-/* .matching__btn {
+.matching__btn {
   width: 100%;
   padding: 1em;
-  appearance: none;
   border-radius: 2em;
   font-family: var(--montserratFont);
   font-weight: var(--fontWeightBold);
   cursor: pointer;
   color: var(--textColorWhite);
-  transition: transform 0.1s ease;
-}
-
-.matching__btn:active {
-    transform: scale(0.96);
-} */
-
-.matching__btn--accept {
-  background-color: #2ecc71; 
-}
-
-.matching__btn--decline {
-  background-color: var(--accentColorRed);
-}
-.matching__btn-open {
+  border: none;
+  appearance: none;
   display: flex;
-  align-items: center;
   justify-content: center;
-  color: var(--accentColorWhite);
-  border-radius: var(--buttonCornerRadius);
-  padding: var(--buttonPadding);
+  align-items: center;
+}
 
+.matching__accept {
+  background-color: #2ecc71; /* Groen */
+}
+
+.matching__decline {
   background-color: var(--accentColorRed);
 }
-.matching__btn-open a {
-  text-decoration: none;
+
+.matching__open {
+  background-color: var(--accentColorRed);
   color: var(--textColorWhite);
+  padding: var(--buttonPadding);
+  border-radius: var(--buttonCornerRadius);
+  cursor: pointer;
+  text-align: center;
+  width: 90%;
+  margin: 0 auto;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
 }
