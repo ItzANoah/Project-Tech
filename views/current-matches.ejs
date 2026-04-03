@@ -5,8 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Current Matches</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/./static/partials/footer.css">
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
 </head>
 
 
@@ -16,7 +17,9 @@
     <div class="current__new-match">
         <div class="current__active-notification">
             <h2 class="current__h2">Nieuwste Matches</h2>
-            <div class="current__notification">!</div>
+            <% if (locals.globalNotification) { %>
+                <div class="current__notification">!</div>
+              <% } %>
         </div>
         <div class="matches__filter-dropdown">
             <label class="matches__filter__label" for="sort">Sorteren op:</label>
@@ -29,12 +32,16 @@
             </select>
         </div>
         <ul class="carousel__list">
-            <% for (let i = 0; i < 5; i++) { %>
+            <% if (matches && matches.length > 0) { %>
+              <% matches.forEach(item => { %>
                 <li class="carousel__list-Item">
-                    <%- include('partials/matching') %>
+                  <%- include('partials/matching-request', { match: item }) %>
                 </li>
-                <% } %>
-        </ul> 
+              <% }) %>
+            <% } else { %>
+              <p>Je hebt momenteel geen nieuwe aanvragen.</p>
+            <% } %>
+          </ul>
     </div>
     <div>
             <h2 class="current__h2">Huidige Projecten</h2>
@@ -85,5 +92,6 @@
     </div>
 </main>
 <%- include('partials/footer') %>
+<script src="/js/matches.js"></script>
 </body>
 </html>

@@ -83,6 +83,7 @@
 
 .projects-section {
     padding: var(--sectionPadding);
+    margin-top: var(--gapSmall)
 }
 
 /* Container voor alle projecten */
@@ -258,8 +259,13 @@ body.is-editing .edit-only {
     display: inline-block;
 }
 
-/* Optioneel: geef secties een subtiele rand als je ze kunt aanpassen */
+/* feedback dat je aan het editen bent */
 body.is-editing section {
+    outline: 0.1em dashed var(--accentColorGold);
+    cursor: pointer;
+}
+
+body.is-editing main {
     outline: 0.1em dashed var(--accentColorGold);
     cursor: pointer;
 }
@@ -305,62 +311,4 @@ body.is-editing .add-project-card {
     font-family: var(--montserratFont);
     font-size: 1.2em;
     margin: 0;
-}
-
-.choice-container {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1em;
-    margin-top: 2em;
-}
-
-.choice-btn {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 2em 1em;
-    border: 2px solid #eee;
-    border-radius: 15px;
-    background: white;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.choice-btn:hover {
-    border-color: var(--accentColorRed);
-    background-color: #fff5f5;
-}
-
-.choice-btn .icon {
-    font-size: 2.5em;
-    margin-bottom: 0.5em;
-}
-
-/* Formulier opzet */
-.manual-form {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5em;
-    margin-top: 1.5em;
-    text-align: left;
-}
-
-.manual-form label {
-    font-family: var(--montserratFont);
-    font-weight: var(--fontWeightBold);
-    font-size: 0.85em;
-    margin-top: 0.5em;
-}
-
-.manual-form input, .manual-form textarea {
-    padding: 0.8em;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-family: inherit;
-    background-color: #fcfcfc;
-}
-
-/* Visuele feedback als een veld niet goed is ingevuld */
-.manual-form input:invalid:focus {
-    border-color: var(--accentColorRed);
 }

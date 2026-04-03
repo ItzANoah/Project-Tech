@@ -1,0 +1,31 @@
+<div class="tag-container crew-profile-edit" aria-label="Project categories">
+    <label for="type-select">Kies Type:</label>
+    
+    <select name="type" id="type-select">
+        <option value="">-- Selecteer Type --</option>
+        <% projectFilters.forEach(function(filter) { %>
+            <% if(filter.categorie === 'type') { %>
+                <% filter.opties.forEach(function(optie) { %>
+                    <option value="<%= optie %>"><%= optie %></option>
+                <% }); %>
+            <% } %>
+        <% }); %>
+    </select>
+
+</div>
+
+<div class="tag-container crew-profile-edit" aria-label="Project categories">
+    <label for="genre-select">Kies Genre:</label>
+    
+    <select name="genre" id="genre-select">
+        <option value="">-- Selecteer Genre --</option>
+        <% projectFilters.forEach(function(filter) { %>
+            <% if(filter.categorie === 'genre') { %>
+                <% filter.opties.forEach(function(optie) { %>
+                    <option value="<%= optie %>"><%= optie %></option>
+                <% }); %>
+            <% } %>
+        <% }); %>
+    </select>
+
+</div>
