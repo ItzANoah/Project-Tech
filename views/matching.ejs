@@ -118,12 +118,12 @@
 const filterGroups = document.querySelectorAll(".filter-dropdown");
 
 filterGroups.forEach(group => {
-const label = group.querySelector('label');
-label.addEventListener('click', () => {
-  const select = group.querySelector('select');
-  select?.showPicker()
-  //   showPicker opent de combobox van een select element https://developer.mozilla.org/en-US/docs/Web/API/HTMLSelectElement/showPicker
-})
+    const label = group.querySelector('label');
+    label.addEventListener('click', () => {
+      const select = group.querySelector('select');
+      //   showPicker opent de combobox van een select element https://developer.mozilla.org/en-US/docs/Web/API/HTMLSelectElement/showPicker
+      select?.showPicker()
+    })
 })
 
 // Verstuur form wanneer er wordt gesorteerd
