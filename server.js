@@ -6,6 +6,7 @@ const session = require('express-session');
 const multer = require('multer');
 const mongoose = require('mongoose');
 const { ObjectId } = require('mongodb');
+const validator = require('validator');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -143,10 +144,36 @@ app.post('/register', async (req, res) => {
       experience 
     } = req.body;
 
+    let errors = [];
+
+    // checkt of het echt een email is
+    if (!validator.isEmail(email)) {
+      errors.push("Het opgegeven e-mailadres is niet geldig.");
+    }
+
+    // haalt hoofdletters weg
+    const sanitizedEmail = validator.normalizeEmail(email);
+
+    // wachtwoord min 8 tekens, iets meer beveiliging, nog geen vereisde als hoofdletters of speciale tekens)
+    if (!validator.isLength(password, { min: 8 })) {
+      errors.push("Je wachtwoord moet minimaal 8 tekens bevatten.");
+    }
+
+    // beveiliging, is niet perse nodig maar maakt de website minder hack gevoelig - credits aan express-validator.github.io 
+    const sanitizedBio = validator.escape(bio || "");
+
+    // error melding
+    if (errors.length > 0) {
+      return res.status(400).render('register', { errors, oldInput: req.body });
+    }
+
     // Check of de gebruiker al bestaat 
-    const userExists = await profileCollection.findOne({ name: username });
+    const userExists = await profileCollection.findOne({ 
+      $or: [{ name: username }, { email: sanitizedEmail }] 
+    });
+
     if (userExists) {
-      return res.send('Deze naam is al bezet.');
+      return res.send('Gebruikersnaam of e-mailadres is al bezet.');
     }
 
     // Wachtwoord versleutelen, voor deze keer geen variabele van de saltrounds gemaakt omdat het maar 1 keer gebruikt wordt.
@@ -155,11 +182,11 @@ app.post('/register', async (req, res) => {
     // volledige profiel
     const newUser = {
       name: username,
-      email: email,
+      email: sanitizedEmail,
       age: Number(age),
       password: hashedPassword,
       role: userFunction,
-      bio: bio,
+      bio: sanitizedBio,
       experience: Number(experience), 
       createdAt: new Date()
     };
