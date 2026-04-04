@@ -1,4 +1,4 @@
-
+<!-- partial header-->
 <header class="project--header">
             <div class="project--title-group">
 
@@ -25,11 +25,10 @@
                     <%- include('editmode-button') %> 
                 <% } %>
                     
+                <!-- toon naam van director als die niet bestaat plaatst onbekende regissuer-->
                <div>
                 <p>Dir: 
-                <a href="/director/<%= projectData.director ? projectData.director.replace(/\s+/g, '-').toLowerCase() : 'onbekend' %>">
             <%= projectData.director || 'Onbekende Regisseur' %>
-                </a>
                  </p>
                 </div>
             </div>

@@ -1,5 +1,5 @@
 /*
- * Dit script luistert naar de URL (BOM) om te zien of we zojuist zijn teruggestuurd 
+ * Dit script luistert naar de URL om te zien of we zojuist zijn teruggestuurd 
  * vanaf de Express server met een 'success=true' querystring in de redirect.
  */
 document.addEventListener('DOMContentLoaded', () => {

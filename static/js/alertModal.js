@@ -1,3 +1,4 @@
+
 function showCustomAlert(message) {
     document.getElementById('customAlertMessage').textContent = message;
     document.getElementById('customAlertModal').style.display = 'block';

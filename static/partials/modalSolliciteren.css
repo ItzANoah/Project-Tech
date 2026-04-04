@@ -7,7 +7,7 @@
 }
 
 /* Kruisje aan de rechterkant zoals afgesproken */
-.modal__close-right {
+.close-modal {
     position: absolute;
     top: 0.5em;
     right: 0.7em;
@@ -21,9 +21,30 @@
     transition: all ease 0.2s;
 }
 
-.modal__close-right:hover {
+.close-modal:hover {
     background: none;
     color: var(--accentColorGold);
+}
+
+/* Styling voor de titel */
+#modalSolliciteren h3 {
+    margin-top: 1rem;
+    color: var(--accentColorRed);
+    font-family: var(--montserratFont);
+}
+
+/* Zorg dat de inputvelden netjes links uitlijnen binnen de gecentreerde modal */
+#modalSolliciteren .form-group {
+    text-align: left;
+}
+
+/* Styling voor de live woordenteller */
+#wordCount {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: -10px;
+    margin-bottom: 15px;
+    text-align: right;
 }
 
 /* Het textarea veld */

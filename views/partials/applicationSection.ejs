@@ -1,17 +1,28 @@
+<!-- Sectie waarin alle "openstaande functies" worden getoond -->
 <section class="applications-section">
     <h3 class="carousel__Title">Openstaande functies</h3> 
+    <!-- Container waarin alle kaarten vacatures komen -->
     <div class="application-grid" id="applicationsContainer">
+         <!-- Check of er applications bestaan en of er  minimaal 1 item in zit -->
         <% if (applications && applications.length > 0) { %>
+            <!-- Loop door elke application heen -->
             <% applications.forEach(app => { %>
+                <!-- Eén kaart per application -->
                 <div class="application-card">
+                    <!-- Verwijder knop -->
                     <button type="button" class="delete-app-btn" onclick="this.parentElement.remove()">&times;</button>
+                    <!-- Content van de kaart -->
                     <div class="application-card__content">
+                        <!-- Titel van de job uit server data -->
                         <h3 class="application-card__title"><%= app.title %></h3>
+                        <!-- Beschrijving van de job -->
                         <p class="application-card__description"><%= app.description %></p>
                     </div>
-                    <!-- De solliciteer knop voor bezoekers -->
+                    <!-- is de gebruiker ingelogd? -->
+                    <!-- Ja → laat "solliciteer" knop zien -->
                     <% if (isLoggedIn) { %>
                         <button type="button" class="btn-apply" data-receiver="<%= projectData.ownerId %>" onclick="openModalSolliciteren(this)">Solliciteer</button>
+                        <!-- Nee → stuur gebruiker naar login -->
                     <% } else { %>
                         <button type="button" class="btn-apply" onclick="window.location.href='/login'">Log in om te solliciteren</button>
                     <% } %>
@@ -22,9 +33,11 @@
             <% }) %>
         <% } %>
 
+        <!-- Check als er geen applications zijn -->
         <% if (!applications || applications.length === 0) { %>
+            <!-- laat dit kaartje zien-->
             <div class="application-card no-apps-msg">
-                <div class="application-card__content" style="display: flex; align-items: center; justify-content: center; height: 100%; text-align: center;">
+                <div class="application-card__content">
                     <h3 class="application-card__title">Er zijn op dit moment geen sollicitatie plekken</h3>
                 </div>
             </div>
@@ -33,7 +46,7 @@
         <!-- Het plus-kaartje (verborgen door .add-project-card) -->
         <div class="application-card add-application-card add-project-card edit-only" id="add-app-placeholder" onclick="openApplicationModal()">
             <span class="plus-icon">+</span>
-            <p style="font-family: var(--montserratFont); font-weight: bold; font-size: 1em; margin: 0;">Beroep toevoegen</p>
+            <p>Beroep toevoegen</p>
         </div>
         </div>
 </section>

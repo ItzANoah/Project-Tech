@@ -67,26 +67,26 @@
 
 /* --- EDIT MODE: SLIDESHOW KNOPPEN --- */
 
-/* 1. Verberg de knoppen standaard */
+/* Verberg de knoppen standaard */
 .add-photo-btn, 
 .remove-photo,
 .slideshow__upload {
     display: none !important;
 }
 
-/* 2. Toon ze alleen als de body 'is-editing' heeft */
+/* Toon ze alleen als de body 'is-editing' heeft */
 body.is-editing .add-photo-btn, 
 body.is-editing .remove-photo,
 body.is-editing .slideshow__upload {
     display: flex !important;
 }
 
-/* 3. Zorg dat de navigatiepijlen altijd verschijnen in edit-mode */
+/*  Zorg dat de navigatiepijlen altijd verschijnen in edit-mode */
 body.is-editing .slideshow__nav {
     display: flex !important;
 }
 
-/* 4. De styling van de knoppen zelf */
+/* De styling van de knoppen zelf */
 .add-photo-btn, 
 .remove-photo {
     position: absolute;

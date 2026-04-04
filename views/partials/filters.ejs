@@ -1,5 +1,7 @@
 <div class="project-filters-wrapper">
+    <!-- wat de gebruiker ziet als je niet aan het editen bent-->
     <div class="filter-display-view">
+        <!-- hidden als er geen type of genre is-->
         <span class="pill pill--type <%= !projectData.type ? 'hidden' : '' %>">
             <%= projectData.type %>
         </span>
@@ -8,17 +10,22 @@
             <%= projectData.genre %>
         </span>
 
+        <!-- word getoond als beide genre en type leeg zijn-->
         <span class="pill--empty <%= (projectData.type || projectData.genre) ? 'hidden' : '' %>">
             Geen Filters
         </span>
     </div>
 
+    <!-- edit mode-->
     <div class="filter-display-edit edit-only">
         <div class="tag-group">
+            <!-- type select-->
             <div class="tag-container">
                 <label for="type-select">Project Type:</label>
                 <select name="type" id="type-select">
+                    <!-- drop down -->
                     <option value="">-- Kies Type --</option>
+                    <!-- loop door alle filters-->
                     <% projectFilters.forEach(function(filter) { %>
                         <% if(filter.categorie === 'type') { %>
                             <% filter.opties.forEach(function(optie) { %>

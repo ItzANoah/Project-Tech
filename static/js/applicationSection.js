@@ -1,3 +1,6 @@
+
+/* Opent de toevoeg-modal en plaatst direct de cursor (focus) in het titel-veld.
+ */
 function openApplicationModal() {
     const modal = document.getElementById('applicationModal');
     if (modal) {
@@ -7,6 +10,7 @@ function openApplicationModal() {
     }
 }
 
+/* Verbergt de modal door de display none aan te passen. */
 function closeApplicationModal() {
     const modal = document.getElementById('applicationModal');
     if (modal) {
@@ -14,7 +18,7 @@ function closeApplicationModal() {
     }
 }
 
-// Sluit-event voor klikken buiten de modal
+/* Sluit-event voor klikken buiten de modal */
 window.addEventListener('click', (event) => {
     const modal = document.getElementById('applicationModal');
     if (event.target === modal) {
@@ -22,6 +26,7 @@ window.addEventListener('click', (event) => {
     }
 });
 
+/* Verstuurt de sollicitatie naar `app.post('/api/submit-application')` in server.js. */
 async function sendApplication(button) {
     const receiverId = button.getAttribute('data-receiver');
     
@@ -42,7 +47,7 @@ async function sendApplication(button) {
 
         if (response.ok) {
             button.innerText = "Verzoek verstuurd! ✓";
-            button.classList.add('btn-sent'); // Optioneel voor styling
+            button.classList.add('btn-sent'); 
             button.disabled = true;
         } else {
             const errData = await response.json();
@@ -54,6 +59,7 @@ async function sendApplication(button) {
     }
 }
 
+/* Leest de input uit de modal en maakt een nieuw HTML-element aan. */
 function saveNewApplication() {
     const titleInput = document.getElementById('appTitle');
     const descInput = document.getElementById('appDesc');
@@ -67,15 +73,16 @@ function saveNewApplication() {
         return;
     }
 
+    // als er niet is ingevuld 
     if (!title || !desc) return showCustomAlert("Vul alles in!");
 
     const container = document.getElementById('applicationsContainer');
     const plusCard = document.getElementById('add-app-placeholder');
 
+    // Maakt element in geheugen aan voordat het in de DOM geplaatst wordt
     const newCard = document.createElement('div');
     newCard.className = 'application-card new-entry';
     
-    // Veilige HTML structuur:
     newCard.innerHTML = `
         <button type="button" class="delete-app-btn" onclick="this.parentElement.remove()">&times;</button>
         <div class="application-card__content">
@@ -86,12 +93,12 @@ function saveNewApplication() {
         <input type="hidden" name="jobDescription" class="hidden-desc">
     `;
 
-    // Vul de velden in via javascript, zo maken aanhalingstekens je formulier niet kapot:
     newCard.querySelector('.application-card__title').textContent = title;
     newCard.querySelector('.application-card__description').textContent = desc;
     newCard.querySelector('.hidden-title').value = title;
     newCard.querySelector('.hidden-desc').value = desc;
 
+    // Plaatst het nieuwe kaartje exact vóór het 'plus' kaartje
     container.insertBefore(newCard, plusCard);
     closeApplicationModal();
     
@@ -102,7 +109,7 @@ function saveNewApplication() {
     showCustomAlert("Succesvol de sollicitatie toegevoegd, vergeet niet om op te slaan!");
 }
 
+// het aanroepen van de pop-up 
 function submitApplicationRequest(id) {
     showCustomAlert("Sollicitatie verzonden voor vacature ID: " + id);
-    // Hier komt later je fetch naar de 'user_connections' collectie
 }

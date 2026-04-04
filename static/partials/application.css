@@ -2,10 +2,9 @@
 .applications-section {
     max-width: 75%; 
     margin: 0 auto;
-    padding: 2rem 0; /* Wat ruimte boven en onder */
+    padding: 2rem 0; 
 }
 
-/* Je grid staat hier nu binnen en zal automatisch de 75% volgen */
 .application-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -16,7 +15,7 @@
 
 /* De kaart zelf */
 .application-card {
-    background: #fff;
+    background: var(--accentColorWhite);
     border: 1px solid #ddd;
     border-radius: 15px;
     padding: 20px;
@@ -74,16 +73,12 @@
     font-size: 3em;
 }
 
-/* Mobiel: op kleine schermen maar 1 kolom */
-@media (max-width: 600px) {
-    .application-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* De verwijder-kruisjes zijn standaard verborgen */
-.delete-app-btn {
-    display: none;
+/* Styling voor de tekst onder het plusje */
+.add-application-card p {
+    font-family: var(--montserratFont);
+    font-weight: var(--fontWeightBold);
+    font-size: 1em;
+    margin: 0;
 }
 
 /* De solliciteer-knop is standaard zichtbaar */
@@ -105,32 +100,31 @@
     background-color: var(--accentColorGold);
 }
 
-/* Alleen als JOUW specifieke container de class is-editing krijgt (via JS of CSS) */
-.is-editing .delete-app-btn {
-    display: block;
-}
-
 .is-editing .btn-apply {
     display: none;
 }
 
-/* =========================================
-   EMPTY STATE (Geen vacatures melding)
-   ========================================= */
+/* als er geen sollicitaties zijn */
 .no-apps-msg {
     grid-column: 1 / -1; /* Zorgt dat hij over de hele breedte van de 2 kolommen gaat */
     max-width: 400px;
     margin: 0 auto;
 }
 
-/* Verberg de melding tijdens het bewerken, we hebben dan immers al de plus-knop! */
+/* Zorg dat de content perfect in het midden staat bij een lege melding */
+.no-apps-msg .application-card__content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+}
+
+/* Verberg de melding tijdens het bewerken, we hebben dan de plus knop */
 .is-editing .no-apps-msg {
     display: none;
 }
 
-/* =========================================
-   APPLICATION MODAL STYLING
-   ========================================= */
 #applicationModal input,
 #applicationModal textarea {
     width: 100%;
@@ -175,7 +169,7 @@
 }
 
 /* Het kruisje in de sollicitatie modal */
-#applicationModal .modal__close {
+#applicationModal .close-modal {
     position: absolute;
     top: 0.5em;
     right: 0.7em;
@@ -189,7 +183,7 @@
     transition: all ease 0.2s;
 }
 
-#applicationModal .modal__close:hover {
+#applicationModal .close-modal:hover {
     background: none !important;
     color: var(--accentColorGold) !important;
 }

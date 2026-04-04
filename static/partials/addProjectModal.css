@@ -37,6 +37,7 @@
     max-height: 400px;
 }
 
+/* opmaak innerhtml van js */
 .modal__item {
     display: flex;
     align-items: center;
