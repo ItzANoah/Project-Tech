@@ -1,0 +1,45 @@
+app.get('/current-matches', checkInlog, async (req, res) => {
+  try {
+    const userId = req.session.userID;
+
+    // --- 1. HAAL NIEUWE AANVRAGEN OP (PENDING) ---
+    const aanvragenData = await matchRequestcollection.find({ 
+      receiverId: userId, // Iemand vraagt iets aan jou
+      status: "pending" 
+    }).sort({ timestamp: -1 }).toArray();
+
+    // --- 2. HAAL GEACCEPTEERDE MATCHES OP (ACCEPTED) ---
+    // Let op: hier wil je vaak matches zien waar jij de verzender óf ontvanger was
+    const matchesData = await matchRequestcollection.find({ 
+      $or: [{ receiverId: userId }, { senderId: userId }],
+      status: "accepted" 
+    }).sort({ timestamp: -1 }).toArray();
+
+    // Functie om details (naam + project) op te halen voor een lijst verzoeken
+    const verrijkMetDetails = async (data) => {
+      return await Promise.all(data.map(async (match) => {
+        const afzender = await profileCollection.findOne({ _id: new ObjectId(match.senderId) });
+        const projectDetails = await projectsCollection.findOne({ _id: new ObjectId(match.projectId) });
+        
+        return {
+          ...match,
+          senderName: afzender ? afzender.name : "Onbekend",
+          projectInfo: projectDetails || { title: "Onbekend Project", mainImage: "/images/placeholder.png" }
+        };
+      }));
+    };
+
+    // Voer de verrijking uit voor beide lijsten
+    const nieuweAanvragen = await verrijkMetDetails(aanvragenData);
+    const huidigeMatches = await verrijkMetDetails(matchesData);
+
+    res.render('current-matches', { 
+      aanvragen: nieuweAanvragen,
+      matches: huidigeMatches
+    });
+    
+  } catch (error) {
+    console.error("Fout bij ophalen matches:", error);
+    res.status(500).send("Fout bij laden pagina.");
+  }
+});

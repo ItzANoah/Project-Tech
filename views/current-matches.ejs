@@ -6,34 +6,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Current Matches</title>
     <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/./static/partials/footer.css">
     <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
 </head>
 
-
 <body>
     <%- include('partials/header') %>
+
 <main>
     <div class="current__new-match">
         <div class="current__active-notification">
             <h2 class="current__h2">Nieuwste Matches</h2>
             <% if (locals.globalNotification) { %>
                 <div class="current__notification">!</div>
-              <% } %>
+            <% } %>
         </div>
+        
         <div class="matches__filter-dropdown">
-            <label class="matches__filter__label" for="sort">Sorteren op:</label>
-            <select id="sort">
+            <label class="matches__filter__label" for="sort-new">Sorteren op:</label>
+            <select id="sort-new">
                 <option value="most-recent">Meest recent</option>
                 <option value="best-match">Beste match</option>
-                <option value="a-z">A > Z</option>
-                <option value="z-a">Z > A</option>
-                <option value="oldest-first">Oudste eerst</option>
             </select>
         </div>
+
         <ul class="carousel__list">
-            <% if (matches && matches.length > 0) { %>
-              <% matches.forEach(item => { %>
+            <% if (aanvragen && aanvragen.length > 0) { %>
+              <% aanvragen.forEach(item => { %>
                 <li class="carousel__list-Item">
                   <%- include('partials/matching-request', { match: item }) %>
                 </li>
@@ -41,56 +39,24 @@
             <% } else { %>
               <p>Je hebt momenteel geen nieuwe aanvragen.</p>
             <% } %>
-          </ul>
+        </ul>
     </div>
-    <div>
-            <h2 class="current__h2">Huidige Projecten</h2>
-            <div class="matches__filter-dropdown">
-                <label class="matches__filter__label" for="sort">Sorteren op:</label>
-                <select id="sort">
-                    <option value="most-recent">Meest recent</option>
-                    <option value="best-match">Beste match</option>
-                    <option value="a-z">A > Z</option>
-                    <option value="z-a">Z > A</option>
-                    <option value="oldest-first">Oudste eerst</option>
-                </select>
-            </div>
-            <ul class="carousel__list current__matches">
-                <% for (let i = 0; i < 5; i++) { %>
-                  <li class="carousel__list-Item <%= i === 0 ? 'first-item-active' : '' %>">
-                    
-                    <% if (i === 0) { %>
-                      <div class="matches__newestmatch-noti">Binnenkort Gepland!</div>
-                    <% } %>
-              
-                    <%- include('partials/matching') %>
-                  </li>
-                <% } %>
-              </ul>
-    </div>
-    <div class="current__old-projects">
-        <div class="current__active-notification">
-            <h2 class="current__h2">Eerdere Projecten</h2>
-        </div>
-        <div class="matches__filter-dropdown">
-            <label class="matches__filter__label" for="sort">Sorteren op:</label>
-            <select id="sort">
-                <option value="most-recent">Meest recent</option>
-                <option value="best-match">Beste match</option>
-                <option value="a-z">A > Z</option>
-                <option value="z-a">Z > A</option>
-                <option value="oldest-first">Oudste eerst</option>
-            </select>
-        </div>
-        <ul class="carousel__list">
-            <% for (let i = 0; i < 5; i++) { %>
-                <li class="carousel__list-Item">
-                    <%- include('partials/matching') %>
-                </li>
-                <% } %>
-        </ul> 
+
+    <div class="current__matches">
+            <h2 class="current__h2">Je huidige matches</h2>
+        
+        <ul class="matching__carousel">
+            <% if (matches && matches.length > 0) { %>
+                <% matches.forEach(match => { %>
+                    <%- include('partials/matching-current', { match: match }) %>
+                <% }); %>
+            <% } else { %>
+                <p>Je hebt op dit moment geen actieve matches.</p>
+            <% } %>
+            </ul>
     </div>
 </main>
+
 <%- include('partials/footer') %>
 <script src="/js/matches.js"></script>
 </body>

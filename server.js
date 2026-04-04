@@ -37,6 +37,7 @@ const client = new MongoClient(uri);
 /////////////// register functie ////////////////
 let profileCollection;
 let matchRequestcollection; 
+let projectsCollection;
 
 async function run() {
   try {
@@ -44,8 +45,9 @@ async function run() {
     const db = client.db("filmcrew");
 
     profileCollection = db.collection("profiles"); 
-    matchRequestcollection = db.collection("verzoeken"); 
-    
+    matchRequestcollection = db.collection("verzoeken");
+    projectsCollection = db.collection("projects");
+
     console.log("Database verbinding succesvol!");
   } catch (error) {
     console.error("Verbindingsfout:", error);
@@ -260,31 +262,40 @@ app.post('/save-project', upload.array('projectImages'), async (req, res) => {
 
 app.get('/current-matches', checkInlog, async (req, res) => {
   try {
-    // controleren met de username of de verzoeken voor de gebruiker zijn die is ingelogd
-    const matchdata = await matchRequestcollection.find({ 
-      receiverId: req.session.userID,
-      status: "pending" 
-    }).sort({ timestamp: -1 }).toArray(); //sorteren op nieuwste
-     // voor elke match zoeken we van de senderID de username op in de DB.
-   
-    const matchesMetNamen = await Promise.all(matchdata.map(async (match) => {
-      const afzender = await profileCollection.findOne({ 
-        _id: new ObjectId(match.senderId)
-    });
-      console.log("Afzender gevonden in DB:", afzender); // om te checken of ik die naam wel kan vinden
+    const userId = req.session.userID;
+
+    const aanvragenData = await matchRequestcollection.find({ receiverId: userId, status: "pending" }).toArray();
+    const matchesData = await matchRequestcollection.find({ 
+      $or: [{ receiverId: userId }, { senderId: userId }], 
+      status: "accepted" 
+    }).toArray();
+
+    const verrijkMatch = async (match) => {
+      const validSender = match.senderId && match.senderId.length === 24;
+      const validProject = match.projectId && match.projectId.length === 24;
+    
+      const afzender = validSender ? await profileCollection.findOne({ _id: new ObjectId(match.senderId) }) : null;
+      const projectDetails = validProject ? await projectsCollection.findOne({ _id: new ObjectId(match.projectId) }) : null;
     
       return {
         ...match,
-        senderName: afzender ? (afzender.name) : "Onbekend"
+        senderName: afzender ? afzender.name : "Onbekend",
+        senderEmail: afzender ? afzender.email : "Geen email bekend", 
+        
+        displayImage: (projectDetails && projectDetails.mainImage) ? projectDetails.mainImage : "/images/placeholder.png",
+        jobTitel: match.jobTitel || "Geen functie",
+        jobDescription: match.jobDescription || "Geen beschrijving"
       };
-    }));
-    res.render('current-matches', { 
-      matches: matchesMetNamen
-    });
-    
+    };
+
+    const aanvragen = await Promise.all(aanvragenData.map(verrijkMatch));
+    const matches = await Promise.all(matchesData.map(verrijkMatch));
+
+    res.render('current-matches', { aanvragen, matches });
+
   } catch (error) {
-    console.error("Fout bij het ophalen van matches:", error);
-    res.status(500).send("Kon de matches niet laden.");
+    console.error("Fout:", error);
+    res.status(500).send("Er ging iets mis.");
   }
 });
 //accepteren en declinen

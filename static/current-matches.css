@@ -34,9 +34,24 @@
   align-items: center;
   z-index: 9;
 }
+.matching__carousel {
+  width: 100%;
+  padding: 20px;
+  display: flex;
+  gap: 2vw;
+  overflow-x: scroll;
+  scroll-snap-type: x mandatory;
+  align-items: stretch;
+}
+
+.carousel__list-Item {
+  list-style-type: none;
+  scroll-snap-align: center;
+  flex: 0 0 25%;
+}
 
 /* --- Kaartje Specifieke Styling --- */
-.current__matches li.first-item-active {
+/* .current__matches li.first-item-active {
   flex: 0 0 30%;
   margin-right: 6vw;
 }
@@ -68,7 +83,7 @@
   font-size: var(--bodyTextSize);
   font-style: italic;
   white-space: nowrap;
-}
+} */
 
 /* --- Filters --- */
 .matches__filter-dropdown {
@@ -116,7 +131,7 @@
   width: 100vw;
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.7); 
-  display: none; /* Wordt 'flex' via JS */
+  display: none;
   justify-content: center;
   align-items: center;
   z-index: 9999;
@@ -126,7 +141,7 @@
   background-color: var(--accentColorWhite);
   width: 85%;
   max-width: 450px;
-  padding: 2.5em 2em; /* Meer ademruimte boven/onder */
+  padding: 2.5em 2em;
   border-radius: 1.5em;
   position: relative;
   box-shadow: 0 10px 25px rgba(0,0,0,0.2);
@@ -171,6 +186,12 @@
 
 .modal-actions form {
   flex: 1;
+}
+.modal-actions p {
+  text-align: center; 
+  width: 100%; 
+  color: var(--accentColorGray); 
+  font-weight: bold;
 }
 
 .matching__btn {
@@ -218,4 +239,16 @@
   justify-content: center;
   align-items: center;
   z-index: 9999;
+}
+
+.matching__info {
+  background-color: #e0e0e0; /* De lichtgrijze kleur uit je screenshot */
+  padding: 1.5rem;
+  flex-grow: 1;
+}
+
+.matching__job-title, .matching__sender-name {
+  margin: 0;
+  padding: 0;
+  text-align: left;
 }
