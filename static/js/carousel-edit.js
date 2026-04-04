@@ -111,6 +111,8 @@ function selectProjectForCarousel(id, title, director, imageUrl, bio) {
     // We korten de bio in voor het kaartje (max 60 tekens)
     const shortBio = bio ? bio.substring(0, 60) + '...' : 'Geen beschrijving beschikbaar.';
 
+    // de innnerhtml is voor in de wijzig profiel modus om het kaartje te zien
+    // daarna neemt projectenCarouselCard.ejs het over als je op de lees versie van de site zit.
     newListItem.innerHTML = `
         <div class="matching__card" data-id="${id}">
             <button type="button" class="delete-project-btn" style="display: block;" onclick="removeProjectFromCarousel('${id}')">&times;</button>
@@ -138,29 +140,26 @@ function selectProjectForCarousel(id, title, director, imageUrl, bio) {
 
 // Functie om een project uit de selectie te halen (werkt alleen lokaal tot je op 'Opslaan' drukt)
 function removeProjectFromCarousel(id) {
-    // 1. Zoek de hidden input met alle ID's
+    // Zoek de hidden input met alle ID's
     const inputIds = document.getElementById('inputSelectedProjectIds');
     if (!inputIds) return;
 
-    // 2. Haal de huidige lijst op en filter het ID eruit
+    // Haal de huidige lijst op en filter het ID eruit
     let currentIds = inputIds.value.split(',').filter(itemId => itemId !== "" && itemId !== id);
     
-    // 3. Update de hidden input met de nieuwe lijst (zonder het verwijderde ID)
+    // Update de hidden input met de nieuwe lijst 
     inputIds.value = currentIds.join(',');
 
-    // 4. Verwijder het kaartje visueel van het scherm
+    // Verwijder het kaartje visueel van het scherm
     const cardElement = document.querySelector(`.matching__card[data-id="${id}"]`);
     if (cardElement) {
-        // We verwijderen het ouder-element (de <li>)
+        // We verwijderen het ouder-element, de <li>
         cardElement.parentElement.remove();
     }
     
     console.log("Project verwijderd. Nieuwe lijst:", inputIds.value);
 }
 
-/**
- * EVENT LISTENERS
- */
 
 document.addEventListener('DOMContentLoaded', () => {
     // Sluiten bij klik buiten het venster
@@ -171,18 +170,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Eventuele andere carrousel initialisaties kunnen hier
 });
 
-/**
- * TAB LOGICA
- */
+
 let currentTab = 'db'; // We houden bij op welke tab we zitten
+// automatisch onze database
 
 async function switchTab(tab) {
     currentTab = tab;
     
     // Visuele feedback voor de tabs
+    // alle knoppen selecteren vervolgens de class weghalen en alleen de aangeklikte knop highlighten
     const tabs = document.querySelectorAll('.tab-btn');
     tabs.forEach(t => t.classList.remove('active'));
     event.currentTarget.classList.add('active');

@@ -24,7 +24,6 @@ function openEditMode() {
             const addCardHTML = `
                 <li class="carousel__list-Item" id="add-card-placeholder">
                     <div class="matching__card add-project-trigger" onclick="openAddProjectModal()" 
-                    <div class="matching__card add-project-trigger" onclick="cp_openAddProjectModal()" 
                          style="border: 2px dashed #ccc; cursor: pointer; display: flex; align-items: center; justify-content: center; min-height: 200px;">
                         <div style="text-align: center;">
                             <span style="font-size: 2rem;">+</span>
