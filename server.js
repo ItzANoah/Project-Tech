@@ -340,7 +340,10 @@ app.get('/matching', async (req, res) => {
 app.get('/', async (req, res) => {
   try {
     const profiles = await getCollection('profiles');
-    res.render('index', { profiles });
+    const projects = await getCollection('projects');
+    const matchingItems = profiles.concat(projects);
+
+    res.render('index', { matchingItems });
   } catch (error) {
     console.error(error);
     res.status(500).send("Database has an error");

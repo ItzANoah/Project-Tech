@@ -19,8 +19,6 @@
 .hero__container p {
     color: var(--textColorWhite);
     font-size: clamp(1rem, 3vw, 1.5rem);
-    font-family: var(--montserratFont);
-    font-weight: var(--fontWeightBold);
 }
 
 .hero__container a {
@@ -32,6 +30,11 @@
     color:  var(--textColorWhite);
     background-color: var(--accentColorRed);
     border-radius: var(--buttonCornerRadius);
+    transition: background-color 0.5s ease;
+}
+
+.hero__container a:hover {
+   background-color: var(--hoverColorRed);
 }
 
 .hero__heading {
@@ -54,26 +57,17 @@
 
 .all-projects {
     margin: var(--sectionPadding);
-}
 
-
-
-
-
-/* Everything for the matching-slider + filters */
-.matching__filter-bar,
-.matching__filters {
     display: flex;
-    gap: var(--gapMedium);
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: var(--gapSmall);
 }
 
-.matching__filter-bar {
-    justify-content: space-between;
-}
 
+/* Dropdown */
 .filter-dropdown {
     position: relative;
+    padding: var(--buttonPadding);
 
     display: flex;
     align-items: center;
@@ -81,6 +75,7 @@
 
     border-radius: var(--buttonCornerRadius);
     background-color: var(--accentColorGold);
+    transition: background-color 0.5s ease;
 
     @media screen and (max-width: 640px) {
         flex-grow: 1;
@@ -112,21 +107,6 @@
     cursor: pointer;
 }
 
-.filter-dropdown, .matching__refresh-btn {
-    padding: var(--buttonPadding);
-}
-
-.matching__refresh-btn {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: var(--gapExtraSmall);
-
-    border-radius: var(--buttonCornerRadius);
-    border: none;
-    background: var(--accentColorGold);
-
-    @media screen and (max-width: 640px) {
-        flex-grow: 1;
-    }
+.matching-slider {
+    padding: unset;
 }
