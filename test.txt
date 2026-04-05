@@ -1,0 +1,116 @@
+app.get('/current-matches', checkInlog, async (req, res) => {
+  try {
+    const userId = req.session.userID;
+
+    // --- 1. HAAL NIEUWE AANVRAGEN OP (PENDING) ---
+    const aanvragenData = await matchRequestcollection.find({ 
+      receiverId: userId, // Iemand vraagt iets aan jou
+      status: "pending" 
+    }).sort({ timestamp: -1 }).toArray();
+
+    // --- 2. HAAL GEACCEPTEERDE MATCHES OP (ACCEPTED) ---
+    // Let op: hier wil je vaak matches zien waar jij de verzender óf ontvanger was
+    const matchesData = await matchRequestcollection.find({ 
+      $or: [{ receiverId: userId }, { senderId: userId }],
+      status: "accepted" 
+    }).sort({ timestamp: -1 }).toArray();
+
+    // Functie om details (naam + project) op te halen voor een lijst verzoeken
+    const verrijkMetDetails = async (data) => {
+      return await Promise.all(data.map(async (match) => {
+        const afzender = await profileCollection.findOne({ _id: new ObjectId(match.senderId) });
+        const projectDetails = await projectsCollection.findOne({ _id: new ObjectId(match.projectId) });
+        
+        return {
+          ...match,
+          senderName: afzender ? afzender.name : "Onbekend",
+          projectInfo: projectDetails || { title: "Onbekend Project", mainImage: "/images/placeholder.png" }
+        };
+      }));
+    };
+
+    // Voer de verrijking uit voor beide lijsten
+    const nieuweAanvragen = await verrijkMetDetails(aanvragenData);
+    const huidigeMatches = await verrijkMetDetails(matchesData);
+
+    res.render('current-matches', { 
+      aanvragen: nieuweAanvragen,
+      matches: huidigeMatches
+    });
+    
+  } catch (error) {
+    console.error("Fout bij ophalen matches:", error);
+    res.status(500).send("Fout bij laden pagina.");
+  }
+});// Vergeet niet bovenaan: const validator = require('validator');
+
+app.post('/register', async (req, res) => {
+  try {
+    const { 
+      username, 
+      email, 
+      age, 
+      password, 
+      function: userFunction,
+      bio,
+      experience 
+    } = req.body;
+
+    // --- VALIDATIE STAP ---
+    let errors = [];
+
+    // 1. Email valideren
+    if (!validator.isEmail(email)) {
+      errors.push("Het opgegeven e-mailadres is niet geldig.");
+    }
+
+    // 2. Email normaliseren (haalt bijv. hoofdletters weg)
+    const sanitizedEmail = validator.normalizeEmail(email);
+
+    // 3. Wachtwoord sterkte (optioneel, bijv. min 8 tekens)
+    if (!validator.isLength(password, { min: 8 })) {
+      errors.push("Je wachtwoord moet minimaal 8 tekens bevatten.");
+    }
+
+    // 4. Input escapen (tegen Cross-Site Scripting in de bio)
+    const sanitizedBio = validator.escape(bio || "");
+
+    // Als er fouten zijn, stop hier en stuur de gebruiker terug
+    if (errors.length > 0) {
+      // Je kunt dit renderen naar je register-pagina en de 'errors' array meegeven
+      return res.status(400).render('register', { errors, oldInput: req.body });
+    }
+    // --- EINDE VALIDATIE ---
+
+    // Check of de gebruiker al bestaat (gebruik de opgeschoonde email!)
+    const userExists = await profileCollection.findOne({ 
+      $or: [{ name: username }, { email: sanitizedEmail }] 
+    });
+
+    if (userExists) {
+      return res.send('Gebruikersnaam of e-mailadres is al bezet.');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = {
+      name: username,
+      email: sanitizedEmail, // Gebruik hier de schone email
+      age: Number(age),
+      password: hashedPassword,
+      role: userFunction,
+      bio: sanitizedBio, // Gebruik hier de veiligere bio
+      experience: Number(experience), 
+      createdAt: new Date()
+    };
+
+    await profileCollection.insertOne(newUser);
+    
+    console.log('Volledig profiel opgeslagen voor:', username);
+    res.redirect('/login');
+
+  } catch (err) {
+    console.error("Fout bij registreren:", err);
+    res.status(500).send("Er ging iets mis bij het aanmaken van je profiel.");
+  }
+});
