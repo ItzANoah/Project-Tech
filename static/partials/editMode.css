@@ -1,84 +1,25 @@
-/* Gouden stippellijntjes als feedback */
-    body.is-editing #bio,
-    body.is-editing .nameRole,
-    body.is-editing .profile-content,
-    body.is-editing .important-qualities li, 
-    body.is-editing main{
-        outline: 2px dashed var(--accentColorGold);
-        outline-offset: 4px;
-    }
+/* ==========================================================================
+   1. EDIT MODE algemene styling
+   ========================================================================== */
 
-    /* Kruisjes op de kwaliteiten */
-    .delete-tag {
-        display: none;
-        margin-left: 8px;
-        cursor: pointer;
-        color: var(--accentColorRed);
-        font-weight: bold;
-    }
+/* Gouden stippellijntjes als feedback op de pagina */
+body.is-editing #bio,
+body.is-editing .nameRole,
+body.is-editing .profile-content,
+body.is-editing .important-qualities li, 
+body.is-editing main {
+    outline: 2px dashed var(--accentColorGold);
+    outline-offset: 4px;
+}
 
-    /* Kruisjes alleen tonen in edit-mode */
-    body.is-editing .delete-tag {
-        display: inline !important;
-    }
-
-    /* De 'Voeg toe' button styling */
-    .add-quality-btn {
-        display: none;
-        background-color: var(--accentColorWhite);
-        border: 1px solid var(--accentColorGold);
-        color: var(--accentColorGold);
-        padding: 0.5em 1.1em;
-        border-radius: 1em;
-        cursor: pointer;
-        font-family: var(--montserratFont);
-        font-size: var(--bodyTekstSize);
-        margin-bottom: 0.5em;
-        vertical-align: top;
-    }
-
-    body.is-editing .add-quality-btn {
-        display: inline-block;
-    }
-
-/* De knop (zorg dat de ID matcht met je partial) */
-#edit-mode-toggle {
+/* De algemene Aanpassen knop rechtsboven */
+.admin-toggle-btn {
     position: absolute;
-    top: 20px;    /* 20px van de bovenkant van de BOX */
-    right: 20px;  /* 20px van de rechterkant van de BOX */
-    padding: 10px 20px;
-    cursor: pointer;
-}
-
-/* Zorg dat de modal zelf een logische volgorde aanhoudt */
-.edit-modal-wrapper {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-}
-
-/* De container voor de knoppen onderaan */
-.modal-footer {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 30px; /* Ruimte tussen de omschrijving/galerij en de knoppen */
-    padding-top: 20px;
-    border-top: 1px solid #ddd;
-    width: 100%;
-}
-
-/* Forceer de knoppen om hun eigen plek in te nemen, niet te zweven */
-.save-toggle-btn {
-    position: static !important; /* Haalt 'absolute' weg als dat er ergens op staat */
-    width: 100% !important;
-    height: auto !important;
-    padding: 12px !important;
-    margin: 0 !important;
-    cursor: pointer;
-    background-color: var(--accentColorRed); /* Jouw kleur */
+    top: 0;
+    right: 0;
+    background-color: var(--accentColorRed);
     color: var(--accentColorWhite);
-    font-family: var(--montserratFont); /* Jouw font */
+    font-family: var(--montserratFont);
     font-weight: var(--fontWeightBold);
     padding: 0.6em 1.2em;
     border: none;
@@ -86,3 +27,210 @@
     cursor: pointer;
 }
 
+.admin-toggle-btn:hover {
+    background-color: var(--accentColorGrey);
+}
+
+.modal-photo-edit-label {
+    position: absolute; 
+    bottom: 10px; 
+    left: 50%; 
+    transform: translateX(-50%); 
+    background: var(--accentColorGrey); 
+    color: var(--accentColorWhite); 
+    padding: 5px 12px; 
+    border-radius: 5px; 
+    cursor: pointer;
+    font-size: 0.8em;
+}
+/* ==========================================================================
+   2. foto aanpassen
+   ========================================================================== */
+
+.edit-photo-label {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--accentColorGrey);
+    color: var(--accentColorWhite);
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    text-align: center;
+    width: 80%;
+}
+
+body.is-editing .edit-photo-label {
+    display: block;
+}
+
+/* ==========================================================================
+   3. kwaliteiten aanpassen
+   ========================================================================== */
+
+/* Kruisjes op de kwaliteiten */
+.delete-tag {
+    display: none;
+    margin-left: 8px;
+    cursor: pointer;
+    color: var(--accentColorRed);
+    font-weight: var(--fontWeightBold);
+}
+
+body.is-editing .delete-tag {
+    display: inline !important;
+}
+
+/* Knop om kwaliteiten toe te voegen */
+.add-quality-btn {
+    display: none;
+    background-color: var(--accentColorWhite);
+    border: 1.5px solid var(--accentColorGold);
+    color: var(--accentColorGold);
+    padding: 0.5em 1.1em;
+    border-radius: 1em;
+    cursor: pointer;
+    font-family: var(--montserratFont);
+    font-weight: var(--fontWeightBold);
+    font-size: var(--bodyTextSize);
+    margin-bottom: 0.5em;
+    vertical-align: top;
+}
+
+body.is-editing .add-quality-btn {
+    display: inline-block;
+}
+
+/* ==========================================================================
+   4. edit modal (Project popup)
+   ========================================================================== */
+
+.edit-modal-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 15px;
+}
+
+/* Afbeeldingen noooit meer te groot */
+.modal-main-image-container {
+    width: 100%;
+    height: 250px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    background-color: var(--accentColorLightGrey);
+}
+
+.modal-main-image-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Inputs in de modal */
+.edit-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--accentColorLightGrey);
+    border-radius: 5px;
+    font-family: inherit;
+    font-size: 1em;
+    background-color: #f5f5f5;
+}
+
+/* Extra beelden galerij in de modal */
+.edit-img-wrap { 
+    position: relative; 
+    width: 30%; 
+    aspect-ratio: 16/9; 
+}
+
+.edit-img-wrap img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+    border-radius: 5px; 
+}
+
+.delete-img-btn { 
+    position: absolute; 
+    top: -5px; 
+    right: -5px; 
+    background: var(--accentColorRed); 
+    color: var(--accentColorWhite); 
+    border-radius: 50%; 
+    width: 20px; 
+    height: 20px; 
+    text-align: center; 
+    cursor: pointer; 
+    line-height: 18px; 
+}
+
+/* ==========================================================================
+   5. uniforme knoppen (onderin de modal & API)
+   ========================================================================== */
+
+.modal-footer-buttons {
+    display: flex; 
+    gap: 10px;
+    margin-top: 20px;
+    width: 100%;
+}
+
+.save-action-btn {
+    flex-grow: 1; 
+    padding: 10px; 
+    background: rgb(40, 167, 69); 
+    color: var(--accentColorWhite); 
+    border: none; 
+    border-radius: 5px; 
+    cursor: pointer;
+    font-weight: var(--fontWeightBold);
+}
+
+.delete-action-btn, 
+.delete-project-btn {
+    display: none; 
+    background-color: var(--accentColorWhite);
+    color: var(--accentColorRed);
+    border: 1.5px solid var(--accentColorRed);
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: var(--montserratFont);
+    font-weight: var(--fontWeightBold);
+    transition: 0.2s;
+    width: auto;
+}
+
+/* Alleen tonen in edit-modus */
+body.is-editing .delete-action-btn,
+body.is-editing .delete-project-btn {
+    display: inline-block !important;
+}
+
+.delete-action-btn:hover, 
+.delete-project-btn:hover {
+    background-color: var(--accentColorRed) !important;
+    color: var(--accentColorWhite) !important;
+}
+
+/* API zoeklijst */
+.search-dropdown {
+    position: absolute;
+    background: var(--accentColorWhite);
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 100;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border: 1px solid var(--accentColorLightGrey);
+    border-radius: 0 0 5px 5px;
+}

@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
         closeAddModal.onclick = () => addProjectModal.style.display = 'none';
     }
 
-    // --- OPTIE 1: Filmcrew Database Zoeken ---
+    // --- optie 1: Filmcrew database zoeken ---
     document.getElementById('btnFlmCrw')?.addEventListener('click', () => {
         formContainer.innerHTML = `
             <div class="manual-form">
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setupDbSearchLogic();
     });
 
-    // --- OPTIE 2: Handmatig Toevoegen ---
+    // --- optie 2: handmatig toevoegen ---
     document.getElementById('btn-manual')?.addEventListener('click', () => {
         formContainer.innerHTML = `
             <form class="manual-form" id="actual-manual-form" enctype="multipart/form-data">
@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- OPTIE 3: API Zoeken (The Movie Database) ---
+    // --- optie 3: API zoeken ---
     document.getElementById('btnApi')?.addEventListener('click', () => {
         formContainer.innerHTML = `
             <div class="manual-form">
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// --- LOGICA FUNCTIES ---
+// --- Logica functies ---
 
 function setupDbSearchLogic() {
     const input = document.getElementById('db-search-input');
@@ -204,7 +204,7 @@ function setupApiSearchLogic() {
     });
 }
 
-// Hulpsuncties voor opslaan
+// Hulpfuncties voor opslaan
 async function confirmAddDbProject() {
     const projectId = document.getElementById('selected-project-id').value;
     const userRole = document.getElementById('user-role-input').value;

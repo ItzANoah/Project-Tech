@@ -1,6 +1,5 @@
 /**
  * EDIT MODE CONFIGURATIE
- * Beheert het bewerken van profielgegevens en de interactie met de server.
  */
 
 const editModeBtn = document.getElementById('edit-mode-toggle');
@@ -9,7 +8,7 @@ const pfpInput = document.getElementById('change-pfp-input');
 // --- 1. PROFIEL BEWERKEN EN OPSLAAN ---
 if (editModeBtn) {
     editModeBtn.addEventListener('click', async () => {
-        // Toggle de 'is-editing' class op de body voor visuele veranderingen (CSS)
+        // Toggle de 'is-editing' class op de body voor editing CSS
         const isEditing = document.body.classList.toggle('is-editing');
 
         if (!isEditing) {
@@ -19,7 +18,7 @@ if (editModeBtn) {
                     // Verwijder alleen het kruisje en de witruimte eromheen
                     return li.innerText.replace('×', '').trim();
                 })
-                // Zorg dat we de knop "+ Kwaliteit toevoegen" NIET opslaan als skill
+                // Zorg dat de knop "+ Kwaliteit toevoegen" niet opslaan als skill
                 .filter(text => text !== "" && !text.includes("+ Kwaliteit"));
 
             const updatedProfileData = {
@@ -29,7 +28,7 @@ if (editModeBtn) {
                 skills: skillsArray
             };
 
-            // LOG DE DATA: Druk op F12 in je browser om te zien of dit er goed uitziet
+            // Log de data
             console.log("Versturen naar server:", updatedProfileData);
 
             // --- VERSTUREN NAAR SERVER ---
@@ -60,7 +59,7 @@ if (editModeBtn) {
 }
 
 /**
- * Hulpfunctie om de UI-elementen aan te passen aan de edit-status
+ * Wat UI aanpassen in edit mode
  */
 function updateEditUI(isEditing) {
     // 1. Tekst en kleur van de knop aanpassen
@@ -74,7 +73,7 @@ function updateEditUI(isEditing) {
         if (el) el.contentEditable = isEditing;
     });
 
-    // 3. Lijstitems (Skills & Ervaring) bewerkbaar maken
+    // 3. Skills & Ervaring bewerkbaar maken
     const profileLists = document.querySelectorAll('.qualities li, .important-qualities li');
     profileLists.forEach(li => {
         li.contentEditable = isEditing;

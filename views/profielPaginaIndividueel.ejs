@@ -78,7 +78,6 @@
                                 <div class="image-placeholder"><img src="<%= extProj.image %>" alt="poster"></div>
                                 <div class="project-info">
                                     <h3><%= extProj.title %></h3>
-                                    <p class="api-tag-notice">Bekende Productie</p>
                                     <h4>Rol: <%= extProj.role %></h4>
                                 </div>
                             </button>
@@ -188,7 +187,7 @@
                 <p class="modal-subtitle">${details.type}</p>
                 <ul class="qualities">${tagList}</ul>
                 <p class="modal-text">${details.contribution}</p>
-                ${(isApi && isOwner) ? `<button onclick="deleteApiProject('${details.title}')" class="delete-project-btn">Verwijder van profiel</button>` : ''}
+                ${(isApi && isOwner) ? `<button onclick="deleteApiProject('${details.title}')" class="delete-project-btn delete-action-btn">Verwijder van profiel</button>` : ''}
                 ${extraImages.length > 0 ? `
                     <div class="galerij-wrapper">
                         <h4 class="galerij-title">Extra beelden</h4>

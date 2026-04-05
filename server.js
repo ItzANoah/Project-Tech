@@ -72,7 +72,7 @@ function checkInlog(req, res, next) {
   }
 }
 
-// --- Multer Configuratie voor uploads (anna) ---
+// Multer Configuratie voor uploads (anna)
 const storage = multer.diskStorage({
   destination: (req, file, cb) => { cb(null, 'public/uploads/'); },
   filename: (req, file, cb) => {
@@ -147,47 +147,6 @@ app.get('/matching', (req, res) => {
   res.render('matching');
 });
 
-// --- Profiel Routes (anna) ---
-
-// Eigen profiel bekijken
-app.get('/profielPaginaIndividueel', checkInlog, async (req, res) => {
-  try {
-    // We gebruiken het userID uit de sessie
-    const user = await profileCollection.findOne({ _id: new ObjectId(req.session.userID) });
-    
-    if (user) {
-      const userProjects = await projectsCollection.find({ 
-        _id: { $in: user.myProjects || [] } 
-      }).toArray();
-      res.render('profielPaginaIndividueel', { theUser: user, projects: userProjects });
-    } else {
-      res.status(404).send("Gebruiker niet gevonden.");
-    }
-  } catch (err) { res.status(500).send("Server fout"); }
-});
-
-// Publiek profiel bekijken (voor anderen)
-app.get('/profiel/:id', async (req, res) => {
-  try {
-    const userId = req.params.id;
-    
-    // Check of de meegestuurde ID wel een geldig MongoDB formaat is
-    if (!ObjectId.isValid(userId)) {
-      return res.status(400).send("Ongeldig Gebruiker ID");
-    }
-
-    const user = await profileCollection.findOne({ _id: new ObjectId(userId) });
-    
-    if (!user) return res.status(404).send("Gebruiker niet gevonden");
-    
-    const projects = await projectsCollection.find({ 
-      _id: { $in: user.myProjects || [] } 
-    }).toArray();
-    
-    res.render('publicProfielPaginaIndividueel', { theUser: user, projects: projects });
-  } catch (err) { res.status(500).send("Server fout"); }
-});
-
 // crew profile
 
 app.get('/crew-profile', (req, res) => {
@@ -251,6 +210,47 @@ app.get('/logout', (req, res) => {
     }
     res.redirect('/login');
   });
+});
+
+// --- Profiel Routes (anna) ---
+
+// Eigen profiel bekijken
+app.get('/profielPaginaIndividueel', checkInlog, async (req, res) => {
+  try {
+    // We gebruiken het userID uit de sessie
+    const user = await profileCollection.findOne({ _id: new ObjectId(req.session.userID) });
+    
+    if (user) {
+      const userProjects = await projectsCollection.find({ 
+        _id: { $in: user.myProjects || [] } 
+      }).toArray();
+      res.render('profielPaginaIndividueel', { theUser: user, projects: userProjects });
+    } else {
+      res.status(404).send("Gebruiker niet gevonden.");
+    }
+  } catch (err) { res.status(500).send("Server fout"); }
+});
+
+// Publiek profiel bekijken (voor anderen)
+app.get('/profiel/:id', async (req, res) => {
+  try {
+    const userId = req.params.id;
+    
+    // Check of de meegestuurde ID wel een geldig MongoDB formaat is
+    if (!ObjectId.isValid(userId)) {
+      return res.status(400).send("Ongeldig Gebruiker ID");
+    }
+
+    const user = await profileCollection.findOne({ _id: new ObjectId(userId) });
+    
+    if (!user) return res.status(404).send("Gebruiker niet gevonden");
+    
+    const projects = await projectsCollection.find({ 
+      _id: { $in: user.myProjects || [] } 
+    }).toArray();
+    
+    res.render('publicProfielPaginaIndividueel', { theUser: user, projects: projects });
+  } catch (err) { res.status(500).send("Server fout"); }
 });
 
 // --- Project Acties & Uploads (anna) ---
@@ -352,7 +352,7 @@ app.post('/add-project-manual', checkInlog, upload.single('projectImage'), async
 
     const result = await projectsCollection.insertOne(newProject);
     
-    // BELANGRIJK: Gebruik _id en ObjectId om de koppeling te maken
+    // Gebruik _id en ObjectId om de koppeling te maken
     await profileCollection.updateOne(
       { _id: new ObjectId(req.session.userID) }, 
       { $push: { myProjects: result.insertedId } }
@@ -394,7 +394,7 @@ app.post('/add-existing-project', checkInlog, async (req, res) => {
             { $addToSet: { myProjects: new ObjectId(projectId) } }
         );
 
-        // 2. Optioneel: Voeg de rol van de gebruiker toe aan de genres van het project
+        // 2. Voeg de rol van de gebruiker toe aan de genres van het project
         await projectsCollection.updateOne(
             { _id: new ObjectId(projectId) },
             { $addToSet: { genres: userRole } }
@@ -414,10 +414,10 @@ app.get('/search-api-projects', checkInlog, async (req, res) => {
         const query = req.query.q;
         const apiKey = process.env.TMDB_API_KEY;
         
-        // We zoeken naar films op TMDB
+        // Zoeken naar films op TMDB
         const response = await axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${encodeURIComponent(query)}&language=nl-NL`);
         
-        // We sturen alleen de relevante info terug naar de voorkant
+        // Relevante info naar de voorkant
         const results = response.data.results.map(movie => ({
             apiId: movie.id,
             title: movie.title,
@@ -490,7 +490,7 @@ app.post('/add-api-project', checkInlog, async (req, res) => {
             addedAt: new Date()
         };
 
-        // We slaan API films direct op in 'relatedProjects' in de user collectie
+        // Sla API films direct op in 'relatedProjects' in de user collectie
         await profileCollection.updateOne(
             { _id: new ObjectId(req.session.userID) },
             { $push: { relatedProjects: apiProjectData } }
@@ -503,7 +503,7 @@ app.post('/add-api-project', checkInlog, async (req, res) => {
     }
 });
 
-// Zoeken in EIGEN database naar bestaande projecten
+// Zoeken in eigen database naar bestaande projecten
 app.get('/search-db-projects', checkInlog, async (req, res) => {
     try {
         const query = req.query.q;
