@@ -9,6 +9,8 @@ const axios = require('axios');
 const mongoose = require('mongoose');
 const { MongoClient, ObjectId } = require('mongodb');
 const validator = require('validator');
+
+app.use(express.urlencoded({ extended: true }))
 const bcrypt = require('bcrypt');
 require('dotenv').config();
 
@@ -20,6 +22,9 @@ app.set('view engine', 'ejs');
 app.set('views', './views');
 
 require('dotenv').config(); // MOET bovenaan staan voor de database link!
+const { MongoClient } = require('mongodb');
+const bcrypt = require('bcrypt');
+const path = require('path'); // Ingebouwd in Node, hoef je niet te installeren
 //casper was hier//
 
 // Database connectie variabelen
@@ -52,6 +57,7 @@ run().catch(console.dir);
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 app.use(session({
   secret: process.env.SESSION_SECRET || 'fallback-geheim',
@@ -118,7 +124,10 @@ const storage = multer.diskStorage({
     cb(null, req.session.userID + '-' + Date.now() + path.extname(file.originalname));
   }
 });
-const upload = multer({ storage: storage });
+const upload = multer({ 
+  storage: storage,
+  limits: { fieldSize: 10 * 1024 * 1024 } // Verhoogt de limiet voor tekstvelden naar 10 MB
+});
 
 // Een test route
 app.get('/', (req, res) => {
@@ -212,69 +221,248 @@ app.get('/login', (req, res) => {
 
 app.get('/crew-profile', async (req, res) => {
     try {
-
         const db = client.db('filmcrew');
+        const apiKey = process.env.TMDB_API_KEY;
 
-        // 1. Haal het project op, het eerste project wat je ziet. 
-        const project = await db.collection('projects').findOne({}) || {};
+        // 1. Haal het juiste project op
+        let project = null;
+        let isOwner = false;
 
-        // We zoeken in de collectie 'filters' binnen de database 'filmcrew'
+        if (req.query.id) {
+            // Bezoeker bekijkt een specifiek project via /crew-profile?id=...
+            try {
+                project = await db.collection('projects').findOne({ _id: new ObjectId(req.query.id) });
+                if (project && req.session.userID) {
+                    isOwner = req.session.userID.toString() === (project.ownerId ? project.ownerId.toString() : '');
+                }
+            } catch (err) {
+                console.log("Ongeldig ID in de URL");
+            }
+        } else if (req.session.userID) {
+            // Geen ID in de link? Dan tonen we jouw eigen project!
+            project = await db.collection('projects').findOne({ ownerId: new ObjectId(req.session.userID) });
+            isOwner = true; // Je bent altijd eigenaar van je eigen project
+        }
+
+        // Als er (nog) geen project is gevonden, maken we een leeg object
+        if (!project) {
+            project = {};
+        }
+
+        // 1.5 Haal de naam van de eigenaar op om als regisseur in te vullen
+        if (project.ownerId) {
+            const ownerProfile = await db.collection('profiles').findOne({ _id: new ObjectId(project.ownerId) });
+            if (ownerProfile) {
+                project.director = ownerProfile.name;
+            }
+        }
+
+        // 2. Haal de beschikbare filters op voor de dropdowns in de edit-modus
         const projectFilters = await db.collection('filters').find({}).toArray();
 
-        // pak alle foto's van de database en stop dit in een array. Als project.images niet bestaat, maken we er een lege array [] van.
-        const projectImages = project.images || []; 
+        // 3. Haal de vacatures/sollicitaties op die specifiek bij DIT project horen
+        // We halen deze nu direct en betrouwbaar uit het project zelf!
+        let openJobs = project.openRoles || [];
 
-        // Stuur alles naar de EJS
+        // 4. Haal de data op voor de Carousel (Andere projecten van de regisseur)
+        // We zetten de opgeslagen ID's om naar echte project-objecten uit de database
+        let relatedProjectsData = [];
+        if (project.relatedProjects && project.relatedProjects.length > 0) {
+            const dbIds = [];
+            const tmdbIds = [];
+
+            project.relatedProjects.forEach(id => {
+                if (typeof id === 'string' && id.startsWith('tmdb_')) {
+                    tmdbIds.push(id.replace('tmdb_', '')); // Haal 'tmdb_' weg voor de fetch
+                } else {
+                    try { dbIds.push(id.length === 24 ? new ObjectId(id) : id); } 
+                    catch(e) { dbIds.push(id); }
+                }
+            });
+
+            // 1. Zoek de lokale FilmCrew database projecten
+            const dbProjects = await db.collection('projects')
+                .find({ _id: { $in: dbIds } })
+                .toArray();
+
+            // 2. Haal de TMDB projecten live op via de API!
+            let tmdbProjects = [];
+            if (tmdbIds.length > 0 && apiKey) {
+                tmdbProjects = await Promise.all(tmdbIds.map(async (id) => {
+                    try {
+                        const response = await fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}&language=nl-NL`);
+                        if (!response.ok) return null;
+                        const movie = await response.json();
+                        
+                        // Extra fetch voor de regisseur (credits)
+                        const creditsResponse = await fetch(`https://api.themoviedb.org/3/movie/${id}/credits?api_key=${apiKey}`);
+                        const creditsData = await creditsResponse.json();
+                        const directorInfo = creditsData.crew ? creditsData.crew.find(person => person.job === 'Director') : null;
+                        const directorName = directorInfo ? directorInfo.name : 'Onbekende regisseur';
+
+                        return {
+                            _id: `tmdb_${id}`, // Zet het prefix weer terug
+                            name: movie.title, // Consistentie met EJS (eigen database gebruikt 'name')
+                            title: movie.title,
+                            director: directorName, // Nu de echte naam van de regisseur!
+                            images: [movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : '/img/placeholder.jpg'],
+                            bio: movie.overview || 'Geen beschrijving beschikbaar.'
+                        };
+                    } catch(e) { return null; }
+                }));
+            }
+
+            relatedProjectsData = [...dbProjects, ...tmdbProjects.filter(p => p !== null)];
+        }
+
+        // 5. Render de pagina en geef alle variabelen mee aan EJS
         res.render('crew-profile', {
-            projectData: project,   // Bevat: title, subtitle, description, images
-            projectImages: projectImages || [], // De array met fotopaden voor je slideshow
-            projectFilters: projectFilters || []
+            projectData: project,
+            projectImages: project.images || [], // De array met foto-paden
+            projectFilters: projectFilters,      // De dropdown opties
+            directorProjects: relatedProjectsData, // De gevulde carousel
+            applications: openJobs,              // De gevulde sollicitatie-grid
+            isOwner: isOwner,                    // <-- Boolean meegeven aan de frontend!
+            isLoggedIn: !!req.session.userID     // Check of de bezoeker is ingelogd
         });
+
     } catch (error) {
-        console.error("Fout bij ophalen profiel/project:", error);
-        res.status(500).send("Fout bij laden profiel");
+        console.error("Fout bij laden van crew-profile:", error);
+        res.status(500).send("Er is een fout opgetreden bij het laden van het profiel.");
     }
 });
 
-//  upload.array omdat je meerdere foto's tegelijk kunt uploaden.
-app.post('/save-project', upload.array('projectImages'), async (req, res) => {
+app.post('/save-project', checkInlog, upload.array('projectImages'), async (req, res) => {
     try {
         const db = client.db('filmcrew');
+        
+        // Zoek HET project van de ingelogde gebruiker
+        let project = await db.collection('projects').findOne({ ownerId: new ObjectId(req.session.userID) });
 
-        // De lijst van foto's die overblijven na het klikken op verwijderen
-        let remainingImages = [];
-        // maak er een array van en sla geen lege velden op. 
-        if (req.body.remainingImages) {
-            remainingImages = req.body.remainingImages.split(',').filter(path => path !== "");
+        // Als de gebruiker nog geen project had, maken we er eerst eentje aan in de database!
+        if (!project) {
+            const insertResult = await db.collection('projects').insertOne({
+                ownerId: new ObjectId(req.session.userID),
+                createdAt: new Date()
+            });
+            project = await db.collection('projects').findOne({ _id: insertResult.insertedId });
         }
 
-        // nieuwe foto's, neem hun pad
-        const newUploads = req.files.map(file => `/uploads/${file.filename}`);
+        // 1. AFBEELDINGEN BEWAREN
+        let finalImages = project.images || []; // Standaard behouden we de oude foto('s)
+        if (req.files && req.files.length > 0) {
+            // Heeft de gebruiker zojuist nieuwe bestanden geupload? Dan OVERSCHRIJVEN we de oude.
+            finalImages = req.files.map(file => `/uploads/${file.filename}`);
+        }
 
-        // combineren van nieuwe met oude foto's
-        const finalImagesList = [...remainingImages, ...newUploads];
+        // --- NIEUW: Openstaande vacatures bundelen ---
+        let openRoles = [];
+        if (req.body.jobTitel) {
+            const titels = [].concat(req.body.jobTitel);
+            const descs = [].concat(req.body.jobDescription);
+            for (let i = 0; i < titels.length; i++) {
+                if (titels[i].trim() !== "") {
+                    openRoles.push({
+                        title: titels[i].trim(),
+                        description: (descs[i] || "").trim()
+                    });
+                }
+            }
+        }
 
-        // pak alle veranderingen bij elkaar en stop dit in een object
-        const updatedProject = {
-            title: req.body.title,
+        // 2. PROJECT UPDATE (Filters, tekst, Carousel IDs & Vacatures)
+        const updatedData = {
+            name: req.body.title,
             subtitle: req.body.subtitle,
-            description: req.body.description,
-            images: finalImagesList, // We overschrijven de oude lijst volledig
+            bio: req.body.description,
+            productionDescription: req.body.productionDescription,
             type: req.body.type,
-            genre: req.body.genre, 
+            genre: req.body.genre,
+            images: finalImages,
+            relatedProjects: req.body.relatedProjects ? req.body.relatedProjects.split(',').filter(id => id !== "") : [],
+            openRoles: openRoles, // <--- Opgeslagen direct in de projects collectie!
             updatedAt: new Date()
         };
 
-        await db.collection('projects').updateOne(
-            {}, // upload naar het eerste project wat je ziet 
-            { $set: updatedProject }, // vervang oude data met nieuwe data 
-            { upsert: true } // maak aan als er nog geen project bestaat
+        await db.collection('projects').updateOne({ _id: project._id }, { $set: updatedData });
+
+        // Stuur succes mee terug naar de browser
+        res.redirect('/crew-profile?success=true');
+    } catch (error) {
+        console.error("Fout bij opslaan:", error);
+        res.status(500).send("Fout bij opslaan.");
+    }
+});
+
+app.get('/api/search-tmdb', async (req, res) => {
+    const query = req.query.q;
+    const apiKey = process.env.TMDB_API_KEY;
+
+    try {
+        // 1. Zoek eerst de films
+        const searchResponse = await fetch(
+            `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${encodeURIComponent(query)}&language=nl-NL`
+        );
+        const searchData = await searchResponse.json();
+        
+        // 2. Voor de top 5 resultaten halen we de regisseur op (om de API niet te overbelasten)
+        const detailedResults = await Promise.all(
+            searchData.results.slice(0, 8).map(async (movie) => {
+                const creditsResponse = await fetch(
+                    `https://api.themoviedb.org/3/movie/${movie.id}/credits?api_key=${apiKey}`
+                );
+                const creditsData = await creditsResponse.json();
+                
+                // Zoek in de 'crew' lijst naar de persoon met de job 'Director'
+                const directorInfo = creditsData.crew.find(person => person.job === 'Director');
+                const directorName = directorInfo ? directorInfo.name : 'Onbekende regisseur';
+
+                return {
+                    _id: `tmdb_${movie.id}`,
+                    name: movie.title, // Consistentie met EJS
+                    title: movie.title,
+                    director: directorName, // Nu de echte naam van de regisseur!
+                    images: [movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : '/img/placeholder.jpg'],
+                    bio: movie.overview
+                };
+            })
         );
 
-        res.redirect('/crew-profile'); // stuur gebruiker terug naar crew-profile 
-    } catch (error) {
-        console.error("Opslaan mislukt:", error);
-        res.status(500).send("Fout bij opslaan");
+        res.json(detailedResults);
+    } catch (err) {
+        console.error("TMDB Error:", err);
+        res.status(500).json({ error: "Fout bij ophalen TMDB data" });
+    }
+});
+
+app.post('/api/submit-application', async (req, res) => {
+    // Extra beveiliging: weiger verzoeken van niet-ingelogde gebruikers
+    if (!req.session.userID) {
+        return res.status(401).json({ error: "Je moet ingelogd zijn om te solliciteren." });
+    }
+
+    const db = client.db('filmcrew');
+    
+    const newApplication = {
+        senderId: String(req.session.userID), // De ingelogde persoon als string
+        receiverId: String(req.body.receiverId), // De eigenaar van het project als string
+        status: "pending",
+        message: req.body.message || "Ik wil graag solliciteren op deze rol!", // Slaat de getypte tekst op, of deze standaardtekst
+        timestamp: new Date() // Maakt automatisch de $date aan
+    };
+
+    await db.collection('verzoeken').insertOne(newApplication);
+    res.status(200).send("Gelukt!");
+});
+
+app.get('/api/all-projects', async (req, res) => {
+    try {
+        const db = client.db('filmcrew');
+        // Haal alle projecten op uit de collectie 'projects'
+        const projects = await db.collection('projects').find({}).toArray();
+        res.json(projects); // Stuur ze als JSON naar de browser
+    } catch (err) {
+        res.status(500).json({ error: "Database fout" });
     }
 });
 

@@ -1,115 +1,52 @@
+<!-- crew-profile pagina is opgebouwd uit zoveel mogelijk partials om overzicht te behouden-->
 <%- include('partials/head') %> 
 <%- include('partials/header') %> 
+
+<!-- Hele document zit in een form gewrapt zodat ik met 1 knop alles kan versturen -->
+ <!-- hier gebruik ik multipart/form-data om aan te geven dat we niet alleen tekst maar ook foto's willen sturen -->
+<form id="projectForm" action="/save-project" method="POST" enctype="multipart/form-data">
+    <!-- achtergrond kleur van de bovenkant --> 
     <div class="background--wrapper">
-
-    <main class="project--container crew-profile-edit">
-    <form id="projectForm" action="/save-project" method="POST" enctype="multipart/form-data">
+    
+    <main class="project--container">
         
-        <header class="project--header">
-            <div class="project--title-group">
-                <h1 id="projectTitle" class="project--title" contenteditable="false">
-                    <%= projectData.title || 'Project Titel' %>
-                </h1>
-                <span id="titleCounter" class="char-counter edit-only">0/20</span>
-                <input type="hidden" name="title" id="inputTitle">
-
-                <h2 id="projectSubtitle" class="project--subtitle" contenteditable="false">
-                    <%= projectData.subtitle || 'Hoofdrol Speler' %>
-                </h2>
-                <span id="subtitleCounter" class="char-counter edit-only">0/30</span>
-                <input type="hidden" name="subtitle" id="inputSubtitle">
-            </div>
-
-            <div class="project--header-info">
-                <%- include('partials/editmode-button') %> 
-
-                <div>
-                    <p>Dir: <a href="/director/d-de-vries"> D. de Vries</a></p>
-                </div>
-            </div>
-        </header>
-
+        <%- include('partials/crewProfile-Header') %> 
         <%- include('partials/slideshow') %> 
         <%- include('partials/filters') %>
-
-         <p id="projectDescription" class="project-text" contenteditable="false">
-        <%= projectData.description || 'Beschrijving van het project' %>
-        </p>
-        <span id="descCounter" class="char-counter edit-only">0/500</span>
-        <input type="hidden" name="description" id="inputDescription">
+        <%- include('partials/crewProfile-projectDescription') %> 
         
-    </form>
-</main>
+    </main>
+    </div>
 
- <section class="production">
-        <h3 class="production_Title">Productie Informatie</h3>
-        <p class="production_Summary" contenteditable="false">We zijn op zoek naar enthousiaste cast- en crewleden die willen bijdragen aan dit unieke, visuele project.
-
-Geschatte werktijd (totaal): 4 tot 5 maanden.
-
-Fase 1 (Pre-productie): Casting, locatiescouting en repetities (nu t/m Maart).
-Fase 2 (Productie): De daadwerkelijke opnamedagen.
-Fase 3 (Post-productie): Montage, sound design en kleurcorrectie.
-
-Draaiperiode: De film moet uiterlijk juni 2026 volledig geschoten zijn.
-
-Aantal draaidagen: We schatten momenteel 3 tot 5 intensieve draaidagen in (voornamelijk in de weekenden).
-        </p>
-    </section>
-
-    <section class="carousel">
-        <h2 class="carousel__Title">Andere projecten van de regisseur</h2>
-
-        <ul class="carousel__list">
-
-            <%- include('partials/addProjectCard') %>
-            
-        <% for (let i = 0; i < 5; i++) { %>
-            <li class="carousel__list-Item">
-
-        <%- include('partials/matching') %>
-        
-        
-        </li>
-        <% } %>
-    </ul>
+    <%- include('partials/crewProfile-productionDescription') %> 
+    <%- include('partials/crewProfile-projectenCarousel') %>
     
-    </section>
-
-    <section class="carousel">
-        <h2 class="carousel__Title">Crew die meewerkt aan de film</h2>
-        
-        <ul class="carousel__list">
-        <% for (let i = 0; i < 5; i++) { %>
-            <li class="carousel__list-Item">
-
-        <%- include('partials/matching') %>
-        
-        </li>
-        <% } %>
-    </ul>
+    <!--links data binnen applicationsection.ejs en rechts data die uit de server.js word mee gegeven
+    uit de database zo krijgt hij gelijk een lijst mee-->
+    <%- include('partials/applicationSection', { applications: applications }) %>
     
-    </section>
+    <!-- onzichtbaar veld geeft in de html het huidige id mee van dit project, 
+     dit is om aan te geven aan welk project sollicitaties en projecten moeten toegevoegd worden. -->
+    <input type="hidden" id="currentProjectId" value="<%= projectData._id %>">
+</form>
 
-    <section class="carousel open sollicitaties">
-        <h2 class="carousel__Title">Open sollicitaties</h2>
-        
-        <ul class="carousel__list">
-        <% for (let i = 0; i < 5; i++) { %>
-            <li class="carousel__list-Item">
+   <!-- alle modals staan buiten de vorm deze hoeven niet mee gestuurd te worden
+    en hebben zo geen last van z index problemen -->
+<%- include('partials/applicationModal') %>
+<%- include('partials/modalSolliciteren') %>
+<%- include('partials/addProjectModal') %> 
+<%- include('partials/alertModal') %>
 
-        <%- include('partials/matching') %>
-        
-        </li>
-        <% } %>
-    </ul>
-    
-    </section>
 <script src="js/slideshow.js"></script>
-<script src="js/tijdelijke-filters.js"></script>
+<script src="js/filters.js"></script>
 <script src="js/editmode-button.js"></script>
 <script src="js/tekstcounter.js"></script>
-<script src="/js/addProjectCard.js"></script>
+<script src="/js/carousel-edit.js"></script>
+<script src="/js/applicationSection.js"></script>
+<script src="/js/ModalSolliciteren.js"></script>
+<script src="/js/alertModal.js"></script>
+<script src="/js/successAlert.js"></script>
+
 <%- include('partials/footer') %> 
 </body>
 

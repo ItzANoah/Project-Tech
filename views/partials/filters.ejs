@@ -1,31 +1,54 @@
-<div class="tag-container crew-profile-edit" aria-label="Project categories">
-    <label for="type-select">Kies Type:</label>
-    
-    <select name="type" id="type-select">
-        <option value="">-- Selecteer Type --</option>
-        <% projectFilters.forEach(function(filter) { %>
-            <% if(filter.categorie === 'type') { %>
-                <% filter.opties.forEach(function(optie) { %>
-                    <option value="<%= optie %>"><%= optie %></option>
-                <% }); %>
-            <% } %>
-        <% }); %>
-    </select>
+<div class="project-filters-wrapper">
+    <!-- wat de gebruiker ziet als je niet aan het editen bent-->
+    <div class="filter-display-view">
+        <!-- hidden als er geen type of genre is-->
+        <span class="pill pill--type <%= !projectData.type ? 'hidden' : '' %>">
+            <%= projectData.type %>
+        </span>
+        
+        <span class="pill pill--genre <%= !projectData.genre ? 'hidden' : '' %>">
+            <%= projectData.genre %>
+        </span>
 
-</div>
+        <!-- word getoond als beide genre en type leeg zijn-->
+        <span class="pill--empty <%= (projectData.type || projectData.genre) ? 'hidden' : '' %>">
+            Geen Filters
+        </span>
+    </div>
 
-<div class="tag-container crew-profile-edit" aria-label="Project categories">
-    <label for="genre-select">Kies Genre:</label>
-    
-    <select name="genre" id="genre-select">
-        <option value="">-- Selecteer Genre --</option>
-        <% projectFilters.forEach(function(filter) { %>
-            <% if(filter.categorie === 'genre') { %>
-                <% filter.opties.forEach(function(optie) { %>
-                    <option value="<%= optie %>"><%= optie %></option>
-                <% }); %>
-            <% } %>
-        <% }); %>
-    </select>
+    <!-- edit mode-->
+    <div class="filter-display-edit edit-only">
+        <div class="tag-group">
+            <!-- type select-->
+            <div class="tag-container">
+                <label for="type-select">Project Type:</label>
+                <select name="type" id="type-select">
+                    <!-- drop down -->
+                    <option value="">-- Kies Type --</option>
+                    <!-- loop door alle filters-->
+                    <% projectFilters.forEach(function(filter) { %>
+                        <% if(filter.categorie === 'type') { %>
+                            <% filter.opties.forEach(function(optie) { %>
+                                <option value="<%= optie %>" <%= projectData.type === optie ? 'selected' : '' %>><%= optie %></option>
+                            <% }); %>
+                        <% } %>
+                    <% }); %>
+                </select>
+            </div>
 
+            <div class="tag-container">
+                <label for="genre-select">Project Genre:</label>
+                <select name="genre" id="genre-select">
+                    <option value="">-- Kies Genre --</option>
+                    <% projectFilters.forEach(function(filter) { %>
+                        <% if(filter.categorie === 'genre') { %>
+                            <% filter.opties.forEach(function(optie) { %>
+                                <option value="<%= optie %>" <%= projectData.genre === optie ? 'selected' : '' %>><%= optie %></option>
+                            <% }); %>
+                        <% } %>
+                    <% }); %>
+                </select>
+            </div>
+        </div>
+    </div>
 </div>

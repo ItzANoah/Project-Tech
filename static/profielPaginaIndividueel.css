@@ -209,11 +209,12 @@
 }
 
 .close-modal {
-    color: var(--accentColorRed);
     position: absolute;
-    top: 15px;
-    right: 25px;
-    font-size: 35px;
+    top: 0.5em;
+    right: 0.7em;
+    background: none;
+    border: none;
+    font-size: var(--h2Size, 2em);
     font-weight: bold;
     cursor: pointer;
 }
@@ -287,11 +288,12 @@ body.is-editing main {
 /* ALLEEN als de body de class 'is-editing' heeft szie je de kaart */
 body.is-editing .add-project-card {
     display: flex !important;
-    border: 0.2em dashed var(--accentColorRed);
+    border: 0.15em dashed #bbb !important;
     justify-content: center;
     align-items: center;
     min-height: 12em;
-    background-color: var(--accentColorWhite);
+    background-color: transparent;
+    color: #888;
 }
 
 /* Styling voor de knop binnen de kaart */
@@ -300,7 +302,7 @@ body.is-editing .add-project-card {
     border: none;
     cursor: pointer;
     font-family: var(--montserratFont);
-    color: var(--accentColorRed);
+    color: inherit;
 }
 
 /* Grootte plus */
@@ -320,6 +322,7 @@ body.is-editing .add-project-card {
     font-family: var(--montserratFont);
     font-size: 1.2em;
     margin: 0;
+    color: inherit;
 }
 
 .galerij-img { 

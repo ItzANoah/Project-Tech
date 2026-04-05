@@ -1,0 +1,66 @@
+.project-filters-wrapper {
+    margin: 1.5rem 0;
+}
+
+.filter-display-view {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+    min-height: 40px; /* Voorkomt verspringen van de pagina */
+}
+
+.pill, .pill--empty {
+    display: inline-block;
+    padding: 6px 18px;
+    border-radius: var(--buttonCornerRadius);
+    background-color: var(--accentColorRed);
+    color: var(--accentColorWhite);
+    font-weight: var(--fontWeightRegular);
+    font-size: var(--bodyTextSize);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Verberg de edit-sectie standaard */
+.filter-display-edit {
+    display: none;
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background: rgba(0,0,0,0.03);
+    border-radius: 8px;
+    border: 1px var();
+}
+
+/* Toon de edit-sectie alleen als body de class 'is-editing' heeft */
+body.is-editing .filter-display-edit {
+    display: block !important;
+}
+
+/* Dropdown styling */
+.tag-group {
+    display: flex;
+    gap: 20px;
+}
+
+.tag-container {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.tag-container label {
+    font-weight: bold;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}
+
+.tag-container select {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+/* De universele helper class voor JavaScript */
+.hidden {
+    display: none !important;
+}
