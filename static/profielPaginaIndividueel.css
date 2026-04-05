@@ -1,16 +1,38 @@
-
+/* ==========================================================================
+   1. Profiel header (Foto en Naam sectie)
+   ========================================================================== */
 
 .profile-header {
     display: flex;
-    align-items: flex-start; 
-    gap: var(--gapMedium);
-    padding-top: var(--gapLarge);
+    gap: var(--gapSmall); 
+    padding-top: var(--gapMedium);
+    align-items: flex-start;
+}
+
+.pfpContainer {
+    position: relative;
+    display: inline-block;
+    width: 18em; 
+    height: auto;
+}
+
+.pfpContainer img {
+    width: 18em;
+    height: auto;
+    object-fit: cover;
+}
+
+.profile-info-box {
+    position: relative;
+    flex-grow: 1;
+    border-radius: 8px;
+    min-height: 250px;
+    padding-left: var(--gapSmall);
 }
 
 .profile-content {
-    position: relative; /* Dit is het anker voor de knop */
-    display: flex;
-    flex-direction: column;
+    list-style: none;
+    padding: 0;
 }
 
 .profile-content h1 {
@@ -18,34 +40,12 @@
     font-weight: var(--fontWeightBold);
     font-size: 4em;
     margin-bottom: -0.1em;
+    color: var(--textColor);
 }
 
-.admin-toggle-btn {
-    position: absolute;
-    top: 0;
-    right: 0;
-    
-    /* Styling */
-    background-color: var(--accentColorRed); /* Jouw kleur */
-    color: white;
-    font-family: var(--montserratFont); /* Jouw font */
-    font-weight: var(--fontWeightBold);
-    padding: 0.6em 1.2em;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-}
-
-.admin-toggle-btn:hover {
-    background-color: #333; /* Kleur bij hover */
-}
-
-/*  zorgt dat de afbeelding niet vervormt */
-.profile-header img {
-    width: 18em;
-    height: auto;
-    object-fit: cover;
-}
+/* ==========================================================================
+   2. Kwaliteiten
+   ========================================================================== */
 
 .important-qualities {
     display: flex;
@@ -53,13 +53,13 @@
     padding-bottom: var(--gapSmall);
     font-family: var(--montserratFont);
     font-size: var(--headerTextSize);
-    font-weight: var( --fontWeightBold);
+    font-weight: var(--fontWeightBold);
     color: var(--accentColorRed);
+    list-style: none;
 }
 
-.important-qualities li{
+.important-qualities li {
     margin-right: var(--gapMedium);
-    list-style: none;
 }
 
 .qualities {
@@ -74,42 +74,50 @@
     display: inline-block;
     background-color: var(--accentColorGold);          
     padding: 0.5em 1.1em;       
-    margin-bottom: 0.5em;
+    margin-bottom: var(--gapSmall);
     border-radius: 1em;        
     font-family: var(--montserratFont);
-    font-size: var(--bodyTekstSize);         
-    font-weight: var( --fontWeightRegular);  
+    font-size: var(--bodyTextSize);         
+    font-weight: var(--fontWeightRegular);
+    color: var(--textColor);
 }
+
+/* ==========================================================================
+   3. Project grid en cards
+   ========================================================================== */
 
 .projects-section {
-    padding: var(--sectionPadding);
-    margin-top: var(--gapSmall)
+    padding-top: var(--gapLarge);
+    margin-top: var(--gapSmall);
 }
 
-/* Container voor alle projecten */
 .project-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 gelijke kolommen */
+    grid-template-columns: repeat(3, 1fr);
     gap: var(--gapSmall);
     list-style: none;
     padding-top: var(--gapMedium);
 }
 
-/* De kaart zelf */
 .project-card {
     background-color: var(--accentColorWhite); 
     border-radius: 25px;    
-    overflow: hidden;          /* Zorgt dat de inhoud niet buiten de ronde hoeken steekt */
+    overflow: hidden;
     display: flex;
     flex-direction: column;
 }
 
-.project-card a {
-    text-decoration: none;  
-    color: inherit;
+.project-link {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
 }
 
-/* Het bovenste gedeelte */
 .image-placeholder {
     height: 12em; 
     display: flex;
@@ -123,7 +131,6 @@
     object-fit: cover;    
 }
 
-/* De donkere balk onder de project afbeeling */
 .project-info {
     background-color: var(--accentColorRed); 
     padding: 1.5em;
@@ -145,40 +152,62 @@
     margin-top: var(--gapExtraSmall);
     font-weight: 300;
     font-size: var(--bodyTextSize);
-    color: #f0f0f0;
+    color: var(--accentColorLightGrey);
     font-family: var(--montserratFont);
 }
 
-/* Stap 2: CSS voor de Pop-up (Modal) */
+.add-project-card {
+    display: flex !important;
+    border: 0.2em dashed var(--accentColorRed);
+    justify-content: center;
+    align-items: center;
+    min-height: 12em;
+    background-color: var(--accentColorWhite);
+}
 
-/* De achtergrond die de hele pagina bedekt */
+.add-project-card .add-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: var(--montserratFont);
+    color: var(--accentColorRed);
+}
+
+.add-project-card .plus-icon {
+    display: block;
+    font-size: 5em; 
+    line-height: 1;
+    margin-bottom: 0.1em;
+}
+
+/* ==========================================================================
+   4. Modals (Pop up vensters)
+   ========================================================================== */
+
 .modal {
-    display: none; /* Standaard verborgen */
-    position: fixed; /* Blijft staan, ook bij scrollen */
-    z-index: 1000; /* Zorgt dat het overal bovenop ligt */
+    display: none;
+    position: fixed;
+    z-index: 1000;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7); /* Zwarte achtergrond met 70% transparantie */
-    overflow: auto; /* Zorgt voor scrollbar binnen de modal als de tekst te lang is */
-    backdrop-filter: blur(5px); /* Optioneel: vervaagt de achtergrond */
+    background-color: rgba(0, 0, 0, 0.7);
+    overflow: auto;
+    backdrop-filter: blur(5px);
 }
 
-/* De eigenlijke witte 'kaart' van de pop-up */
 .modal-content {
     background-color: var(--accentColorWhite);
-    margin: 5% auto; /* 5% van de bovenkant, gecentreerd */
+    margin: 5% auto;
     padding: 2.5em;
     border-radius: 25px;
-    width: 80%; /* Breedte op grote schermen */
-    max-width: 800px; /* Maximale breedte */
-    position: relative; /* Nodig voor het kruisje */
+    width: 80%;
+    max-width: 800px;
+    position: relative;
     font-family: var(--montserratFont);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
 }
 
-/* Het sluitkruisje */
 .close-modal {
     position: absolute;
     top: 0.5em;
@@ -188,43 +217,21 @@
     font-size: var(--h2Size, 2em);
     font-weight: bold;
     cursor: pointer;
-    line-height: 1;
-    color: var(--accentColorRed);
-    transition: all ease 0.2s;
-}
-
-.close-modal:hover,
-.close-modal:focus {
-    background: none;
-    color: var(--accentColorGold);
-}
-
-/* Styling voor de inhoud binnen de modal-body (ingevoegd via JS) */
-#modal-body h2 {
-    color: var(--accentColorRed);
-    margin-bottom: 0.2em;
-}
-
-#modal-body h3 {
-    font-weight: 300;
-    font-size: 1em;
-    margin-bottom: 1.5em;
 }
 
 .modal-image {
     width: 100%;
     height: auto;
-    max-height: 300px; /* Beperk de hoogte van de detailfoto */
+    max-height: 300px;
     object-fit: cover;
     border-radius: 15px;
     margin-bottom: 1.5em;
 }
 
-.modal-meta {
-    display: flex;
-    gap: 0.5em;
-    margin-bottom: 1.5em;
-    flex-wrap: wrap;
+.galerij-container { 
+    display: flex; 
+    gap: 10px; 
+    flex-wrap: wrap; 
 }
 
 .modal-meta .tag {
@@ -278,7 +285,7 @@ body.is-editing main {
     display: none !important; 
 }
 
-/* ALLEEN als de body de class 'is-editing' heeft, tonen we de kaart */
+/* ALLEEN als de body de class 'is-editing' heeft szie je de kaart */
 body.is-editing .add-project-card {
     display: flex !important;
     border: 0.15em dashed #bbb !important;
@@ -298,10 +305,10 @@ body.is-editing .add-project-card {
     color: inherit;
 }
 
-/* Maak het plusje groot en gecentreerd */
+/* Grootte plus */
 .add-project-card .plus-icon {
     display: block;
-    font-size: 5em; /* Lekker groot */
+    font-size: 5em; 
     line-height: 1;
     margin-bottom: 0.1em;
     transition: transform 0.3s ease;
@@ -316,4 +323,11 @@ body.is-editing .add-project-card {
     font-size: 1.2em;
     margin: 0;
     color: inherit;
+}
+
+.galerij-img { 
+    width: 30%; 
+    aspect-ratio: 16/9; 
+    object-fit: cover; 
+    border-radius: 5px; 
 }

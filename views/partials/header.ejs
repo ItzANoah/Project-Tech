@@ -5,7 +5,12 @@
     <ul class="nav__list">
       <li class="nav__link dark"><a href="/crew-profile">My Projects</a></li>
       <li class="nav__link light"><a href="/matching">Find Talents</a></li>
-      <li class="nav__link dark"><a href="/current-matches">Matches</a></li>
+      <li class="nav__link dark"><a href="/current-matches">Matches</a>
+        <% if (locals.globalNotification) { %>
+          <div class="current__notification-header">!</div>
+        <% } %>
+      </li>
+      
     </ul>
     
     <!-- <div class="header__actions"> oude
