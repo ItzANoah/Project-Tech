@@ -9,17 +9,6 @@ const mongoose = require('mongoose');
 const { ObjectId } = require('mongodb');
 const validator = require('validator');
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'public/uploads');
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname)); 
-  }
-});
-
-const upload = multer({ storage: storage });
-
 app.use(express.urlencoded({ extended: true }))
 app.use(express.static("static"));
 app.set('view engine', 'ejs');
@@ -61,6 +50,7 @@ run().catch(console.dir);
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 app.use(session({
   secret: process.env.SESSION_SECRET || 'fallback-geheim',
@@ -127,7 +117,10 @@ const storage = multer.diskStorage({
     cb(null, req.session.userID + '-' + Date.now() + path.extname(file.originalname));
   }
 });
-const upload = multer({ storage: storage });
+const upload = multer({ 
+  storage: storage,
+  limits: { fieldSize: 10 * 1024 * 1024 } // Verhoogt de limiet voor tekstvelden naar 10 MB
+});
 
 // Een test route
 app.get('/', (req, res) => {
@@ -451,7 +444,7 @@ app.post('/api/submit-application', async (req, res) => {
         senderId: String(req.session.userID), // De ingelogde persoon als string
         receiverId: String(req.body.receiverId), // De eigenaar van het project als string
         status: "pending",
-        message: req.body.message, // De tekst uit het textarea veld
+        message: req.body.message || "Ik wil graag solliciteren op deze rol!", // Slaat de getypte tekst op, of deze standaardtekst
         timestamp: new Date() // Maakt automatisch de $date aan
     };
 
