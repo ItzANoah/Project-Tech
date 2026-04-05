@@ -1,16 +1,23 @@
 const express = require('express');
 const fs = require('fs');
+const path = require('path'); 
 const app = express();
 const port = 4000;
 const session = require('express-session');
 const multer = require('multer');
-const axios = require('axios'); // Voor api
+const axios = require('axios');
 const mongoose = require('mongoose');
-const { ObjectId } = require('mongodb');
+const { MongoClient, ObjectId } = require('mongodb');
 const validator = require('validator');
 
 app.use(express.urlencoded({ extended: true }))
+const bcrypt = require('bcrypt');
+require('dotenv').config();
+
+app.use(express.urlencoded({ extended: true }))
+app.use(express.json());
 app.use(express.static("static"));
+app.use(express.static('public')); // Zorg dat deze er ook staat voor je uploads
 app.set('view engine', 'ejs');
 app.set('views', './views');
 
