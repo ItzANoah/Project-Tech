@@ -2,7 +2,7 @@
 :root {
 
    /* Logo */
-   --logoColorDark: #D44737;
+   --logoColorDark: #d34130;
    --logoColor: #252525;
    --logoFont: 'Montserrat', sans-serif;
    --logoSize: 2rem;
@@ -11,7 +11,7 @@
    /* Colors */
    --accentColorWhite: #ffffff;
    --accentColorGold: #EEB628;
-   --accentColorRed: #D44737;
+   --accentColorRed: #d34130;
    --accentColorGrey: #252525;
    --accentColorLightGrey: #E6E6E6;
 
@@ -19,7 +19,7 @@
    --textColorWhite: #ffffff;
 
    --hoverColorGold: hsl(43, 95%, 45%);
-   --hoverColorRed: hsl(6, 75%, 40%);
+   --hoverColorRed: hsl(6.26, 75%, 41%);
 
    /* Typography */
    --abrilFont: "Abril Fatface";
