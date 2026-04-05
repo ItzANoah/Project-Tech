@@ -1,0 +1,31 @@
+<li class="project-card add-project-card">
+    <button class="add-btn">
+        <span class="plus-icon">+</span>
+        <h3>Project toevoegen</h3>
+    </button>
+</li>
+
+<div id="add-project-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" id="close-add-modal">&times;</span>
+        <h2>Nieuw project toevoegen</h2>
+        <p>Kies een bron voor je project:</p>
+
+        <div class="choice-container">
+            <button class="choice-btn" id="btnApi">
+                <span class="icon">🎬</span>
+                <span>Bestaande Film (API)</span>
+            </button>
+            <button class="choice-btn" id="btnFlmCrw">
+                <span class="icon">👥</span>
+                <span>Filmcrew Projecten</span>
+            </button>
+            <button class="choice-btn" id="btn-manual">
+                <span class="icon">✍️</span>
+                <span>Handmatig Toevoegen</span>
+            </button>
+        </div>
+
+        <div id="add-project-form-container"></div>
+    </div>
+</div>
