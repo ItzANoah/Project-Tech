@@ -4,6 +4,20 @@ const app = express();
 const port = 4000;
 const session = require('express-session');
 const multer = require('multer');
+const mongoose = require('mongoose');
+const { ObjectId } = require('mongodb');
+const validator = require('validator');
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'public/uploads');
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname)); 
+  }
+});
+
+const upload = multer({ storage: storage });
 
 app.use(express.urlencoded({ extended: true }))
 app.use(express.static("static"));
@@ -22,7 +36,9 @@ const client = new MongoClient(uri);
 
 
 /////////////// register functie ////////////////
-let profileCollection; 
+let profileCollection;
+let matchRequestcollection; 
+let projectsCollection;
 
 async function run() {
   try {
@@ -30,7 +46,9 @@ async function run() {
     const db = client.db("filmcrew");
 
     profileCollection = db.collection("profiles"); 
-    
+    matchRequestcollection = db.collection("verzoeken");
+    projectsCollection = db.collection("projects");
+
     console.log("Database verbinding succesvol!");
   } catch (error) {
     console.error("Verbindingsfout:", error);
@@ -63,12 +81,45 @@ app.use((req, res, next) => {
 //////// checkt of je bent ingelogd /////////
 function checkInlog(req, res, next) {
   if (req.session.username) {
-    next(); // ga maar door naar de volgende stap
+    next(); // ga door naar de volgende stap
   } else {
     res.redirect('/login'); // Terug naar de login pagina
   }
 }
+// voor de noti in de header
+app.use(async (req, res, next) => {
+  // alleen wanneer ingelogd
+  if (req.session.userID) {
+    try {
+      const matchdata = await matchRequestcollection.find({ 
+        receiverId: req.session.userID,
+        status: "pending" 
+      }).sort({ timestamp: -1 }).toArray();
 
+      let hasNewHeaderRequest = false;
+      if (matchdata.length > 0) {
+        const nu = new Date();
+        const tweeDagenGeleden = new Date();
+        tweeDagenGeleden.setDate(nu.getDate() - 2);
+        const nieuwsteMatchDatum = new Date(matchdata[0].timestamp);
+
+        if (nieuwsteMatchDatum > tweeDagenGeleden) {
+          hasNewHeaderRequest = true;
+        }
+      }
+
+      // We slaan het op in res.locals, zodat de header er ALTIJD bij kan
+      res.locals.globalNotification = hasNewHeaderRequest;
+      
+    } catch (err) {
+      console.error("Notificatie check fout:", err);
+      res.locals.globalNotification = false;
+    }
+  } else {
+    res.locals.globalNotification = false;
+  }
+  next(); // Ga door naar de volgende route
+});
 
 // Een test route
 app.get('/', (req, res) => {
@@ -95,23 +146,49 @@ app.post('/register', async (req, res) => {
       experience 
     } = req.body;
 
-    // Check of de gebruiker al bestaat 
-    const userExists = await profileCollection.findOne({ name: username });
-    if (userExists) {
-      return res.send('Deze naam is al bezet.');
+    let errors = [];
+
+    // checkt of het echt een email is
+    if (!validator.isEmail(email)) {
+      errors.push("Het opgegeven e-mailadres is niet geldig.");
     }
 
-    // Wachtwoord versleutelen
+    // haalt hoofdletters weg
+    const sanitizedEmail = validator.normalizeEmail(email);
+
+    // wachtwoord min 8 tekens, iets meer beveiliging, nog geen vereisde als hoofdletters of speciale tekens)
+    if (!validator.isLength(password, { min: 8 })) {
+      errors.push("Je wachtwoord moet minimaal 8 tekens bevatten.");
+    }
+
+    // beveiliging, is niet perse nodig maar maakt de website minder hack gevoelig - credits aan express-validator.github.io 
+    const sanitizedBio = validator.escape(bio || "");
+
+    // error melding
+    if (errors.length > 0) {
+      return res.status(400).render('register', { errors, oldInput: req.body });
+    }
+
+    // Check of de gebruiker al bestaat 
+    const userExists = await profileCollection.findOne({ 
+      $or: [{ name: username }, { email: sanitizedEmail }] 
+    });
+
+    if (userExists) {
+      return res.send('Gebruikersnaam of e-mailadres is al bezet.');
+    }
+
+    // Wachtwoord versleutelen, voor deze keer geen variabele van de saltrounds gemaakt omdat het maar 1 keer gebruikt wordt.
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // volledige profiel opbouwen
+    // volledige profiel
     const newUser = {
       name: username,
-      email: email,
+      email: sanitizedEmail,
       age: Number(age),
       password: hashedPassword,
       role: userFunction,
-      bio: bio,
+      bio: sanitizedBio,
       experience: Number(experience), 
       createdAt: new Date()
     };
@@ -142,27 +219,138 @@ app.get('/profielPaginaIndividueel', (req, res) => {
 
 // crew profile
 
-app.get('/crew-profile', (req, res) => {
-  //  Maak de lijst met afbeeldingen aan
-  const projectImages = [
-    "/images/placeholder-hero.jpg",
-    "/images/cameraman.png",
-    "/images/home-page-image.png"
-  ];
+app.get('/crew-profile', async (req, res) => {
+    try {
 
-  // maak de tags aan 
-  const projectTags = ["Sci-Fi", "Action", "Adventure", "Thriller", "Animation"];
+        const db = client.db('filmcrew');
 
-  // Stuur alles naar de render functie
-  res.render('crew-profile', {
-    projectImages: projectImages,
-    projectTags: projectTags
-  });
+        // 1. Haal het project op, het eerste project wat je ziet. 
+        const project = await db.collection('projects').findOne({}) || {};
+
+        // We zoeken in de collectie 'filters' binnen de database 'filmcrew'
+        const projectFilters = await db.collection('filters').find({}).toArray();
+
+        // pak alle foto's van de database en stop dit in een array. Als project.images niet bestaat, maken we er een lege array [] van.
+        const projectImages = project.images || []; 
+
+        // Stuur alles naar de EJS
+        res.render('crew-profile', {
+            projectData: project,   // Bevat: title, subtitle, description, images
+            projectImages: projectImages || [], // De array met fotopaden voor je slideshow
+            projectFilters: projectFilters || []
+        });
+    } catch (error) {
+        console.error("Fout bij ophalen profiel/project:", error);
+        res.status(500).send("Fout bij laden profiel");
+    }
+});
+
+//  upload.array omdat je meerdere foto's tegelijk kunt uploaden.
+app.post('/save-project', upload.array('projectImages'), async (req, res) => {
+    try {
+        const db = client.db('filmcrew');
+
+        // De lijst van foto's die overblijven na het klikken op verwijderen
+        let remainingImages = [];
+        // maak er een array van en sla geen lege velden op. 
+        if (req.body.remainingImages) {
+            remainingImages = req.body.remainingImages.split(',').filter(path => path !== "");
+        }
+
+        // nieuwe foto's, neem hun pad
+        const newUploads = req.files.map(file => `/uploads/${file.filename}`);
+
+        // combineren van nieuwe met oude foto's
+        const finalImagesList = [...remainingImages, ...newUploads];
+
+        // pak alle veranderingen bij elkaar en stop dit in een object
+        const updatedProject = {
+            title: req.body.title,
+            subtitle: req.body.subtitle,
+            description: req.body.description,
+            images: finalImagesList, // We overschrijven de oude lijst volledig
+            type: req.body.type,
+            genre: req.body.genre, 
+            updatedAt: new Date()
+        };
+
+        await db.collection('projects').updateOne(
+            {}, // upload naar het eerste project wat je ziet 
+            { $set: updatedProject }, // vervang oude data met nieuwe data 
+            { upsert: true } // maak aan als er nog geen project bestaat
+        );
+
+        res.redirect('/crew-profile'); // stuur gebruiker terug naar crew-profile 
+    } catch (error) {
+        console.error("Opslaan mislukt:", error);
+        res.status(500).send("Fout bij opslaan");
+    }
 });
 
 app.get('/current-matches', checkInlog, async (req, res) => {
-  
-  res.render('current-matches');
+  try {
+    const userId = req.session.userID;
+
+    const aanvragenData = await matchRequestcollection.find({ receiverId: userId, status: "pending" }).toArray();
+    const matchesData = await matchRequestcollection.find({ 
+      $or: [{ receiverId: userId }, { senderId: userId }], 
+      status: "accepted" 
+    }).toArray();
+
+    const verrijkMatch = async (match) => {
+      const validSender = match.senderId && match.senderId.length === 24;
+      const validProject = match.projectId && match.projectId.length === 24;
+    
+      const afzender = validSender ? await profileCollection.findOne({ _id: new ObjectId(match.senderId) }) : null;
+      const projectDetails = validProject ? await projectsCollection.findOne({ _id: new ObjectId(match.projectId) }) : null;
+    
+      return {
+        ...match,
+        senderName: afzender ? afzender.name : "Onbekend",
+        senderEmail: afzender ? afzender.email : "Geen email bekend", 
+        
+        displayImage: (projectDetails && projectDetails.mainImage) ? projectDetails.mainImage : "/images/placeholder.png",
+        jobTitel: match.jobTitel || "Geen functie",
+        jobDescription: match.jobDescription || "Geen beschrijving"
+      };
+    };
+
+    const aanvragen = await Promise.all(aanvragenData.map(verrijkMatch));
+    const matches = await Promise.all(matchesData.map(verrijkMatch));
+
+    res.render('current-matches', { aanvragen, matches });
+
+  } catch (error) {
+    console.error("Fout:", error);
+    res.status(500).send("Er ging iets mis.");
+  }
+});
+//accepteren en declinen
+app.post('/match/accept/:id', checkInlog, async (req, res) => {
+  try {
+      const matchId = req.params.id;
+      await matchRequestcollection.updateOne(
+          { _id: new ObjectId(matchId) },
+          { $set: { status: "accepted" } }
+      );
+      res.redirect('/current-matches');
+  } catch (error) {
+      console.error("Fout bij accepteren:", error);
+      res.status(500).send("Er ging iets mis.");
+  }
+});
+app.post('/match/decline/:id', checkInlog, async (req, res) => {
+  try {
+      const matchId = req.params.id;
+      await matchRequestcollection.updateOne(
+          { _id: new ObjectId(matchId) },
+          { $set: { status: "rejected" } }
+      );
+      res.redirect('/current-matches');
+  } catch (error) {
+      console.error("Fout bij afwijzen:", error);
+      res.status(500).send("Er ging iets mis.");
+  }
 });
 
 ///////////////// inlog functies ////////////////////
@@ -178,9 +366,10 @@ app.post('/login', async (req, res) => {
 
       if (match) {
         // Sessie vullen
-        req.session.userID = user._id;
+        // Bij het succesvol inloggen:
         req.session.username = user.name;
-        
+        req.session.userID = user._id.toString(); 
+
         console.log(`Gebruiker ${user.name} is ingelogd.`);
         return res.redirect('/current-matches');
       }

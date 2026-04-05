@@ -2,81 +2,44 @@
 <%- include('partials/header') %> 
     <div class="background--wrapper">
 
-    <main class="project--container">
-
+    <main class="project--container crew-profile-edit">
+    <form id="projectForm" action="/save-project" method="POST" enctype="multipart/form-data">
+        
         <header class="project--header">
-        <div class="project--title-group">
-        <h1 class="project--title" contenteditable="false">Lord Of Balls</h1>
-        <h2 class="project--subtitle" contenteditable="false">Starring Lord De Vries</h2>
-    </div>
+            <div class="project--title-group">
+                <h1 id="projectTitle" class="project--title" contenteditable="false">
+                    <%= projectData.title || 'Project Titel' %>
+                </h1>
+                <span id="titleCounter" class="char-counter edit-only">0/20</span>
+                <input type="hidden" name="title" id="inputTitle">
 
-    <div>
-    <!-- onclick veranderen in event listener eventueel  -->
-        <button type="button" class="button--profile" onclick="openEditMode()">
-            Wijzig profiel
-            <span>&#9998;</span>
-        </button>
-        <div class="director-info">
-            <p>Dir: <a href="/director/d-de-vries"> D. de Vries</a></p>
-        </div>
-        </div>
-    </header>
+                <h2 id="projectSubtitle" class="project--subtitle" contenteditable="false">
+                    <%= projectData.subtitle || 'Hoofdrol Speler' %>
+                </h2>
+                <span id="subtitleCounter" class="char-counter edit-only">0/30</span>
+                <input type="hidden" name="subtitle" id="inputSubtitle">
+            </div>
 
-  <section class="slideshow" aria-label="Project visuals">
-    <button class="slideshow__nav slideshow__nav--prev" aria-label="Previous image">&#10094;</button>
-    
-   <div class="slideshow__container">
-    <div class="slideshow__upload edit-only">
-        <label for="file-upload" class="add-photo-btn">
-            Foto toevoegen
-        </label>
-        <input type="file" id="file-upload" accept="image/*" onchange="previewImage(this)" style="display:none;">
-    </div>
+            <div class="project--header-info">
+                <%- include('partials/editmode-button') %> 
 
-    <% projectImages.forEach((img, index) => { %>
-        <div class="slideshow__item <%= index === 0 ? 'slideshow__item--active' : '' %>">
-            <img src="<%= img %>" alt="Project visual" class="slideshow__image">
-            <button type="button" class="remove-photo edit-only" onclick="removePhotoFromSlideshow(this)">
-                Foto verwijderen
-            </button>
-        </div>
-    <% }) %>
-</div>
+                <div>
+                    <p>Dir: <a href="/director/d-de-vries"> D. de Vries</a></p>
+                </div>
+            </div>
+        </header>
 
-    <button class="slideshow__nav slideshow__nav--next" aria-label="Next image">&#10095;</button>
-   </section>
+        <%- include('partials/slideshow') %> 
+        <%- include('partials/filters') %>
 
-    <nav class="tag-container" aria-label="Project categories">
-    <ul class="tag-list"> 
-        <% projectTags.forEach((tag) => { %>
-            <li class="tag">
-                <%= tag %>
-                <button type="button" class="remove-tag edit-only" onclick="removeTag(this)">×</button>
-            </li>
-        <% }) %>
-    </ul>
-
-    <div class="edit-only">
-        <select id="tag-select">
-            <option value="" disabled selected>Kies een filter...</option>
-            <option value="Sci-Fi">Sci-Fi</option>
-            <option value="Action">Action</option>
-            <option value="Horror">Horror</option>
-            <option value="Comedy">Comedy</option>
-            <option value="Documentary">Documentary</option>
-        </select>
-        <button type="button" class="button--profile" onclick="addTagFromSelect()">Voeg toe</button>
-    </div>
-</nav>
-
-    <p class="project-text" contenteditable="false">
-        Maak kennis met Lord de Vries. Hij is rijk, heeft een kasteel en een adellijke titel. Maar er is één ding dat hij níét heeft: street credibility. In zijn wanhopige poging om de coolste man op aarde te worden, ontdekt hij een verborgen ondergronds toernooi: extreem knikkeren voor miljardairs.
-Vergeet basketballen en voetbal; dit is de arena waar reputaties worden gemaakt of gebroken met glazen balletjes. Lord de Vries trekt zijn duurste, glimmendste joggingpak aan en zijn grootste zonnebril, vastbesloten om de 'Koning van de Knikkers' te worden en eindelijk respect te verdienen bij de 'jeugd van tegenwoordig'.
-    </p>
-
+         <p id="projectDescription" class="project-text" contenteditable="false">
+        <%= projectData.description || 'Beschrijving van het project' %>
+        </p>
+        <span id="descCounter" class="char-counter edit-only">0/500</span>
+        <input type="hidden" name="description" id="inputDescription">
+        
+    </form>
 </main>
-
-</div>
 
  <section class="production">
         <h3 class="production_Title">Productie Informatie</h3>
@@ -96,21 +59,16 @@ Aantal draaidagen: We schatten momenteel 3 tot 5 intensieve draaidagen in (voorn
 
     <section class="carousel">
         <h2 class="carousel__Title">Andere projecten van de regisseur</h2>
-        
+
         <ul class="carousel__list">
+
+            <%- include('partials/addProjectCard') %>
+            
         <% for (let i = 0; i < 5; i++) { %>
             <li class="carousel__list-Item">
 
-        <article class="matching__card">
-            <header>
-                <img src="/images/cameraman.png" width="335" alt="">
-                <h3>David de Boer - Acteur</h3>
-            </header>
-            <p>5 jaar ervaring als lead actor, speelde in meerdere shortfilms en commercials.</p>
-            <div class="matching__card-link">
-                <a href="#">Bekijk details</a>
-            </div>
-        </article>
+        <%- include('partials/matching') %>
+        
         
         </li>
         <% } %>
@@ -125,16 +83,7 @@ Aantal draaidagen: We schatten momenteel 3 tot 5 intensieve draaidagen in (voorn
         <% for (let i = 0; i < 5; i++) { %>
             <li class="carousel__list-Item">
 
-        <article class="matching__card">
-            <header>
-                <img src="/images/cameraman.png" width="335" alt="">
-                <h3>David de Boer - Acteur</h3>
-            </header>
-            <p>5 jaar ervaring als lead actor, speelde in meerdere shortfilms en commercials.</p>
-            <div class="matching__card-link">
-                <a href="#">Bekijk details</a>
-            </div>
-        </article>
+        <%- include('partials/matching') %>
         
         </li>
         <% } %>
@@ -149,23 +98,19 @@ Aantal draaidagen: We schatten momenteel 3 tot 5 intensieve draaidagen in (voorn
         <% for (let i = 0; i < 5; i++) { %>
             <li class="carousel__list-Item">
 
-        <article class="matching__card">
-            <header>
-                <img src="/images/cameraman.png" width="335" alt="">
-                <h3>David de Boer - Acteur</h3>
-            </header>
-            <p>5 jaar ervaring als lead actor, speelde in meerdere shortfilms en commercials.</p>
-            <div class="matching__card-link">
-                <a href="#">Bekijk details</a>
-            </div>
-        </article>
+        <%- include('partials/matching') %>
         
         </li>
         <% } %>
     </ul>
     
     </section>
-
-<script src="/crew-profile.js"></script>
+<script src="js/slideshow.js"></script>
+<script src="js/tijdelijke-filters.js"></script>
+<script src="js/editmode-button.js"></script>
+<script src="js/tekstcounter.js"></script>
+<script src="/js/addProjectCard.js"></script>
+<%- include('partials/footer') %> 
 </body>
+
 </html>

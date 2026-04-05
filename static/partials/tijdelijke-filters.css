@@ -1,0 +1,42 @@
+/* --- Tags --- */
+
+/* tags, knop en inputveld zelfde rij */
+.tag-container {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.tag {
+    background-color: var(--accentColorGold);
+    color: var(--accentColorWhite);
+    padding: 8px 20px;
+    border-radius: var(--buttonCornerRadius);
+
+    font-family: var(--montserratFont);
+    font-size: var(--bodyTextSize);
+    font-weight: var(--fontWeightRegular);
+}
+
+/* tags op een rij en zonder styling */
+.tag-list {
+    display: flex;
+    flex-wrap: wrap;     
+    gap: 10px;           
+    list-style: none;     
+    padding: 0;         
+    margin: 0;
+}
+
+/* De kruisjes knop in de tag */
+.remove-tag {
+    background: none;
+    border: none;
+    color: var(--accentColorWhite);
+    font-weight: var(--fontWeightBold);
+    cursor: pointer;
+}
+
+.remove-tag:hover {
+    color: var(--accentColorRed);
+}

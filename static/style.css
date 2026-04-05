@@ -8,6 +8,7 @@
 
 @import "variables.css";
 @import "partials";
+@import "partials/addProjectCard.css";
 
 @import "login-register.css";
 @import "crew-profile.css";
