@@ -519,7 +519,7 @@ app.get('/search-db-projects', checkInlog, async (req, res) => {
     }
 });
 
-// Bestaand project uit eigen DB toevoegen aan je profiel
+// Bestaand project uit eigen DB toevoegen aan profiel
 app.post('/add-existing-project', checkInlog, async (req, res) => {
     try {
         const { projectId, userRole } = req.body;
