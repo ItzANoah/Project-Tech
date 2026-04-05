@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FilmCrew-Matching</title>
+    <title>FilmCrew</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 
@@ -18,7 +18,7 @@
                     <p>Start een project. Sluit je aan.</p>
                 </hgroup>
 
-                <button>Ontdek projecten & talenten</button>
+                <a href="/matching">Ontdek meer!</a>
             </div>
 
             <img
@@ -28,27 +28,11 @@
             >
         </header>
 
-        <section>
-            <h2>Populaire projecten</h2>
-            <%- include('partials/matching-slider') %>
-        </section>
-
-        <section class="reviews">
-            <h2>Succesvolle matching verhalen</h2>
-            <article class="review__card">
-                <h3>Naam</h3>
-                <p>Beschrijving</p>
-            </article>
-        </section>
-
-        <section class="movie-article">
-            <h2>Film artikelen</h2>
-            <article class="movie-article__card">
-                <h3>Naam</h3>
-                <p>Beschrijving</p>
-            </article>
+        <section class="all-projects">
+            <h2>Alle projecten</h2>
+            <%- include('partials/matching-slider', { matchingItems }) %>
         </section>
     </main>
-
+    <%- include('partials/footer') %>
 </body>
 </html>

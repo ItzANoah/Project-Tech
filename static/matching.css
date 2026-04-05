@@ -1,16 +1,21 @@
-/* Matching cards */
+/* Matching cards + slider */
 .matching__card {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    flex-grow: 1;
+    gap: var(--gapExtraSmall);
 
     background-color: var(--accentColorLightGrey);
     border-radius: var(--buttonCornerRadius);
-    width: min-content;
+    width: 100%;
 }
 
-.matching__card, .matching__card img {
+.matching__card img {
     border-radius: var(--buttonCornerRadius);
+    object-fit: cover;
+    object-position: top;
+    aspect-ratio: 16/9;
+    width: 100%;
 }
 
 .matching__card-link {
@@ -22,34 +27,59 @@
     padding: var(--buttonPadding);
 
     background-color: var(--accentColorRed);
+    transition: background-color 0.5s ease;
+}
+
+.matching__card-link:hover {
+    background-color: var(--hoverColorRed);
 }
 
 .matching__card-link a {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
     text-decoration: none;
     color: var(--textColorWhite);
 }
 
-.matching__card :where(h3, p) {
+.matching__card-body {
     padding: 0 1rem;
+}
+
+.matching__card p {
+    flex-grow: 1;
+
+    /* Ellipsis overflow voor tekst bij een bepaald aantal lijnen aan tekst https://stackoverflow.com/questions/5269713/css-ellipsis-on-second-line */
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+
+    @supports (-webkit-line-clamp: 4) {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: initial;
+        display: -webkit-box;
+        -webkit-line-clamp: 4;
+        -webkit-box-orient: vertical;
+    }
+}
+
+.matching-slider .matching__card {
+    width: 335px;
 }
 
 .matching-slider__item {
     flex: none !important;
+    display: flex;
 }
-
-
-
-
 
 /* Matching-page */
 .matching {
     display: flex;
-    justify-content: space-between;
-}
-
-.matching__results-bar {
-    display: flex;
-    justify-content: space-between;
+    gap: var(--gapMedium);
+    margin: var(--sectionPadding);
+    width: 100%;
 }
 
 .matching__header {
@@ -69,11 +99,180 @@
     border: 3px solid var(--accentColorGold);
     border-radius: var(--buttonCornerRadius);
     padding: var(--buttonPadding);
+    color: var(--textColor);
     text-decoration: none;
+    transition: background-color 0.5s ease;
+}
+
+.matching__header a:hover {
+    border: 3px solid var(--hoverColorGold);
+}
+
+.matching__layout {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: var(--gapMedium);
+}
+
+.matching__results-bar {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--gapSmall);
+}
+
+.matching__results-btns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--gapSmall);
+}
+
+.matching__filter-btn {
+    background-color: var(--accentColorWhite);
+    padding: var(--buttonPadding);
+    border: 3px solid var(--accentColorRed);
+    border-radius: var(--buttonCornerRadius);
+    cursor: pointer;
+
+    display: none;
+
+    @media (width <= 1024px) {
+        display: flex;
+        flex-grow: 1;
+        justify-content: center;
+        align-items: center;
+        gap: var(--gapExtraSmall);
+    }
 }
 
 .matching__grid {
-    display: inline-grid;
-    grid-template-columns: repeat(3, 1fr);
+    display: grid;
+    /* Grid responsiveness https://www.youtube.com/watch?v=bj0Z_GncIwY */
+    grid-template-columns: repeat(auto-fill, minmax(min(325px, 100%), 1fr));
     gap: var(--gapMedium);
+}
+
+.matching__aside {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gapMedium);
+    min-width: 18rem;
+
+    padding: 2rem 3rem;
+    height: fit-content;
+
+    border-radius: var(--buttonCornerRadius);
+    background-color: var(--accentColorGrey);
+
+    @media (width <= 1024px) {
+        display: none;
+    }
+}
+
+.matching__aside * {
+    color: var(--textColorWhite);
+}
+
+.matching__aside button {
+    padding: var(--buttonPadding);
+    background-color: var(--accentColorRed);
+    border-radius: var(--buttonCornerRadius);
+    border: none;
+    transition: background-color 0.5s ease;
+}
+
+.matching__aside button:hover {
+    background-color: var(--hoverColorRed);
+}
+
+.matching__aside form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gapLarge);
+}
+
+.matching__aside fieldset {
+    border: none;
+
+    display: flex;
+    flex-direction: column;
+    gap: var(--gapExtraSmall);
+}
+
+.matching__aside legend {
+    font-size: var(--h3Size);
+    margin-bottom: var(--gapSmall);
+}
+
+.matching__aside [type="search"] {
+    padding: var(--buttonPadding);
+    border-radius: var(--buttonCornerRadius);
+    color: var(--textColor);
+}
+
+.matching__aside [type="radio"],
+.matching__aside [type="checkbox"] {
+    accent-color: var(--accentColorGold);
+
+    width: 1.2rem;
+    height: 1.2rem;
+
+    transition: 0.2s ease;
+}
+
+.matching__aside [type="radio"]:hover,
+.matching__aside [type="checkbox"]:hover {
+    transform: scale(1.2);
+}
+
+.filter-option {
+    display: flex;
+    align-items: center;
+    gap: var(--gapSmall);
+}
+
+.filter-option--last {
+    display: flex;
+    align-items: center;
+    gap: var(--gapExtraSmall);
+}
+
+.filter-dialog {
+    border: none;
+    max-width: unset;
+    max-height: unset;
+    height: 100%;
+    width: 100%;
+    background-color: var(--accentColorGrey);
+}
+
+body:has(.filter-dialog[open]) {
+    overflow: hidden;
+}
+
+.filter-dialog .matching__aside {
+    display: flex;
+    box-sizing: border-box;
+    border: none;
+    border-radius: unset;
+}
+.filter-dialog__close-btn {
+    background-color: unset !important;
+    padding: unset !important;
+    border: none;
+    cursor: pointer;
+}
+
+.filter-dialog__header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.noUi-tooltip {
+    bottom: -150% !important;
+}
+
+:root .noUi-connect {
+    background-color: var(--accentColorGold);
 }

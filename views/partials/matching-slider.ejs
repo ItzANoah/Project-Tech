@@ -1,7 +1,7 @@
 <ul class="matching-slider carousel__list">
-    <% for (let i = 0; i < 5; i++) { %>
+    <% matchingItems.forEach(item => { %>
         <li class="matching-slider__item carousel__list-Item">
-            <%- include('matching') %>
+            <%- include('matching', { item }) %>
         </li>
-    <% } %>
+    <% }) %>
 </ul>

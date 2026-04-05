@@ -4,14 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>matching</title>
-    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.8.1/nouislider.min.css" rel="stylesheet"/>
+
 </head>
 <body>
     <%- include('partials/header') %>
     <main>
         <header class="matching__header">
             <div>
-                <h1>Vind jouw perfecte project!</h1>
+                <h1>Vind jouw perfecte match!</h1>
                 <p>Ontdek projecten die aansluiten bij jouw talent. Duik in de details en meld je aan <br> om deel uit te maken van de productie.</p>
             </div>
             <a href="./">Terug
@@ -22,133 +24,150 @@
         </header>
 
         <section class="matching">
-            <aside>
+            <aside class="matching__aside">
                 <h2>Filters</h2>
-                <form action="">
-                    <fieldset>
-                        <legend>Project type</legend>
-                        <div class="filter-option">
-                            <input type="checkbox" id="shortfilm" name="shortfilm">
-                            <label for="shortfilm">Short film</label>
-                        </div>
+                <form action="/matching" method="GET" id="filter-form">
+                    <%- include('partials/matching-filters', {
+                        uniqueIdModifier: 'aside',
+                        viewMode,
+                        filtersQuery,
+                        matchingItems,
+                        profileRoles,
+                        projectTypes,
+                        projectGenres,
+                        highestProfileAge,
+                        lowestProfileAge,
+                        highestExperience,
+                        lowestExperience
+                    }) %>
 
-                        <div class="filter-option">
-                            <input type="checkbox" id="documentary" name="documentary">
-                            <label for="documentary">Documentaire</label>
-                        </div>
-
-                        <div class="filter-option">
-                            <input type="checkbox" id="commercial" name="commercial">
-                            <label for="commercial">Commercial</label>
-                        </div>
-
-                        <div class="filter-option">
-                            <input type="checkbox" id="tv-serie" name="tv-serie">
-                            <label for="tv-serie">TV serie</label>
-                        </div>
-                    </fieldset>
-
-                    <fieldset>
-                        <legend>Genre</legend>
-                        <div class="filter-option">
-                            <input type="checkbox" id="horror" name="horror">
-                            <label for="horror">Horror</label>
-                        </div>
-
-                        <div class="filter-option">
-                            <input type="checkbox" id="drama" name="drama">
-                            <label for="drama">Drama</label>
-                        </div>
-
-                        <div class="filter-option">
-                            <input type="checkbox" id="comedy" name="comedy">
-                            <label for="comedy">Comedy</label>
-                        </div>
-
-                        <div class="filter-option">
-                            <input type="checkbox" id="thriller" name="thriller">
-                            <label for="thriller">Thriller</label>
-                        </div>
-                    </fieldset>
-
-                    <fieldset>
-                        <legend>Locatie (radius)</legend>
-                        <div class="filter-option">
-                            <input type="radio" id="ten" name="kilometers">
-                            <label for="ten">10km</label>
-                        </div>
-
-                        <div class="filter-option">
-                            <input type="radio" id="twenty" name="kilometers">
-                            <label for="twenty">20km</label>
-                        </div>
-
-                        <div class="filter-option">
-                            <input type="radio" id="thirty" name="kilometers">
-                            <label for="thirty">30km</label>
-                        </div>
-
-                        <div class="filter-option">
-                            <input type="radio" id="allKm" name="kilometers" checked>
-                            <label for="allKm">40km +</label>
-                        </div>
-                    </fieldset>
-
-                    <fieldset>
-                        <legend>Regisseur</legend>
-                        <div class="filter-option">
-                            <input type="search" id="search-director" name="search-director">
-                            <label for="search-director">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 25 25" fill="none">
-                                    <path d="M24.5884 22.6243L19.0982 17.1322C20.7444 14.9872 21.5129 12.2964 21.2479 9.60559C20.983 6.91482 19.7044 4.42557 17.6715 2.64281C15.6386 0.860048 13.0037 -0.0827372 10.3012 0.00570391C7.59878 0.0941451 5.03115 1.20719 3.1192 3.11905C1.20725 5.03091 0.0941494 7.59843 0.00570417 10.3008C-0.0827411 13.0031 0.860088 15.6379 2.64293 17.6707C4.42578 19.7035 6.91514 20.982 9.60603 21.2469C12.2969 21.5119 14.9879 20.7434 17.1329 19.0974L22.6277 24.593C22.7567 24.722 22.9099 24.8244 23.0785 24.8942C23.2471 24.9641 23.4278 25 23.6103 25C23.7928 25 23.9735 24.9641 24.1421 24.8942C24.3107 24.8244 24.4639 24.722 24.593 24.593C24.722 24.464 24.8244 24.3108 24.8942 24.1422C24.9641 23.9736 25 23.7929 25 23.6104C25 23.4279 24.9641 23.2472 24.8942 23.0786C24.8244 22.91 24.722 22.7568 24.593 22.6278L24.5884 22.6243ZM2.79786 10.6585C2.79786 9.10382 3.25891 7.58401 4.12271 6.29131C4.9865 4.9986 6.21425 3.99106 7.65069 3.3961C9.08714 2.80113 10.6678 2.64546 12.1927 2.94877C13.7176 3.25208 15.1183 4.00075 16.2177 5.10011C17.3171 6.19946 18.0658 7.60013 18.3692 9.12497C18.6725 10.6498 18.5168 12.2304 17.9218 13.6667C17.3268 15.1031 16.3192 16.3308 15.0265 17.1946C13.7337 18.0583 12.2138 18.5194 10.659 18.5194C8.57478 18.5172 6.5765 17.6883 5.10271 16.2146C3.62892 14.7409 2.8 12.7427 2.79786 10.6585Z" fill="black"/>
-                                </svg>
-                            </label>
-                        </div>
-                    </fieldset>
-                    <button type="submit">Zoeken</button>
+                    <button type="submit">Filteren</button>
                 </form>
             </aside>
 
-            <div>
+            <div class="matching__layout">
                 <div class="matching__results-bar">
-                    <h2>Resultaten (..)</h2>
-                    <div class="filter-dropdown">
-                        <label class="filter__label" for="sort">Sorteren:</label>
-                        <select id="sort">
-                            <option value="best-match">Beste match</option>
-                            <option value="most-popular">Meest populair</option>
-                            <option value="a-z">A > Z</option>
-                            <option value="z-a">Z > A</option>
-                            <option value="most-recent">Meest recent</option>
-                            <option value="oldest-first">Oudste eerst</option>
-                        </select>
+                    <h2>Resultaten (<%= matchingItems.length %>)</h2>
+                    <div class="matching__results-btns">
+                        <button command="show-modal" commandfor="filter-dialog" class="matching__filter-btn">Filter
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="14" viewBox="0 0 15 14" fill="none">
+                                <path d="M2.88827 5.32292V0.583333C2.88827 0.428624 2.8275 0.280251 2.71934 0.170854C2.61118 0.0614583 2.46448 0 2.31152 0C2.15856 0 2.01186 0.0614583 1.9037 0.170854C1.79554 0.280251 1.73477 0.428624 1.73477 0.583333V5.32292C1.23853 5.45143 0.798685 5.74333 0.484587 6.1526C0.170488 6.56187 0 7.06523 0 7.58333C0 8.10143 0.170488 8.6048 0.484587 9.01407C0.798685 9.42334 1.23853 9.71524 1.73477 9.84375V13.4167C1.73477 13.5714 1.79554 13.7197 1.9037 13.8291C2.01186 13.9385 2.15856 14 2.31152 14C2.46448 14 2.61118 13.9385 2.71934 13.8291C2.8275 13.7197 2.88827 13.5714 2.88827 13.4167V9.84375C3.38451 9.71524 3.82435 9.42334 4.13845 9.01407C4.45255 8.6048 4.62304 8.10143 4.62304 7.58333C4.62304 7.06523 4.45255 6.56187 4.13845 6.1526C3.82435 5.74333 3.38451 5.45143 2.88827 5.32292ZM2.31152 8.75C2.08338 8.75 1.86036 8.68158 1.67067 8.55338C1.48098 8.42519 1.33313 8.24298 1.24583 8.0298C1.15852 7.81662 1.13568 7.58204 1.18019 7.35573C1.22469 7.12942 1.33455 6.92154 1.49587 6.75838C1.65719 6.59521 1.86273 6.4841 2.08648 6.43908C2.31024 6.39407 2.54217 6.41717 2.75294 6.50547C2.96372 6.59378 3.14387 6.74331 3.27062 6.93517C3.39737 7.12703 3.46502 7.35259 3.46502 7.58333C3.46502 7.89275 3.34349 8.1895 3.12717 8.40829C2.91084 8.62708 2.61745 8.75 2.31152 8.75ZM8.07901 1.82292V0.583333C8.07901 0.428624 8.01825 0.280251 7.91009 0.170854C7.80192 0.0614583 7.65522 0 7.50226 0C7.3493 0 7.2026 0.0614583 7.09444 0.170854C6.98628 0.280251 6.92551 0.428624 6.92551 0.583333V1.82292C6.42927 1.95143 5.98943 2.24333 5.67533 2.6526C5.36123 3.06187 5.19074 3.56523 5.19074 4.08333C5.19074 4.60143 5.36123 5.1048 5.67533 5.51407C5.98943 5.92334 6.42927 6.21524 6.92551 6.34375V13.4167C6.92551 13.5714 6.98628 13.7197 7.09444 13.8291C7.2026 13.9385 7.3493 14 7.50226 14C7.65522 14 7.80192 13.9385 7.91009 13.8291C8.01825 13.7197 8.07901 13.5714 8.07901 13.4167V6.34375C8.57525 6.21524 9.0151 5.92334 9.32919 5.51407C9.64329 5.1048 9.81378 4.60143 9.81378 4.08333C9.81378 3.56523 9.64329 3.06187 9.32919 2.6526C9.0151 2.24333 8.57525 1.95143 8.07901 1.82292ZM7.50226 5.25C7.27412 5.25 7.0511 5.18158 6.86141 5.05338C6.67172 4.92519 6.52387 4.74298 6.43657 4.5298C6.34926 4.31662 6.32642 4.08204 6.37093 3.85573C6.41544 3.62942 6.5253 3.42154 6.68662 3.25838C6.84794 3.09521 7.05347 2.9841 7.27723 2.93908C7.50098 2.89407 7.73291 2.91717 7.94369 3.00547C8.15446 3.09378 8.33461 3.24331 8.46136 3.43517C8.58811 3.62703 8.65576 3.85259 8.65576 4.08333C8.65576 4.39275 8.53423 4.6895 8.31791 4.90829C8.10158 5.12708 7.80819 5.25 7.50226 5.25ZM15 9.91667C14.9995 9.39937 14.8294 8.89684 14.5163 8.48779C14.2032 8.07875 13.7648 7.7863 13.2698 7.65625V0.583333C13.2698 0.428624 13.209 0.280251 13.1008 0.170854C12.9927 0.0614583 12.846 0 12.693 0C12.54 0 12.3933 0.0614583 12.2852 0.170854C12.177 0.280251 12.1163 0.428624 12.1163 0.583333V7.65625C11.62 7.78476 11.1802 8.07666 10.8661 8.48593C10.552 8.8952 10.3815 9.39857 10.3815 9.91667C10.3815 10.4348 10.552 10.9381 10.8661 11.3474C11.1802 11.7567 11.62 12.0486 12.1163 12.1771V13.4167C12.1163 13.5714 12.177 13.7197 12.2852 13.8291C12.3933 13.9385 12.54 14 12.693 14C12.846 14 12.9927 13.9385 13.1008 13.8291C13.209 13.7197 13.2698 13.5714 13.2698 13.4167V12.1771C13.7648 12.047 14.2032 11.7546 14.5163 11.3455C14.8294 10.9365 14.9995 10.434 15 9.91667ZM12.693 11.0833C12.4649 11.0833 12.2418 11.0149 12.0522 10.8867C11.8625 10.7585 11.7146 10.5763 11.6273 10.3631C11.54 10.15 11.5172 9.91537 11.5617 9.68906C11.6062 9.46275 11.716 9.25487 11.8774 9.09171C12.0387 8.92855 12.2442 8.81743 12.468 8.77242C12.6917 8.7274 12.9237 8.7505 13.1344 8.83881C13.3452 8.92711 13.5254 9.07664 13.6521 9.2685C13.7788 9.46036 13.8465 9.68592 13.8465 9.91667C13.8465 10.2261 13.725 10.5228 13.5086 10.7416C13.2923 10.9604 12.9989 11.0833 12.693 11.0833Z" fill="black"/>
+                            </svg>
+                        </button>
+                        <div class="filter-dropdown">
+                            <label class="filter__label" for="matching-filter__sort">Sorteren:</label>
+                            <!-- Form attribute voor select buiten een form https://stackoverflow.com/questions/6644128/html-input-field-outside-of-a-form-->
+                            <select id="matching-filter__sort" name="sort" form="filter-form">
+                                <option value="best-match">Beste match</option>
+                                <option value="a-z" <%= filtersQuery.sort === 'a-z' && 'selected' %>>A > Z</option>
+                                <option value="z-a" <%= filtersQuery.sort === 'z-a' && 'selected' %>>Z > A</option>
+                                <option value="newest-first" <%= filtersQuery.sort === 'newest-first' && 'selected' %>>Nieuwste eerst</option>
+                                <option value="oldest-first" <%= filtersQuery.sort === 'oldest-first' && 'selected' %>>Oudste eerst</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
                 <div class="matching__grid">
-                    <% for (let i = 0; i < 20; i++) { %>
-                    <%- include('partials/matching') %>
-                    <% } %>
+                    <% matchingItems.forEach(item => { %>
+                        <%- include('partials/matching', { item }) %>
+                    <% }) %>
                 </div>
             </div>
+
+<!--         Dialog element https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dialog-->
+            <dialog id="filter-dialog" class="filter-dialog">
+                <div class="matching__aside">
+                    <div class="filter-dialog__header">
+                        <h2>Filters</h2>
+                        <button class="filter-dialog__close-btn" commandfor="filter-dialog" command="close">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="29" height="29" viewBox="0 0 29 29" fill="none">
+                                <path d="M28.5751 26.5235C28.7098 26.6582 28.8167 26.8181 28.8896 26.9941C28.9625 27.1701 29 27.3588 29 27.5493C29 27.7398 28.9625 27.9284 28.8896 28.1044C28.8167 28.2805 28.7098 28.4404 28.5751 28.5751C28.4404 28.7098 28.2805 28.8167 28.1044 28.8896C27.9284 28.9625 27.7398 29 27.5493 29C27.3588 29 27.1701 28.9625 26.9941 28.8896C26.8181 28.8167 26.6582 28.7098 26.5235 28.5751L14.5 16.5498L2.47654 28.5751C2.20448 28.8472 1.83548 29 1.45073 29C1.06597 29 0.696971 28.8472 0.424908 28.5751C0.152844 28.303 7.58447e-09 27.934 0 27.5493C-7.58447e-09 27.1645 0.152844 26.7955 0.424908 26.5235L12.4502 14.5L0.424908 2.47654C0.152844 2.20448 0 1.83548 0 1.45073C0 1.06597 0.152844 0.696971 0.424908 0.424908C0.696971 0.152844 1.06597 0 1.45073 0C1.83548 0 2.20448 0.152844 2.47654 0.424908L14.5 12.4502L26.5235 0.424908C26.7955 0.152844 27.1645 -7.58447e-09 27.5493 0C27.934 7.58447e-09 28.303 0.152844 28.5751 0.424908C28.8472 0.696971 29 1.06597 29 1.45073C29 1.83548 28.8472 2.20448 28.5751 2.47654L16.5498 14.5L28.5751 26.5235Z" fill="white"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <form action="/matching" method="GET">
+                        <%- include('partials/matching-filters', {
+                            uniqueIdModifier: 'dialog',
+                            viewMode,
+                            filtersQuery,
+                            matchingItems,
+                            profileRoles,
+                            projectTypes,
+                            projectGenres,
+                            highestProfileAge,
+                            lowestProfileAge,
+                            highestExperience,
+                            lowestExperience
+                        }) %>
+
+                        <button type="submit">Filteren</button>
+                    </form>
+                </div>
+            </dialog>
         </section>
-
-
     </main>
-
+    <%- include('partials/footer') %>
 </body>
 
+<!-- voor de slider (noUIslider) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.8.1/nouislider.min.js"></script>
 
 <script>
-  const filterGroups = document.querySelectorAll(".filter-dropdown");
+<!--  dropdown volledig veld aan kunnen klikken-->
+const filterGroups = document.querySelectorAll(".filter-dropdown");
 
-  filterGroups.forEach(group => {
+filterGroups.forEach(group => {
     const label = group.querySelector('label');
     label.addEventListener('click', () => {
       const select = group.querySelector('select');
-      select?.showPicker()
       //   showPicker opent de combobox van een select element https://developer.mozilla.org/en-US/docs/Web/API/HTMLSelectElement/showPicker
+      select?.showPicker()
     })
-  })
+})
+
+// Verstuur form wanneer er wordt gesorteerd
+const selectedSort = document.getElementById('matching-filter__sort');
+selectedSort.addEventListener('change', () => {
+  document.getElementById('filter-form').submit();
+})
+
+// noUiSliders
+const filterSliderFieldsets = document.querySelectorAll('.filter-slider__fieldset');
+filterSliderFieldsets.forEach(fieldset => {
+  const slider = fieldset.querySelector('.filter-slider');
+
+  // dataset http://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/dataset
+  const min = Number(slider.dataset.min || 99);
+  const max = Number(slider.dataset.max || 99);
+  const currentMin = Number(slider.dataset.currentMin);
+  const currentMax = Number(slider.dataset.currentMax);
+
+  noUiSlider.create(slider, {
+    start: [currentMin || min, currentMax || max],
+    connect: true,
+    step: 1,
+    range: { min: min, max: max},
+    tooltips: true,
+
+    format: {
+      to: value => Math.round(value),
+      from: value => Number(value)
+    }});     console.log(currentMin);
+
+
+  // Events callbacks https://refreshless.com/nouislider/events-callbacks/
+  // Getting slider values https://refreshless.com/nouislider/slider-read-write/
+  slider.noUiSlider.on('update', () => {
+    const selectedValue = slider.noUiSlider.get(true); // selectedValue returns [min, max]
+
+    const minInput = fieldset.querySelector('.filter-slider__min-value')
+    const maxInput = fieldset.querySelector('.filter-slider__max-value')
+
+    // Huidige value van een input element https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/value
+    minInput.value = selectedValue[0];
+    maxInput.value = selectedValue[1];
+  });
+})
 </script>
 </html>

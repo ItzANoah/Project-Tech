@@ -1,0 +1,98 @@
+<fieldset>
+    <legend>Weergave</legend>
+    <div class="filter-option">
+        <input type="radio" id="all-<%= uniqueIdModifier %>" name="view" value="all" <%= viewMode === 'all' && 'checked' %>>
+        <label for="all-<%= uniqueIdModifier %>">Alle</label>
+    </div>
+
+    <div class="filter-option">
+        <input type="radio" id="profiles-<%= uniqueIdModifier %>" name="view" value="profiles" <%= viewMode === 'profiles' && 'checked' %>>
+        <label for="profiles-<%= uniqueIdModifier %>">Talenten</label>
+    </div>
+
+    <div class="filter-option">
+        <input type="radio" id="projects-<%= uniqueIdModifier %>" name="view" value="projects" <%= viewMode === 'projects' && 'checked' %>>
+        <label for="projects-<%= uniqueIdModifier %>">Projecten</label>
+    </div>
+</fieldset>
+
+<% if (projectTypes.length !== 0) { %>
+    <fieldset>
+        <legend>Project type</legend>
+        <% projectTypes.forEach((type, i) => { %>
+            <div class="filter-option">
+                <input type="checkbox" id="type-<%= i %>-<%= uniqueIdModifier %>" name="<%= type %>" <%= filtersQuery[type] === 'on' && 'checked' %>>
+                <label for="type-<%= i %>-<%= uniqueIdModifier %>"><%= type %></label>
+            </div>
+        <% }) %>
+    </fieldset>
+<% } %>
+
+<% if (profileRoles.length !== 0) { %>
+    <fieldset>
+        <legend>Rollen</legend>
+        <% profileRoles.forEach((role, i) => { %>
+            <div class="filter-option">
+                <input type="checkbox" id="role-<%= i %>-<%= uniqueIdModifier %>" name="<%= role %>" <%= filtersQuery[role] === 'on' && 'checked' %>>
+                <label for="role-<%= i %>-<%= uniqueIdModifier %>"><%= role %></label>
+            </div>
+        <% }) %>
+    </fieldset>
+<% } %>
+
+<% if (projectGenres.length !== 0) { %>
+    <fieldset>
+        <legend>Genre</legend>
+        <% projectGenres.forEach((genre, i) => { %>
+            <div class="filter-option">
+                <input type="checkbox" id="genre-<%= i %>-<%= uniqueIdModifier %>" name="<%= genre %>" <%= filtersQuery[genre] === 'on' && 'checked' %>>
+                <label for="genre-<%= i %>-<%= uniqueIdModifier %>"><%= genre %></label>
+            </div>
+        <% }) %>
+    </fieldset>
+<% } %>
+
+<% if (highestExperience != null && lowestExperience != null) { %>
+    <fieldset class="filter-slider__fieldset">
+        <legend>Ervaring (jaren)</legend>
+        <div class="filter-slider"
+             data-max="<%= highestExperience %>"
+             data-min="<%= lowestExperience %>"
+             data-current-min="<%= filtersQuery['experienceMin'] %>"
+             data-current-max="<%= filtersQuery['experienceMax'] %>"
+        ></div>
+
+        <!-- hidden input https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/hidden -->
+        <input type="hidden" name="experienceMin" class="filter-slider__min-value">
+        <input type="hidden" name="experienceMax" class="filter-slider__max-value">
+    </fieldset>
+<% } %>
+
+<% if (highestProfileAge && lowestProfileAge) { %>
+    <fieldset class="filter-slider__fieldset">
+        <legend>Leeftijd</legend>
+        <div class="filter-slider"
+             data-max="<%= highestProfileAge %>"
+             data-min="<%= lowestProfileAge %>"
+             data-current-min="<%= filtersQuery['ageMin'] %>"
+             data-current-max="<%= filtersQuery['ageMax'] %>"
+        ></div>
+
+        <input type="hidden" name="ageMin" class="filter-slider__min-value">
+        <input type="hidden" name="ageMax" class="filter-slider__max-value">
+    </fieldset>
+<% } %>
+
+<% if (viewMode === 'projects') { %>
+    <fieldset>
+        <legend>Regisseur</legend>
+        <div class="filter-option filter-option--last">
+            <input placeholder="Christopher Nolan" type="search" id="search-director-<%= uniqueIdModifier %>" name="director">
+            <label for="search-director-<%= uniqueIdModifier %>">
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 25 25" fill="none">
+                    <path d="M24.5884 22.6243L19.0982 17.1322C20.7444 14.9872 21.5129 12.2964 21.2479 9.60559C20.983 6.91482 19.7044 4.42557 17.6715 2.64281C15.6386 0.860048 13.0037 -0.0827372 10.3012 0.00570391C7.59878 0.0941451 5.03115 1.20719 3.1192 3.11905C1.20725 5.03091 0.0941494 7.59843 0.00570417 10.3008C-0.0827411 13.0031 0.860088 15.6379 2.64293 17.6707C4.42578 19.7035 6.91514 20.982 9.60603 21.2469C12.2969 21.5119 14.9879 20.7434 17.1329 19.0974L22.6277 24.593C22.7567 24.722 22.9099 24.8244 23.0785 24.8942C23.2471 24.9641 23.4278 25 23.6103 25C23.7928 25 23.9735 24.9641 24.1421 24.8942C24.3107 24.8244 24.4639 24.722 24.593 24.593C24.722 24.464 24.8244 24.3108 24.8942 24.1422C24.9641 23.9736 25 23.7929 25 23.6104C25 23.4279 24.9641 23.2472 24.8942 23.0786C24.8244 22.91 24.722 22.7568 24.593 22.6278L24.5884 22.6243ZM2.79786 10.6585C2.79786 9.10382 3.25891 7.58401 4.12271 6.29131C4.9865 4.9986 6.21425 3.99106 7.65069 3.3961C9.08714 2.80113 10.6678 2.64546 12.1927 2.94877C13.7176 3.25208 15.1183 4.00075 16.2177 5.10011C17.3171 6.19946 18.0658 7.60013 18.3692 9.12497C18.6725 10.6498 18.5168 12.2304 17.9218 13.6667C17.3268 15.1031 16.3192 16.3308 15.0265 17.1946C13.7337 18.0583 12.2138 18.5194 10.659 18.5194C8.57478 18.5172 6.5765 17.6883 5.10271 16.2146C3.62892 14.7409 2.8 12.7427 2.79786 10.6585Z" fill="white"/>
+                </svg>
+            </label>
+        </div>
+    </fieldset>
+<% } %>

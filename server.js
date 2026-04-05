@@ -57,7 +57,7 @@ app.use(session({
   secret: process.env.SESSION_SECRET || 'fallback-geheim',
   resave: false,
   saveUninitialized: false,
-  cookie: { 
+  cookie: {
     secure: false, // moet op true als we https gaan gebruikern
     maxAge: 3600000 // 1 uur lang cookie
   }
@@ -135,14 +135,14 @@ app.get('/register', (req, res) => {
 app.post('/register', async (req, res) => {
   try {
     // alles van stap 1 & 2 opslaan
-    const { 
-      username, 
-      email, 
-      age, 
-      password, 
+    const {
+      username,
+      email,
+      age,
+      password,
       function: userFunction,
       bio,
-      experience 
+      experience
     } = req.body;
 
     let errors = [];
@@ -194,7 +194,7 @@ app.post('/register', async (req, res) => {
 
     // Opslaan in de juiste collectie
     await profileCollection.insertOne(newUser);
-    
+
     console.log('Volledig profiel opgeslagen voor:', username);
     res.redirect('/login');
 
@@ -206,10 +206,6 @@ app.post('/register', async (req, res) => {
 
 app.get('/login', (req, res) => {
   res.render('login');
-});
-
-app.get('/matching', (req, res) => {
-  res.render('matching');
 });
 
 // crew profile
@@ -369,10 +365,10 @@ app.post('/login', async (req, res) => {
         return res.redirect('/current-matches');
       }
     }
-    
+
     // Als de gebruiker niet bestaat of het wachtwoord klopt niet
     return res.render('login', { error: 'Onjuiste gebruikersnaam of wachtwoord' });
-    
+
   } catch (err) {
     console.error("Login fout:", err);
     res.status(500).send("Serverfout.");
@@ -710,4 +706,157 @@ app.post('/add-existing-project', checkInlog, async (req, res) => {
     } catch (err) { 
         res.status(500).json({ success: false }); 
     }
+});
+
+// Aanroepen collections profiles en projects
+const getCollection = async (collection) => {
+  const database = client.db("filmcrew");
+  return await database.collection(collection).find().toArray();
+}
+
+const getDistinctValues = async (collection, key) => {
+  const database = client.db("filmcrew");
+  return await database.collection(collection).distinct(key);
+}
+
+const getMinOrMaxValue = async (key, sort) => {
+  const database = client.db("filmcrew");
+  const minOrMaxDocument = await database.collection('profiles')
+    .find({[key]: {$exists: true}})
+    // Find() alleen op een specifieke key https://www.geeksforgeeks.org/mongodb/mongodb-check-the-existence-of-the-fields-in-the-specified-collection/
+    .sort({[key]: sort})
+    .toArray();
+
+  return minOrMaxDocument[0][key];
+}
+
+// Matching
+app.get('/matching', async (req, res) => {
+  try {
+    let matchingItems = [];
+    let profileRoles = [];
+    let projectTypes = [];
+    let projectGenres = [];
+    let highestProfileAge = null;
+    let lowestProfileAge = null;
+    let highestExperience = null;
+    let lowestExperience = null;
+
+    const filtersQuery = req.query;
+    const viewMode = filtersQuery.view || 'all';
+
+    if (viewMode === "all") {
+      let profiles = await getCollection('profiles');
+      let projects = await getCollection('projects');
+
+      // Concat() voor mergen meerdere arrays https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat
+      matchingItems = profiles.concat(projects);
+    }
+
+    // Alle profiles filters
+    if (viewMode === "profiles") {
+      matchingItems = await getCollection('profiles');
+
+      profileRoles = await getDistinctValues('profiles', 'role');
+      highestProfileAge = await getMinOrMaxValue('age', -1);
+      lowestProfileAge = await getMinOrMaxValue('age', 1);
+      highestExperience = await getMinOrMaxValue('experience', -1);
+      lowestExperience = await getMinOrMaxValue('experience', 1);
+
+      const hasFilteredRoles = profileRoles.some(role => filtersQuery[role] === 'on')
+      if (hasFilteredRoles) {
+        matchingItems = matchingItems.filter(item => filtersQuery[item.role] === 'on');
+      }
+
+      const hasFilteredAge = (filtersQuery['ageMin'] && filtersQuery['ageMax']);
+      if (hasFilteredAge) {
+        matchingItems = matchingItems.filter(item => item.age >= filtersQuery['ageMin'] && item.age <= filtersQuery['ageMax']);
+      }
+
+      const hasFilteredExperience = (filtersQuery['experienceMin'] && filtersQuery['experienceMax']);
+      if (hasFilteredExperience) {
+        matchingItems = matchingItems.filter(item => item.experience >= filtersQuery['experienceMin'] && item.experience <= filtersQuery['experienceMax']);
+      }
+    }
+
+    // alle project filters
+    if (viewMode === "projects") {
+      matchingItems = await getCollection('projects');
+      projectTypes = await getDistinctValues('projects', 'type');
+      projectGenres = await getDistinctValues('projects', 'genre');
+
+      const hasFilteredTypes = projectTypes.some(type => filtersQuery[type] === 'on')
+      if (hasFilteredTypes) {
+        matchingItems = matchingItems.filter(item => filtersQuery[item.type] === 'on');
+      }
+
+      const hasFilteredGenres = projectGenres.some(genre => filtersQuery[genre] === 'on')
+      if (hasFilteredGenres) {
+        matchingItems = matchingItems.filter(item => filtersQuery[item.genre] === 'on');
+      }
+
+      const hasFilteredDirector = filtersQuery['director'];
+      if (hasFilteredDirector) {
+        // Includes is case sensitive https://www.reddit.com/r/learnjavascript/comments/qa5ur6/how_do_i_use_includes_and_tolowerccase_in_same_if/
+        matchingItems = matchingItems.filter(item => item.director.toLowerCase().includes(filtersQuery['director'].toLowerCase()));
+      }
+    }
+
+
+    // Alle sorteer opties
+    if (filtersQuery['sort'] === 'a-z' || filtersQuery['sort'] === 'z-a') {
+      const directionSort = filtersQuery['sort'] === 'a-z' ? 1 : -1;
+      // sorteren op een volgorde, sort() https://www.freecodecamp.org/news/how-to-sort-alphabetically-in-javascript/
+      // Uitleg video van sort met comparison function https://www.youtube.com/watch?v=CTHhlx25X-U
+      matchingItems = matchingItems.sort((item1, item2) => {
+        const aName = item1.name.toLowerCase();
+        const bName = item2.name.toLowerCase();
+        if (aName < bName) return -1 * directionSort;
+        if (aName > bName) return 1 * directionSort;
+        return 0;
+      })
+    }
+
+    if (filtersQuery['sort'] === 'newest-first' || filtersQuery['sort'] === 'oldest-first') {
+      const directionSort = filtersQuery['sort'] ? 1 : -1;
+
+      matchingItems = matchingItems.sort((item1, item2) => {
+        const aDate = item1.createdAt || item1.updatedAt;
+        const bDate = item2.createdAt || item2.updatedAt;
+        if (aDate < bDate) return 1 * directionSort;
+        if (aDate > bDate) return -1 * directionSort;
+        return 0;
+      })
+    }
+
+    res.render('matching', {
+      viewMode,
+      filtersQuery,
+      matchingItems,
+      profileRoles,
+      projectTypes,
+      projectGenres,
+      highestProfileAge,
+      lowestProfileAge,
+      highestExperience,
+      lowestExperience
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Database has an error");
+  }
+});
+
+// Home
+app.get('/', async (req, res) => {
+  try {
+    const profiles = await getCollection('profiles');
+    const projects = await getCollection('projects');
+    const matchingItems = profiles.concat(projects);
+
+    res.render('index', { matchingItems });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Database has an error");
+  }
 });
