@@ -120,11 +120,6 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-// Een test route
-app.get('/', (req, res) => {
-  res.render('index');
-});
-
 app.listen(port, () => {
   console.log(`Server draait op http://localhost:${port}`);
 });
@@ -206,10 +201,6 @@ app.post('/register', async (req, res) => {
 
 app.get('/login', (req, res) => {
   res.render('login');
-});
-
-app.get('/matching', (req, res) => {
-  res.render('matching');
 });
 
 // crew profile
