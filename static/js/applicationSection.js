@@ -41,7 +41,8 @@ async function sendApplication(button) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                receiverId: receiverId
+                receiverId: receiverId,
+                message: "Ik wil graag solliciteren op deze rol!" // Standaardbericht voor de snelle knop
             })
         });
 

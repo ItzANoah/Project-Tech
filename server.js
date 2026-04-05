@@ -380,8 +380,8 @@ app.post('/api/submit-application', async (req, res) => {
     const db = client.db('filmcrew');
     
     const newApplication = {
-        senderId: new ObjectId(req.session.userID), // De ingelogde persoon
-        receiverId: new ObjectId(req.body.receiverId), // De eigenaar van het project
+        senderId: String(req.session.userID), // De ingelogde persoon als string
+        receiverId: String(req.body.receiverId), // De eigenaar van het project als string
         status: "pending",
         message: req.body.message, // De tekst uit het textarea veld
         timestamp: new Date() // Maakt automatisch de $date aan
