@@ -1,0 +1,16 @@
+<!-- open sollicitatie grid kaart -->
+<div class="application-card">
+    <div class="application-card__body">
+        <h3><%= application.title %></h3>
+        <p><%= application.description %></p>
+    </div>
+    
+    <div class="application-card__actions">
+        <button type="button" 
+                class="btn-apply" 
+                data-receiver="<%= projectData.ownerId %>" 
+                onclick="sendApplication(this)">
+            Solliciteer nu
+        </button>
+    </div>
+</div>

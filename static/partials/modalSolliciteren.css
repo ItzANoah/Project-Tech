@@ -1,0 +1,88 @@
+/* Container voor de sollicitatie modal */
+.modal-solliciteren-content {
+    position: relative;
+    padding: 30px;
+    text-align: center;
+    max-width: 600px;
+}
+
+/* Kruisje aan de rechterkant zoals afgesproken */
+.close-modal {
+    position: absolute;
+    top: 0.5em;
+    right: 0.7em;
+    background: none;
+    border: none;
+    font-size: var(--h2Size, 2em);
+    font-weight: var(--fontWeightBold);
+    cursor: pointer;
+    line-height: 1;
+    color: var(--accentColorRed);
+    transition: all ease 0.2s;
+}
+
+.close-modal:hover {
+    background: none;
+    color: var(--accentColorGold);
+}
+
+/* Styling voor de titel */
+#modalSolliciteren h3 {
+    margin-top: 1rem;
+    color: var(--accentColorRed);
+    font-family: var(--montserratFont);
+}
+
+/* Zorg dat de inputvelden netjes links uitlijnen binnen de gecentreerde modal */
+#modalSolliciteren .form-group {
+    text-align: left;
+}
+
+/* Styling voor de live woordenteller */
+#wordCount {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: -10px;
+    margin-bottom: 15px;
+    text-align: right;
+}
+
+/* Het textarea veld */
+#modalSolliciteren textarea {
+    width: 100%;
+    min-height: 150px;
+    padding: 1rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 15px;
+    border: 2px solid var(--accentColorRed);
+    font-family: var(--montserratFont);
+    box-sizing: border-box;
+    resize: vertical;
+}
+
+#modalSolliciteren textarea:focus {
+    outline: 2px solid #005fcc; /* Standaard blauwe outline */
+    border-color: #005fcc;
+}
+
+/* De Versturen knop in de modal */
+#modalSolliciteren .btn-save {
+    display: block;
+    width: 100%;
+    max-width: 300px;
+    margin: 1.5rem auto 0 auto;
+    background-color: var(--accentColorRed);
+    color: var(--accentColorWhite);
+    border: none;
+    border-radius: 25px;
+    padding: 0.8rem;
+    font-family: var(--montserratFont);
+    font-weight: var(--fontWeightBold);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#modalSolliciteren .btn-save:hover {
+    background-color: var(--accentColorGold);
+}

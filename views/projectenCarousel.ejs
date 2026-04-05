@@ -1,0 +1,22 @@
+
+<!-- projectenCarousel -->
+ <!-- de mogelijkheid om een extra class toe te voegen als iemand anders dit wil gebruiken-->
+<section class="carousel <%= extraClass || '' %>">
+    <h3 class="carousel__Title"><%= title %></h3>
+    <ul class="carousel__list" id="<%= carouselId %>">
+    
+    <!-- Check of de array met projecten bestaat en niet leeg is -->
+    <% if (items && items.length > 0) { %>
+        <!-- Loop door elk project (item) in de array heen -->
+        <% items.forEach(item => { %>
+            <li class="carousel__list-Item">
+                <!-- Laad voor elk project het specifieke 'Card' component in -->
+                <%- include('partials/projectenCarouselCard', { project: item }) %>
+            </li>
+        <% }) %>
+    <% } else { %>
+        <!-- Fallback voor als er geen data is -->
+        <p class="no-data-msg">Geen projecten gevonden.</p>
+    <% } %>
+</ul>
+</section>

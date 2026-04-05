@@ -22,20 +22,199 @@ ZELF IETS TOEVOEGEN IN HET CAROUSEL
     padding-top: 1rem;
 }
 
+/* Dwing de carrousel om items naast elkaar te houden */
 .carousel__list {
-  width: 100%;
-  padding: 20px;
-  display: flex;
-  gap: 2vw;
-  overflow-x: scroll;
-  scroll-snap-type: x mandatory;
-  align-items: stretch;
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 20px;
+    overflow-x: auto;
+    padding: 20px 0;
+    align-items: stretch; /* Zorgt dat alle kaarten even hoog zijn */
 }
 
+/* De container van de kaart (li) */
 .carousel__list-Item {
-  list-style-type: none;
-  scroll-snap-align: center;
-  flex: 0 0 25%;
+    flex: 0 0 250px; 
+    list-style: none;
+}
+
+/* De kaart zelf */
+.matching__card {
+    width: 100%;
+    height: 100%;
+    background: var(--accentColorWhite);
+    border: 1px solid #ddd;
+    border-radius: var(--buttonCornerRadius); 
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+}
+
+/* De afbeelding bovenin de kaart */
+.matching__image {
+    width: 100%;
+    height: 100%;
+    /* 'contain' zorgt dat de hele afbeelding zichtbaar blijft binnen de box */
+    object-fit: contain; 
+    background-color: black; 
+}
+
+/* De tekst-container binnen de kaart */
+.matching__card-content {
+    padding: 1rem;
+    flex-grow: 1; /* Duwt de knop naar beneden als er weinig tekst is */
+}
+
+/* Maak de titel rood en gecentreerd (zoals bij vacatures) */
+.matching__card-title {
+    text-align: center;
+    color: var(--accentColorRed);
+    font-family: var(--montserratFont);
+    margin-bottom: 0.2rem;
+}
+
+.matching__card-subtitle {
+    text-align: center;
+    color: #666;
+    font-weight: bold;
+    font-size: 0.9em;
+    margin-bottom: 0.8rem;
+}
+
+.delete-project-btn {
+    display: none; /* Standaard onzichtbaar */
+    position: absolute;
+    top: 0.5em;
+    right: 0.7em;
+    background: none;
+    border: none;
+    font-size: var(--h2Size, 2em);
+    font-weight: var(--fontWeightBold);
+    cursor: pointer;
+    line-height: 1;
+    color: var(--accentColorRed);
+    transition: all ease 0.2s;
+    z-index: 10;
+}
+
+/* Alleen tonen als de body de class 'is-editing' heeft */
+.is-editing .delete-project-btn {
+    display: block;
+}
+
+/* Verberg de melding zodra we in edit-modus gaan */
+.is-editing .no-data-msg {
+    display: none;
+}
+
+.matching__image-placeholder {
+    width: 100%;
+    height: 200px;
+    background-color: black; 
+}
+
+/* De Verwijderknop */
+.delete-project-btn {
+    display: none; /* Standaard onzichtbaar */
+    position: absolute;
+    top: 0.5em;
+    right: 0.7em;
+    background: none;
+    border: none;
+    font-size: var(--h2Size, 2em);
+    font-weight: var(--fontWeightBold);
+    cursor: pointer;
+    line-height: 1;
+    color: var(--accentColorRed);
+    transition: all ease 0.2s;
+    z-index: 10;
+}
+
+/* Toon de knop alleen als de body 'is-editing' heeft */
+.is-editing .delete-project-btn {
+    display: block;
+}
+
+.delete-project-btn:hover {
+    background: none;
+    color: var(--accentColorGold);
+}
+
+.matching__card-image-container {
+    width: 100%;
+    height: 250px; 
+    background-color: black;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 
+#addProjectModal {
+    text-align: center;
+}
+
+/* Forceer de gap van 1rem tussen de titel en de knoppen */
+#addProjectModal h2, 
+#addProjectModal h3 {
+    margin-bottom: 1rem !important;
+}
+
+/* knoppen in de modal */
+#addProjectModal .tab-btn {
+    background-color: var(--accentColorRed);
+    color: var(--accentColorWhite);
+    border: none;
+    border-radius: 25px;
+    padding: 0.8rem 1.5rem;
+    font-family: var(--montserratFont);
+    font-weight: var(--fontWeightBold);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin: 0 0.5rem 1rem 0.5rem; /* Marges netjes verdeeld */
+    display: inline-block;
+}
+
+#addProjectModal .tab-btn:hover {
+    background-color: var(--accentColorGold);
+}
+
+#modalSearchInput {
+    width: 80%;
+    max-width: 400px;
+    margin: 1.5rem auto;
+    padding: 0.8rem 1.2rem;
+    border-radius: 25px;
+    border: 2px solid var(--accentColorRed);
+    font-family: var(--montserratFont);
+    display: block;
+}
+
+/* Zorg dat de modal box relative is voor absolute positionering van kruisje */
+#addProjectModal .modal-content,
+#addProjectModal .modal__content {
+    position: relative;
+}
+
+/* Override voor het kruisje in de carousel modal */
+#addProjectModal .close-modal {
+    position: absolute;
+    top: 0.5em;
+    right: 0.7em;
+    background: none !important;
+    border: none;
+    font-size: var(--h2Size, 2em);
+    font-weight: var(--fontWeightBold);
+    cursor: pointer;
+    line-height: 1;
+    color: var(--accentColorRed) !important;
+    transition: all ease 0.2s;
+    z-index: 10;
+}
+
+#addProjectModal .close-modal:hover {
+    background: none !important;
+    color: var(--accentColorGold) !important;
+}

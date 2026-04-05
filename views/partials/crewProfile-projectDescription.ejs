@@ -1,0 +1,8 @@
+    
+     <!-- res render stuurt het object projectData mee naar dit document -->
+     <!-- de "projectData.name" wordt vervangen door de string uit database -->
+        <p id="projectDescription" class="project-text" contenteditable="false">
+        <%= projectData.bio || 'Beschrijving van het project' %>
+        </p>
+        <span id="descCounter" class="char-counter edit-only">0/500</span>
+        <input type="hidden" name="description" id="inputDescription">

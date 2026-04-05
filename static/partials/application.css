@@ -1,0 +1,189 @@
+/* Zorg dat de sectie zelf gecentreerd is en 75% breed */
+.applications-section {
+    max-width: 75%; 
+    margin: 0 auto;
+    padding: 2rem 0; 
+}
+
+.application-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    list-style: none;
+    padding: 0;
+}
+
+/* De kaart zelf */
+.application-card {
+    background: var(--accentColorWhite);
+    border: 1px solid #ddd;
+    border-radius: 15px;
+    padding: 20px;
+    position: relative; /* Nodig voor het kruisje rechtsboven */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 180px;
+}
+
+.application-card__title {
+    text-align: center;
+    color: var(--accentColorRed);
+    font-family: var(--montserratFont);
+}
+
+/* Het kruisje in edit-mode */
+.delete-app-btn {
+    display: none; /* Standaard weg */
+    position: absolute;
+    top: 0.5em;
+    right: 0.7em;
+    background: none;
+    border: none;
+    font-size: var(--h2Size, 2em);
+    font-weight: var(--fontWeightBold);
+    cursor: pointer;
+    line-height: 1;
+    color: var(--accentColorRed);
+    transition: all ease 0.2s;
+    z-index: 10;
+}
+
+.delete-app-btn:hover {
+    background: none !important;
+    color: var(--accentColorGold) !important;
+}
+.is-editing .delete-app-btn {
+    display: block;
+}
+
+/* De 'Plus' kaart voor het toevoegen */
+.add-application-card {
+    border: 0.15em dashed #bbb !important;
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #888;
+}
+
+.add-application-card .plus-icon {
+    font-size: 3em;
+}
+
+/* Styling voor de tekst onder het plusje */
+.add-application-card p {
+    font-family: var(--montserratFont);
+    font-weight: var(--fontWeightBold);
+    font-size: 1em;
+    margin: 0;
+}
+
+/* De solliciteer-knop is standaard zichtbaar */
+.btn-apply {
+    display: block;
+    width: 100%;
+    background-color: var(--accentColorRed);
+    color: var(--accentColorWhite);
+    border: none;
+    border-radius: 25px;
+    padding: 0.8rem;
+    font-family: var(--montserratFont);
+    font-weight: var(--fontWeightBold);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-apply:hover {
+    background-color: var(--accentColorGold);
+}
+
+.is-editing .btn-apply {
+    display: none;
+}
+
+/* als er geen sollicitaties zijn */
+.no-apps-msg {
+    grid-column: 1 / -1; /* Zorgt dat hij over de hele breedte van de 2 kolommen gaat */
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* Zorg dat de content perfect in het midden staat bij een lege melding */
+.no-apps-msg .application-card__content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+}
+
+/* Verberg de melding tijdens het bewerken, we hebben dan de plus knop */
+.is-editing .no-apps-msg {
+    display: none;
+}
+
+#applicationModal input,
+#applicationModal textarea {
+    width: 100%;
+    padding: 0.8rem 1.2rem;
+    margin-bottom: 1rem;
+    border-radius: 15px;
+    border: 2px solid var(--accentColorRed);
+    font-family: var(--montserratFont);
+    box-sizing: border-box;
+}
+
+#applicationModal textarea,
+#appDesc {
+    min-height: 140px;
+    resize: vertical;
+}
+
+/* Exacte spacing tussen de H3 titel en het eerste inputveld */
+#applicationModal h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+
+#applicationModal .btn-save {
+    display: block;
+    width: 100%;
+    max-width: 300px;
+    margin: 1.5rem auto 0 auto;
+    background-color: var(--accentColorRed);
+    color: var(--accentColorWhite);
+    border: none;
+    border-radius: 25px;
+    padding: 0.8rem;
+    font-family: var(--montserratFont);
+    font-weight: var(--fontWeightBold);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#applicationModal .btn-save:hover {
+    background-color: var(--accentColorGold);
+}
+
+/* Het kruisje in de sollicitatie modal */
+#applicationModal .close-modal {
+    position: absolute;
+    top: 0.5em;
+    right: 0.7em;
+    background: none;
+    border: none;
+    font-size: var(--h2Size, 2em);
+    font-weight: var(--fontWeightBold);
+    cursor: pointer;
+    line-height: 1;
+    color: var(--accentColorRed);
+    transition: all ease 0.2s;
+}
+
+#applicationModal .close-modal:hover {
+    background: none !important;
+    color: var(--accentColorGold) !important;
+}
