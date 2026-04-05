@@ -10,7 +10,6 @@ const mongoose = require('mongoose');
 const { MongoClient, ObjectId } = require('mongodb');
 const validator = require('validator');
 
-app.use(express.urlencoded({ extended: true }))
 const bcrypt = require('bcrypt');
 require('dotenv').config();
 
@@ -21,10 +20,6 @@ app.use(express.static('public')); // Zorg dat deze er ook staat voor je uploads
 app.set('view engine', 'ejs');
 app.set('views', './views');
 
-require('dotenv').config(); // MOET bovenaan staan voor de database link!
-const { MongoClient } = require('mongodb');
-const bcrypt = require('bcrypt');
-const path = require('path'); // Ingebouwd in Node, hoef je niet te installeren
 //casper was hier//
 
 // Database connectie variabelen
