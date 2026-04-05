@@ -23,6 +23,8 @@
 }
 .register__login-redirect a{
   transition: all 0.2s;
+}.register__login-redirect a:visited{
+  color: var(--accentColorGray);
 }
 .register__login-redirect a:hover{
   color: var(--accentColorRed);
@@ -85,6 +87,8 @@
 }
 .login__register-redirect a{
   transition: all 0.2s;
+}.login__register-redirect a:visited{
+  color: var(--accentColorGray);
 }
 .login__register-redirect a:hover{
   color: var(--accentColorRed);

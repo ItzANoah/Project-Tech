@@ -1,0 +1,50 @@
+<!--Matching-card-->
+<article class="matching__card">
+    <header>
+        <img src="/images/cameraman.png" width="335" alt="">
+        
+        <% if (match.status === 'pending') { %>
+            <div class="matches__newestmatch-noti">Nieuw!</div>
+        <% } %>
+    </header>
+    
+    <div class="matching__card-info">
+        <h3><%= match.jobTitel %></h3>
+        <h4><%= match.senderName %></h4>
+    </div>
+
+    <div class="matching__card-link">
+        <div class="matching__open" data-target="modal-<%= match._id %>" role="button" tabindex="0">
+            Bekijk details
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-<%= match._id %>">
+        <div class="modal-content">
+            <button class="matching__modal-close">&times;</button>
+            <h2>Match Details</h2>
+            <hr>
+            <div class="modal-body">
+                <p><strong>Functie:</strong> <%= match.jobTitel %></p>
+                <p><strong>Beschrijving:</strong> <%= match.jobDescription %></p>
+                <p><strong>Bericht van <%= match.senderName %>:</strong></p>
+                <blockquote class="modal-message">"<%= match.message %>"</blockquote>
+            </div>
+
+            <% if (match.status === 'pending') { %>
+                <div class="modal-actions">
+                    <form action="/match/accept/<%= match._id %>" method="POST">
+                        <button type="submit" class="matching__btn matching__accept">Accepteren</button>
+                    </form>
+                    <form action="/match/decline/<%= match._id %>" method="POST">
+                        <button type="submit" class="matching__btn matching__decline">Afwijzen</button>
+                    </form>
+                </div>
+            <% } else { %>
+                <div class="modal-actions">
+                    <p>Email: <a href="mailto:<%= match.senderEmail %>"><%= match.senderEmail %></a></p>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</article>

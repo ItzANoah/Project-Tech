@@ -233,10 +233,98 @@
     flex-wrap: wrap; 
 }
 
+.modal-meta .tag {
+    background-color: var(--accentColorGold);
+    padding: 0.4em 1em;
+    border-radius: 1em;
+    font-size: 0.85em;
+    font-weight: var(--fontWeightBold);
+}
+
+.modal-description {
+    line-height: 1.6;
+    font-size: 0.95em;
+}
+
+/* De project-kaarten moeten nu buttons zijn, dus we moeten de button styling resetten */
+.project-link {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Verberg alle aanpas-knoppen standaard */
+.edit-only {
+    display: none;
+}
+
+/* Als de body de class 'is-editing' heeft, toon dan de aanpas-opties */
+body.is-editing .edit-only {
+    display: inline-block;
+}
+
+/* feedback dat je aan het editen bent */
+body.is-editing section {
+    outline: 0.1em dashed var(--accentColorGold);
+    cursor: pointer;
+}
+
+body.is-editing main {
+    outline: 0.1em dashed var(--accentColorGold);
+    cursor: pointer;
+}
+
+/* Standaard is de 'voeg toe' kaart onzichtbaar */
+.add-project-card {
+    display: none !important; 
+}
+
+/* ALLEEN als de body de class 'is-editing' heeft szie je de kaart */
+body.is-editing .add-project-card {
+    display: flex !important;
+    border: 0.2em dashed var(--accentColorRed);
+    justify-content: center;
+    align-items: center;
+    min-height: 12em;
+    background-color: var(--accentColorWhite);
+}
+
+/* Styling voor de knop binnen de kaart */
+.add-project-card .add-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: var(--montserratFont);
+    color: var(--accentColorRed);
+}
+
+/* Grootte plus */
+.add-project-card .plus-icon {
+    display: block;
+    font-size: 5em; 
+    line-height: 1;
+    margin-bottom: 0.1em;
+    transition: transform 0.3s ease;
+}
+
+.add-project-card:hover .plus-icon {
+    transform: scale(1.1); /* Effect bij hover */
+}
+
+.add-project-card h3 {
+    font-family: var(--montserratFont);
+    font-size: 1.2em;
+    margin: 0;
+}
+
 .galerij-img { 
     width: 30%; 
     aspect-ratio: 16/9; 
     object-fit: cover; 
     border-radius: 5px; 
 }
-

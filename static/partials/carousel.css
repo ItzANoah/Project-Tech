@@ -29,6 +29,7 @@ ZELF IETS TOEVOEGEN IN HET CAROUSEL
   gap: 2vw;
   overflow-x: scroll;
   scroll-snap-type: x mandatory;
+  align-items: stretch;
 }
 
 .carousel__list-Item {
