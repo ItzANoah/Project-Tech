@@ -4,6 +4,7 @@ const app = express();
 const port = 4000;
 const session = require('express-session');
 const multer = require('multer');
+const axios = require('axios'); // Voor api
 const mongoose = require('mongoose');
 const { ObjectId } = require('mongodb');
 const validator = require('validator');
@@ -20,12 +21,13 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 app.use(express.urlencoded({ extended: true }))
+app.use(express.json()); // Nodig voor fetch calls (anna)
 app.use(express.static("static"));
 app.set('view engine', 'ejs');
 app.set('views', './views');
 
 require('dotenv').config(); // MOET bovenaan staan voor de database link!
-const { MongoClient } = require('mongodb');
+const { MongoClient, ObjectId } = require('mongodb'); // ObjectId toegevoegd (anna)
 const bcrypt = require('bcrypt');
 const path = require('path'); // Ingebouwd in Node, hoef je niet te installeren
 //casper was hier//
@@ -33,7 +35,6 @@ const path = require('path'); // Ingebouwd in Node, hoef je niet te installeren
 // Database connectie variabelen
 const uri = process.env.URI;
 const client = new MongoClient(uri);
-
 
 /////////////// register functie ////////////////
 let profileCollection;
@@ -108,7 +109,6 @@ app.use(async (req, res, next) => {
         }
       }
 
-      // We slaan het op in res.locals, zodat de header er ALTIJD bij kan
       res.locals.globalNotification = hasNewHeaderRequest;
       
     } catch (err) {
@@ -118,8 +118,17 @@ app.use(async (req, res, next) => {
   } else {
     res.locals.globalNotification = false;
   }
-  next(); // Ga door naar de volgende route
+  next();
 });
+
+// Multer Configuratie voor uploads (anna)
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => { cb(null, 'public/uploads/'); },
+  filename: (req, file, cb) => {
+    cb(null, req.session.userID + '-' + Date.now() + path.extname(file.originalname));
+  }
+});
+const upload = multer({ storage: storage });
 
 // Een test route
 app.get('/', (req, res) => {
@@ -211,10 +220,6 @@ app.get('/login', (req, res) => {
 
 app.get('/matching', (req, res) => {
   res.render('matching');
-});
-
-app.get('/profielPaginaIndividueel', (req, res) => {
-  res.render('profielPaginaIndividueel');
 });
 
 // crew profile
@@ -392,4 +397,327 @@ app.get('/logout', (req, res) => {
     }
     res.redirect('/login');
   });
+});
+
+// --- Profiel Routes (anna) ---
+
+// Eigen profiel bekijken
+app.get('/profielPaginaIndividueel', checkInlog, async (req, res) => {
+  try {
+    // We gebruiken het userID uit de sessie
+    const user = await profileCollection.findOne({ _id: new ObjectId(req.session.userID) });
+    
+    if (user) {
+      const userProjects = await projectsCollection.find({ 
+        _id: { $in: user.myProjects || [] } 
+      }).toArray();
+      res.render('profielPaginaIndividueel', { theUser: user, projects: userProjects });
+    } else {
+      res.status(404).send("Gebruiker niet gevonden.");
+    }
+  } catch (err) { res.status(500).send("Server fout"); }
+});
+
+// Publiek profiel bekijken (voor anderen)
+app.get('/profiel/:id', async (req, res) => {
+  try {
+    const userId = req.params.id;
+    
+    // Check of de meegestuurde ID wel een geldig MongoDB formaat is
+    if (!ObjectId.isValid(userId)) {
+      return res.status(400).send("Ongeldig Gebruiker ID");
+    }
+
+    const user = await profileCollection.findOne({ _id: new ObjectId(userId) });
+    
+    if (!user) return res.status(404).send("Gebruiker niet gevonden");
+    
+    const projects = await projectsCollection.find({ 
+      _id: { $in: user.myProjects || [] } 
+    }).toArray();
+    
+    res.render('publicProfielPaginaIndividueel', { theUser: user, projects: projects });
+  } catch (err) { res.status(500).send("Server fout"); }
+});
+
+// --- Project Acties & Uploads (anna) ---
+
+// Route voor het bijwerken van algemene profielgegevens (Naam, Rol, Bio, Skills)
+app.post('/update-profile', checkInlog, async (req, res) => {
+    try {
+        const { name, role, bio, skills } = req.body;
+        
+        // We zoeken op de ObjectId van de ingelogde gebruiker
+        await profileCollection.updateOne(
+            { _id: new ObjectId(req.session.userID) },
+            { 
+                $set: { 
+                    name: name,
+                    role: role,
+                    bio: bio,
+                    skills: skills 
+                } 
+            }
+        );
+
+        // OOK de sessie-naam bijwerken voor de header/overal
+        req.session.username = name;
+
+        console.log("Profiel bijgewerkt voor ID:", req.session.userID);
+        res.json({ success: true });
+    } catch (err) {
+        console.error("Fout bij updaten profiel:", err);
+        res.status(500).json({ success: false, message: "Serverfout bij opslaan" });
+    }
+});
+
+// Project aanpassen (inclusief galerij)
+app.post('/update-project-details', checkInlog, upload.fields([
+    { name: 'projectImage', maxCount: 1 },
+    { name: 'galerijImages', maxCount: 10 }
+]), async (req, res) => {
+    try {
+        const { projectId, title, type, contribution, genres, existingImages } = req.body;
+        const currentProject = await projectsCollection.findOne({ _id: new ObjectId(projectId) });
+        let finalMainImage = currentProject.mainImage || currentProject.image; 
+        if (req.files['projectImage']) { finalMainImage = '/uploads/' + req.files['projectImage'][0].filename; }
+
+        let updatedGalerij = JSON.parse(existingImages || "[]");
+        if (req.files['galerijImages']) {
+            req.files['galerijImages'].forEach(file => { updatedGalerij.push('/uploads/' + file.filename); });
+        }
+        updatedGalerij = updatedGalerij.filter(img => img !== finalMainImage);
+
+        await projectsCollection.updateOne(
+            { _id: new ObjectId(projectId) },
+            { $set: { 
+                name: title, title: title, type: type, bio: contribution, 
+                description: contribution, genres: JSON.parse(genres), 
+                mainImage: finalMainImage, image: finalMainImage, images: updatedGalerij 
+            }}
+        );
+        res.json({ success: true });
+    } catch (err) { res.status(500).json({ success: false }); }
+});
+
+// Profielfoto uploaden 
+app.post('/upload-pfp', checkInlog, upload.single('profilePic'), async (req, res) => {
+  try {
+    const imagePath = '/uploads/' + req.file.filename;
+    
+    // BELANGRIJK: We zoeken op _id met de ObjectId uit de sessie
+    await profileCollection.updateOne(
+      { _id: new ObjectId(req.session.userID) }, 
+      { $set: { image: imagePath } }
+    );
+    
+    res.json({ success: true, newImagePath: imagePath });
+  } catch (err) { 
+    console.error("PFP Upload fout:", err);
+    res.status(500).json({ success: false, message: 'Fout bij uploaden' }); 
+  }
+});
+
+// Handmatig nieuw project toevoegen
+app.post('/add-project-manual', checkInlog, upload.single('projectImage'), async (req, res) => {
+  try {
+    const { title, type, contribution, role } = req.body;
+    const imagePath = req.file ? '/uploads/' + req.file.filename : '/images/projectPlaceholder.png';
+    
+    const newProject = { 
+      title, 
+      name: title, 
+      type, 
+      description: contribution, 
+      bio: contribution, 
+      role, 
+      mainImage: imagePath, 
+      images: [], 
+      genres: [role || type], 
+      createdAt: new Date() 
+    };
+
+    const result = await projectsCollection.insertOne(newProject);
+    
+    // Gebruik _id en ObjectId om de koppeling te maken
+    await profileCollection.updateOne(
+      { _id: new ObjectId(req.session.userID) }, 
+      { $push: { myProjects: result.insertedId } }
+    );
+    
+    res.json({ success: true });
+  } catch (err) { 
+    console.error("Handmatig toevoegen fout:", err);
+    res.status(500).json({ success: false }); 
+  }
+});
+
+// Project verwijderen
+app.post('/delete-project', checkInlog, async (req, res) => {
+    try {
+        const { projectId } = req.body;
+        await projectsCollection.deleteOne({ _id: new ObjectId(projectId) });
+        await profileCollection.updateOne({ name: req.session.userID }, { $pull: { myProjects: new ObjectId(projectId) } });
+        res.json({ success: true });
+    } catch (err) { res.status(500).json({ success: false }); }
+});
+
+// Zoeken in database naar bestaande projecten
+app.get('/search-db-projects', checkInlog, async (req, res) => {
+    try {
+        const results = await projectsCollection.find({ name: { $regex: req.query.q, $options: 'i' } }).limit(5).toArray();
+        res.json(results);
+    } catch (err) { res.status(500).json([]); }
+});
+
+// Bestaand project toevoegen aan je eigen lijst
+app.post('/add-existing-project', checkInlog, async (req, res) => {
+    try {
+        const { projectId, userRole } = req.body;
+        
+        // 1. Voeg het project ID toe aan de lijst van de gebruiker
+        await profileCollection.updateOne(
+            { _id: new ObjectId(req.session.userID) }, 
+            { $addToSet: { myProjects: new ObjectId(projectId) } }
+        );
+
+        // 2. Voeg de rol van de gebruiker toe aan de genres van het project
+        await projectsCollection.updateOne(
+            { _id: new ObjectId(projectId) },
+            { $addToSet: { genres: userRole } }
+        );
+        
+        res.json({ success: true });
+    } catch (err) { 
+        console.error("Bestaand project toevoegen fout:", err);
+        res.status(500).json({ success: false }); 
+    }
+});
+
+// Films van api halen
+
+app.get('/search-api-projects', checkInlog, async (req, res) => {
+    try {
+        const query = req.query.q;
+        const apiKey = process.env.TMDB_API_KEY;
+        
+        // Zoeken naar films op TMDB
+        const response = await axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${encodeURIComponent(query)}&language=nl-NL`);
+        
+        // Relevante info naar de voorkant
+        const results = response.data.results.map(movie => ({
+            apiId: movie.id,
+            title: movie.title,
+            year: movie.release_date ? movie.release_date.split('-')[0] : 'Onbekend',
+            poster: movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : '/images/projectPlaceholder.png',
+            overview: movie.overview
+        }));
+
+        res.json(results);
+    } catch (err) {
+        console.error("API Error:", err);
+        res.json([]);
+    }
+});
+
+// --- TMDB API ROUTES (Anna) ---
+
+// 1. Zoeken in de TMDB API
+app.get('/search-api-projects', checkInlog, async (req, res) => {
+    try {
+        const query = req.query.q;
+        const apiKey = process.env.TMDB_API_KEY; 
+        
+        if (!query) return res.json([]);
+
+        const response = await axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${encodeURIComponent(query)}&language=nl-NL`);
+        
+        const results = response.data.results.map(movie => ({
+            title: movie.title,
+            year: movie.release_date ? movie.release_date.split('-')[0] : 'Onbekend',
+            poster: movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : '/images/projectPlaceholder.png',
+            overview: movie.overview,
+            id: movie.id
+        }));
+
+        res.json(results);
+    } catch (err) {
+        console.error("TMDB API Fout:", err.message);
+        res.status(500).json([]);
+    }
+});
+
+// API film verwijderen uit het profiel
+app.post('/delete-api-project', checkInlog, async (req, res) => {
+    try {
+        const { projectTitle } = req.body;
+        
+        await profileCollection.updateOne(
+            { _id: new ObjectId(req.session.userID) },
+            { $pull: { relatedProjects: { title: projectTitle } } }
+        );
+
+        res.json({ success: true });
+    } catch (err) {
+        console.error("Fout bij verwijderen API project:", err);
+        res.status(500).json({ success: false });
+    }
+});
+
+app.post('/add-api-project', checkInlog, async (req, res) => {
+    try {
+        const { title, description, image, role } = req.body;
+
+        const apiProjectData = {
+            title: title,
+            description: description,
+            image: image,
+            role: role,
+            source: "TMDB-API",
+            addedAt: new Date()
+        };
+
+        // Sla API films direct op in 'relatedProjects' in de user collectie
+        await profileCollection.updateOne(
+            { _id: new ObjectId(req.session.userID) },
+            { $push: { relatedProjects: apiProjectData } }
+        );
+
+        res.json({ success: true });
+    } catch (err) {
+        console.error("Fout bij opslaan API project:", err);
+        res.status(500).json({ success: false });
+    }
+});
+
+// Zoeken in eigen database naar bestaande projecten
+app.get('/search-db-projects', checkInlog, async (req, res) => {
+    try {
+        const query = req.query.q;
+        const results = await projectsCollection.find({ 
+            $or: [
+                { name: { $regex: query, $options: 'i' } },
+                { title: { $regex: query, $options: 'i' } }
+            ]
+        }).limit(5).toArray();
+        res.json(results);
+    } catch (err) { 
+        res.status(500).json([]); 
+    }
+});
+
+// Bestaand project uit eigen DB toevoegen aan profiel
+app.post('/add-existing-project', checkInlog, async (req, res) => {
+    try {
+        const { projectId, userRole } = req.body;
+        
+        await profileCollection.updateOne(
+            { _id: new ObjectId(req.session.userID) }, 
+            { $addToSet: { myProjects: new ObjectId(projectId) } }
+        );
+        
+        res.json({ success: true });
+    } catch (err) { 
+        res.status(500).json({ success: false }); 
+    }
 });
