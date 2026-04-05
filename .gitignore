@@ -3,3 +3,4 @@ node_modules/
 .idea/
 /static/style.css
 /css/style.css
+.DS_Store
