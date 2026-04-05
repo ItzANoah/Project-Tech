@@ -1,35 +1,25 @@
 const express = require('express');
 const fs = require('fs');
+const path = require('path');
 const app = express();
 const port = 4000;
 const session = require('express-session');
 const multer = require('multer');
-const axios = require('axios'); // Voor api
+const axios = require('axios');
 const mongoose = require('mongoose');
-const { ObjectId } = require('mongodb');
+const { MongoClient, ObjectId } = require('mongodb');
 const validator = require('validator');
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'public/uploads');
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
-  }
-});
-
-const upload = multer({ storage: storage });
+const bcrypt = require('bcrypt');
+require('dotenv').config();
 
 app.use(express.urlencoded({ extended: true }))
-app.use(express.json()); // Nodig voor fetch calls (anna)
+app.use(express.json());
 app.use(express.static("static"));
+app.use(express.static('public')); // Zorg dat deze er ook staat voor je uploads
 app.set('view engine', 'ejs');
 app.set('views', './views');
 
 require('dotenv').config(); // MOET bovenaan staan voor de database link!
-const { MongoClient, ObjectId } = require('mongodb'); // ObjectId toegevoegd (anna)
-const bcrypt = require('bcrypt');
-const path = require('path'); // Ingebouwd in Node, hoef je niet te installeren
 //casper was hier//
 
 // Database connectie variabelen
@@ -170,7 +160,7 @@ app.post('/register', async (req, res) => {
       errors.push("Je wachtwoord moet minimaal 8 tekens bevatten.");
     }
 
-    // beveiliging, is niet perse nodig maar maakt de website minder hack gevoelig - credits aan express-validator.github.io
+    // beveiliging, is niet perse nodig maar maakt de website minder hack gevoelig - credits aan express-validator.github.io 
     const sanitizedBio = validator.escape(bio || "");
 
     // error melding
@@ -178,7 +168,7 @@ app.post('/register', async (req, res) => {
       return res.status(400).render('register', { errors, oldInput: req.body });
     }
 
-    // Check of de gebruiker al bestaat
+    // Check of de gebruiker al bestaat 
     const userExists = await profileCollection.findOne({
       $or: [{ name: username }, { email: sanitizedEmail }]
     });
@@ -500,7 +490,7 @@ app.post('/update-project-details', checkInlog, upload.fields([
   } catch (err) { res.status(500).json({ success: false }); }
 });
 
-// Profielfoto uploaden
+// Profielfoto uploaden 
 app.post('/upload-pfp', checkInlog, upload.single('profilePic'), async (req, res) => {
   try {
     const imagePath = '/uploads/' + req.file.filename;
