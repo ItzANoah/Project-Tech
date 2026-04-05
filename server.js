@@ -289,13 +289,12 @@ app.get('/crew-profile', async (req, res) => {
             if (tmdbIds.length > 0 && apiKey) {
                 tmdbProjects = await Promise.all(tmdbIds.map(async (id) => {
                     try {
-                        const response = await fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}&language=nl-NL`);
-                        if (!response.ok) return null;
-                        const movie = await response.json();
+                        const response = await axios.get(`https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}&language=nl-NL`);
+                        const movie = response.data;
                         
                         // Extra fetch voor de regisseur (credits)
-                        const creditsResponse = await fetch(`https://api.themoviedb.org/3/movie/${id}/credits?api_key=${apiKey}`);
-                        const creditsData = await creditsResponse.json();
+                        const creditsResponse = await axios.get(`https://api.themoviedb.org/3/movie/${id}/credits?api_key=${apiKey}`);
+                        const creditsData = creditsResponse.data;
                         const directorInfo = creditsData.crew ? creditsData.crew.find(person => person.job === 'Director') : null;
                         const directorName = directorInfo ? directorInfo.name : 'Onbekende regisseur';
 
@@ -400,17 +399,21 @@ app.get('/api/search-tmdb', async (req, res) => {
     try {
         // 1. Zoek eerst de films
         const searchResponse = await fetch(
+        const searchResponse = await axios.get(
             `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${encodeURIComponent(query)}&language=nl-NL`
         );
         const searchData = await searchResponse.json();
+        const searchData = searchResponse.data;
         
         // 2. Voor de top 5 resultaten halen we de regisseur op (om de API niet te overbelasten)
         const detailedResults = await Promise.all(
             searchData.results.slice(0, 8).map(async (movie) => {
                 const creditsResponse = await fetch(
+                const creditsResponse = await axios.get(
                     `https://api.themoviedb.org/3/movie/${movie.id}/credits?api_key=${apiKey}`
                 );
                 const creditsData = await creditsResponse.json();
+                const creditsData = creditsResponse.data;
                 
                 // Zoek in de 'crew' lijst naar de persoon met de job 'Director'
                 const directorInfo = creditsData.crew.find(person => person.job === 'Director');
