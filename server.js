@@ -6,7 +6,7 @@ const session = require('express-session');
 const multer = require('multer');
 const axios = require('axios'); // Voor api
 const mongoose = require('mongoose');
-const { ObjectId } = require('mongodb');
+const { MongoClient, ObjectId } = require('mongodb'); // ObjectId toegevoegd (anna)
 const validator = require('validator');
 
 const storage = multer.diskStorage({
@@ -27,7 +27,6 @@ app.set('view engine', 'ejs');
 app.set('views', './views');
 
 require('dotenv').config(); // MOET bovenaan staan voor de database link!
-const { MongoClient, ObjectId } = require('mongodb'); // ObjectId toegevoegd (anna)
 const bcrypt = require('bcrypt');
 const path = require('path'); // Ingebouwd in Node, hoef je niet te installeren
 //casper was hier//
