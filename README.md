@@ -28,4 +28,10 @@ Om onze website lokaal te kunnen bekijken en gebruiken, moet je de volgende stap
 
 Nadat je dit uitvoert in je terminal krijg je een localhost link te zien. Als je deze opent in de browser kun je zo de website lokaal bekijken en gebruiken.
 
+We hebben een Test account voor u opgezet waar een aantal projecten al aan zijn gelinkt om zo goed mogelijk weer te geven hoe de website functioneert. 
+De inlog hiervoor is als volgt:
+Gebruikersnaam:
+- Docent
+Wachtwoord:
+- Wachtwoord01
 **let op:** de .env file is niet aanwezig. Hierdoor kunnen sommige functionaliteiten mogelijk niet (volledig) werken.
