@@ -338,10 +338,18 @@ app.post('/save-project', checkInlog, upload.array('projectImages'), async (req,
     }
 
     // 1. AFBEELDINGEN BEWAREN
-    let finalImages = project.images || []; // Standaard behouden we de oude foto('s)
+    let finalImages = project.images || []; 
+    
+    // Haal de bewaarde/overgebleven foto's op (voor het geval je in de edit-modus foto's hebt verwijderd)
+    let remaining = req.body.inputRemainingImages || req.body.remainingImages;
+    if (remaining !== undefined) {
+      finalImages = remaining.split(',').filter(img => img.trim() !== "");
+    }
+
     if (req.files && req.files.length > 0) {
-      // Heeft de gebruiker zojuist nieuwe bestanden geupload? Dan OVERSCHRIJVEN we de oude.
-      finalImages = req.files.map(file => `/uploads/${file.filename}`);
+      // Voeg de nieuwe foto's TOE aan de lijst, in plaats van te overschrijven!
+      const newUploads = req.files.map(file => `/uploads/${file.filename}`);
+      finalImages = finalImages.concat(newUploads);
     }
 
     // --- NIEUW: Openstaande vacatures bundelen ---
