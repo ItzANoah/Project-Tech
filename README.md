@@ -32,6 +32,7 @@ We hebben een Test account voor u opgezet waar een aantal projecten al aan zijn 
 De inlog hiervoor is als volgt:
 Gebruikersnaam:
 - Docent
+
 Wachtwoord:
 - Wachtwoord01
 **let op:** de .env file is niet aanwezig. Hierdoor kunnen sommige functionaliteiten mogelijk niet (volledig) werken.
