@@ -1,12 +1,14 @@
 <!--Matching-card-->
 
-<article class="matching__card">
+<article class="matching-card">
     <header>
         <img src="<%= item.image || item.images?.[0] || '/images/image-not-found.png' %>" width="335" alt="<%= item.name %>">
-        <h3 class="matching__card-body"><%= item.name %> - <%= item.type || item.role %></h3>
+        <h3 class="matching-card__body"><%= item.name %> - <%= item.type || item.role %></h3>
     </header>
-    <p class="matching__card-body"><%= item.bio %></p>
-    <div class=" matching__card-link">
+    <div class="matching-card__body-wrapper">
+        <p class="matching-card__body"><%= item.bio %></p>
+    </div>
+    <div class="matching-card__link">
         <a href="<%= item.type ? '/crew-profile?id=' + item._id : '/profiel/' + item._id %>">Bekijk details</a>
     </div>
 </article>

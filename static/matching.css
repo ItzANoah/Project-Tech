@@ -1,5 +1,5 @@
 /* Matching cards + slider */
-.matching__card {
+.matching-card {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
@@ -10,7 +10,7 @@
     width: 100%;
 }
 
-.matching__card img {
+.matching-card img {
     border-radius: var(--buttonCornerRadius);
     object-fit: cover;
     object-position: top;
@@ -18,7 +18,7 @@
     width: 100%;
 }
 
-.matching__card-link {
+.matching-card__link {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -30,11 +30,11 @@
     transition: background-color 0.5s ease;
 }
 
-.matching__card-link:hover {
+.matching-card__link:hover {
     background-color: var(--hoverColorRed);
 }
 
-.matching__card-link a {
+.matching-card__link a {
     display: flex;
     justify-content: center;
     width: 100%;
@@ -43,13 +43,15 @@
     color: var(--textColorWhite);
 }
 
-.matching__card-body {
+.matching-card__body {
     padding: 0 1rem;
 }
 
-.matching__card p {
+.matching-card__body-wrapper {
     flex-grow: 1;
+}
 
+.matching-card__body {
     /* Ellipsis overflow voor tekst bij een bepaald aantal lijnen aan tekst https://stackoverflow.com/questions/5269713/css-ellipsis-on-second-line */
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -65,7 +67,7 @@
     }
 }
 
-.matching-slider .matching__card {
+.matching-slider .matching-card {
     width: 335px;
 }
 
