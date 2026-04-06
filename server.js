@@ -996,7 +996,7 @@ app.get('/matching', async (req, res) => {
     }
 
     if (filtersQuery['sort'] === 'newest-first' || filtersQuery['sort'] === 'oldest-first') {
-      const directionSort = filtersQuery['sort'] ? 1 : -1;
+      const directionSort = filtersQuery['sort'] === 'newest-first' ? 1 : -1;
 
       matchingItems = matchingItems.sort((item1, item2) => {
         const aDate = item1.createdAt || item1.updatedAt;
