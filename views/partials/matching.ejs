@@ -1,12 +1,14 @@
 <!--Matching-card-->
 
-<article class="matching__card">
+<article class="matching-card">
     <header>
-        <img src="/images/cameraman.png" width="335" alt="">
-        <h3>David de Boer - Acteur</h3>
+        <img src="<%= item.image || item.images?.[0] || '/images/image-not-found.png' %>" width="335" alt="<%= item.name %>">
+        <h3 class="matching-card__body"><%= item.name %> - <%= item.type || item.role %></h3>
     </header>
-    <p>5 jaar ervaring als lead actor, speelde in meerdere shortfilms en commercials.</p>
-    <div class="matching__card-link">
-        <a href="#">Bekijk details</a>
+    <div class="matching-card__body-wrapper">
+        <p class="matching-card__body"><%= item.bio %></p>
+    </div>
+    <div class="matching-card__link">
+        <a href="<%= item.type ? '/crew-profile?id=' + item._id : '/profiel/' + item._id %>">Bekijk details</a>
     </div>
 </article>
