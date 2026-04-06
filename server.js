@@ -340,17 +340,47 @@ app.post('/save-project', checkInlog, upload.array('projectImages'), async (req,
     // 1. AFBEELDINGEN BEWAREN
     let finalImages = project.images || []; 
     
-    // Haal de bewaarde/overgebleven foto's op (voor het geval je in de edit-modus foto's hebt verwijderd)
-    let remaining = req.body.inputRemainingImages || req.body.remainingImages;
-    if (remaining !== undefined) {
-      finalImages = remaining.split(',').filter(img => img.trim() !== "");
+    // Haal de bewaarde/overgebleven foto's op (synchronisatie vanuit JS)
+    if (req.body.inputRemainingImages !== undefined) {
+      if (req.body.inputRemainingImages.trim() === "") {
+        finalImages = []; // Alle oude foto's zijn door de gebruiker weggeklikt
+      } else {
+        finalImages = req.body.inputRemainingImages.split(',').filter(img => img.trim() !== "");
+      }
     }
 
     if (req.files && req.files.length > 0) {
-      // Voeg de nieuwe foto's TOE aan de lijst, in plaats van te overschrijven!
+      // Voeg de nieuwe foto's TOE aan de lijst
       const newUploads = req.files.map(file => `/uploads/${file.filename}`);
       finalImages = finalImages.concat(newUploads);
     }
+
+    // --- REPARATIE --- 
+    // Filter kapotte data (zoals per ongeluk opgeslagen Base64 code) er direct uit
+    finalImages = finalImages.filter(img => 
+      img.startsWith('/uploads/') || 
+      img.startsWith('/img/') || 
+      img.startsWith('/images/') || 
+      img.startsWith('http')
+    );
+    // Filter kapotte data, lege strings en het woord 'null' er direct uit
+    finalImages = finalImages.filter(img => {
+      if (typeof img !== 'string') return false;
+      const cleanImg = img.trim();
+      if (cleanImg === "null" || cleanImg === "undefined" || cleanImg === "") return false;
+      
+      return cleanImg.startsWith('/uploads/') || 
+             cleanImg.startsWith('/img/') || 
+             cleanImg.startsWith('/images/') || 
+             cleanImg.startsWith('http');
+    }).map(img => {
+      // Zorg dat er geen localhost links in de database achterblijven
+      if (img.includes('/uploads/')) return '/uploads/' + img.split('/uploads/')[1];
+      return img.trim();
+    });
+
+    // Haal eventuele dubbele foto's eruit
+    finalImages = [...new Set(finalImages)];
 
     // --- NIEUW: Openstaande vacatures bundelen ---
     let openRoles = [];
