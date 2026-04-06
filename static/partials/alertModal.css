@@ -1,0 +1,40 @@
+/*
+ * Styling voor de custom alert modal.
+ */
+
+/* Zorg dat de alert altijd bovenop alle andere modals of overlays ligt */
+#customAlertModal {
+    z-index: 2000;
+}
+
+.custom-alert-content {
+    max-width: 400px;
+    text-align: center;
+    border-radius: 25px;
+    padding: 2rem;
+}
+
+#customAlertMessage {
+    margin: 1.5rem 0;
+    font-family: var(--montserratFont);
+    color: var(--accentColorRed);
+    font-size: 1.2em;
+}
+
+.custom-alert-btn {
+    margin: 1rem auto 0 auto;
+    display: block;
+    background-color: var(--accentColorRed);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 0.8rem 2.5rem;
+    font-family: var(--montserratFont);
+    font-weight: var(--fontWeightBold);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.custom-alert-btn:hover {
+    background-color: var(--accentColorGold);
+}

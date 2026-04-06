@@ -1,11 +1,17 @@
+<!-- partial slideshow sectie boven in pagina-->
 <section class="slideshow" aria-label="Project visuals">
+    <!-- navigatie knop vorige afbeelding-->
     <button type="button" class="slideshow__nav slideshow__nav--prev">&#10094;</button>
     
+    <!-- container met alle slides-->
     <div class="slideshow__container">
+        <!-- button on foto's toe te voegen alleen te zien in edit mode-->
         <div class="slideshow__upload edit-only">
+            <!-- klibaar label opent file input-->
             <label for="file-upload" class="add-photo-btn">
                 Foto toevoegen 📸
             </label>
+            <!-- verborgen file input -->
             <input type="file" 
                    name="projectImages" 
                    id="file-upload" 
@@ -15,10 +21,15 @@
                    style="display:none;">
         </div>
 
+        <!-- zijn er afbeeldingen?-->
         <% if (projectData.images && projectData.images.length > 0) { %>
+            <!-- loop door alle afbeeldingen-->
             <% projectData.images.forEach((img, index) => { %>
+                <!-- eerste slide krijgt active class -->
                 <div class="slideshow__item <%= index === 0 ? 'slideshow__item--active' : '' %>">
+                    <!-- afbeelding-->
                     <img src="<%= img %>" alt="Project visual" class="slideshow__image">
+                    <!-- verwijder knop alleen in edit zichtbaar-->
                     <button type="button" class="remove-photo edit-only" onclick="removePhotoFromSlideshow(this)">
                         Verwijderen
                     </button>
@@ -26,7 +37,8 @@
             <% }) %>
         <% } %>
     </div>
-
+    
     <button type="button" class="slideshow__nav slideshow__nav--next">&#10095;</button>
+    <!-- verborgen input om bij te houden welke afbeeldingen overblijven-->
     <input type="hidden" name="remainingImages" id="inputRemainingImages">
 </section>

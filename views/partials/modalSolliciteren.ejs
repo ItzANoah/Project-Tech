@@ -1,0 +1,17 @@
+<!-- modal kaartje als je wil solliciteren-->
+<div id="modalSolliciteren" class="modal">
+    <div class="modal__content modal-solliciteren-content">
+        <!-- Het kruisje rechtsbovenin (aangepast naar de standaard close-modal class) -->
+        <button type="button" class="close-modal" onclick="closeModalSolliciteren()">&times;</button>
+        
+        <h3>Solliciteer voor deze functie</h3>
+        
+        <div class="form-group">
+            <textarea id="sollicitatieMessage" placeholder="Typ hier je motivatie (maximaal 100 woorden)..."></textarea>
+            <div id="wordCount">0/200 woorden</div>
+        </div>
+        
+        <input type="hidden" id="sollicitatieReceiverId" value="">
+        <button type="button" class="btn-save" onclick="submitSollicitatie()">Versturen</button>
+    </div>
+</div>
