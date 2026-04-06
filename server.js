@@ -976,7 +976,7 @@ app.get('/matching', async (req, res) => {
       const hasFilteredDirector = filtersQuery['director'];
       if (hasFilteredDirector) {
         // Includes is case sensitive https://www.reddit.com/r/learnjavascript/comments/qa5ur6/how_do_i_use_includes_and_tolowerccase_in_same_if/
-        matchingItems = matchingItems.filter(item => item.director.toLowerCase().includes(filtersQuery['director'].toLowerCase()));
+        matchingItems = matchingItems.filter(item => item.director?.toLowerCase().includes(filtersQuery['director'].toLowerCase()));
       }
     }
 
