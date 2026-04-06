@@ -61,12 +61,17 @@
 .add-application-card {
     border: 0.15em dashed #bbb !important;
     background: transparent;
-    display: flex;
+    display: none !important; /* Standaard onzichtbaar buiten edit mode */
     flex-direction: column;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     color: #888;
+}
+
+/* Alleen zichtbaar maken als de body de class 'is-editing' heeft */
+.is-editing .add-application-card {
+    display: flex !important;
 }
 
 .add-application-card .plus-icon {
