@@ -269,60 +269,37 @@ body.is-editing .edit-only {
     display: inline-block;
 }
 
-/* feedback dat je aan het editen bent */
-body.is-editing section {
-    outline: 0.1em dashed var(--accentColorGold);
-    cursor: pointer;
-}
-
 body.is-editing main {
     outline: 0.1em dashed var(--accentColorGold);
     cursor: pointer;
 }
 
-/* Standaard is de 'voeg toe' kaart onzichtbaar */
 .add-project-card {
-    display: none !important; 
-}
-
-/* ALLEEN als de body de class 'is-editing' heeft szie je de kaart */
-body.is-editing .add-project-card {
     display: flex !important;
-    border: 0.15em dashed #bbb !important;
+    border: 0.2em dashed var(--accentColorRed);
     justify-content: center;
     align-items: center;
     min-height: 12em;
-    background-color: transparent;
-    color: #888;
+    background-color: var(--accentColorWhite);
 }
 
-/* Styling voor de knop binnen de kaart */
 .add-project-card .add-btn {
     background: none;
     border: none;
     cursor: pointer;
     font-family: var(--montserratFont);
-    color: inherit;
+    color: var(--accentColorRed);
 }
 
-/* Grootte plus */
 .add-project-card .plus-icon {
     display: block;
     font-size: 5em; 
     line-height: 1;
     margin-bottom: 0.1em;
-    transition: transform 0.3s ease;
 }
 
 .add-project-card:hover .plus-icon {
     transform: scale(1.1); /* Effect bij hover */
-}
-
-.add-project-card h3 {
-    font-family: var(--montserratFont);
-    font-size: 1.2em;
-    margin: 0;
-    color: inherit;
 }
 
 .galerij-img { 
