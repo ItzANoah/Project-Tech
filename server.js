@@ -363,24 +363,6 @@ app.post('/save-project', checkInlog, upload.array('projectImages'), async (req,
       img.startsWith('/images/') || 
       img.startsWith('http')
     );
-    // Filter kapotte data, lege strings en het woord 'null' er direct uit
-    finalImages = finalImages.filter(img => {
-      if (typeof img !== 'string') return false;
-      const cleanImg = img.trim();
-      if (cleanImg === "null" || cleanImg === "undefined" || cleanImg === "") return false;
-      
-      return cleanImg.startsWith('/uploads/') || 
-             cleanImg.startsWith('/img/') || 
-             cleanImg.startsWith('/images/') || 
-             cleanImg.startsWith('http');
-    }).map(img => {
-      // Zorg dat er geen localhost links in de database achterblijven
-      if (img.includes('/uploads/')) return '/uploads/' + img.split('/uploads/')[1];
-      return img.trim();
-    });
-
-    // Haal eventuele dubbele foto's eruit
-    finalImages = [...new Set(finalImages)];
 
     // --- NIEUW: Openstaande vacatures bundelen ---
     let openRoles = [];
