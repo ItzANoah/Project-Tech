@@ -675,7 +675,7 @@ app.post('/update-project-details', checkInlog, upload.fields([
       { _id: new ObjectId(projectId) },
       { $set: {
           name: title, title: title, type: type, bio: contribution,
-          description: contribution, genres: JSON.parse(genres),
+          description: contribution, genre: JSON.parse(genres),
           mainImage: finalMainImage, image: finalMainImage, images: updatedGalerij
         }}
     );
@@ -716,7 +716,7 @@ app.post('/add-project-manual', checkInlog, upload.single('projectImage'), async
       role,
       mainImage: imagePath,
       images: [],
-      genres: [role || type],
+      genre: [role || type],
       createdAt: new Date()
     };
 
@@ -767,7 +767,7 @@ app.post('/add-existing-project', checkInlog, async (req, res) => {
     // 2. Voeg de rol van de gebruiker toe aan de genres van het project
     await projectsCollection.updateOne(
       { _id: new ObjectId(projectId) },
-      { $addToSet: { genres: userRole } }
+      { $addToSet: { genre: userRole } }
     );
 
     res.json({ success: true });
