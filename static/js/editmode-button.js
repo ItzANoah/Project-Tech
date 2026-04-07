@@ -67,10 +67,24 @@ function openEditMode() {
         const remainingImages = [];
         document.querySelectorAll('.slideshow__image').forEach(img => {
             const src = img.getAttribute('src');
-            if (src) remainingImages.push(src);
+            // Tijdelijke base64 (data:) negeren, we willen alleen echte paden bewaren!
+            if (src && !src.startsWith('data:')) {
+                remainingImages.push(src);
+            }
         });
-        const imgInput = document.getElementById('inputRemainingImages');
-        if (imgInput) imgInput.value = remainingImages.join(',');
+        
+        // Maak het verborgen veld automatisch aan als deze nog niet bestaat in de EJS
+        let imgInput = document.getElementById('inputRemainingImages');
+        if (!imgInput) {
+            imgInput = document.createElement('input');
+            imgInput.type = 'hidden';
+            imgInput.id = 'inputRemainingImages';
+            imgInput.name = 'inputRemainingImages';
+            const form = document.getElementById('projectForm');
+            if (form) form.appendChild(imgInput);
+        }
+        
+        imgInput.value = remainingImages.join(',');
 
         // 3. OPRUIMEN: Verwijder de tijdelijke "Plus-kaarten"
         const addCard = document.getElementById('add-card-placeholder');
