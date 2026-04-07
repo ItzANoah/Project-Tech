@@ -3,12 +3,34 @@
   margin-top: 7.5rem;
   padding-right: 0.5rem;
 }
+.matching__card-request{
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: var(--gapExtraSmall);
 
-.matching__card h4 {
+  background-color: var(--accentColorLightGrey);
+  border-radius: var(--buttonCornerRadius);
+  width: 100%;
+}.matching__card-request img{
+  border-radius: var(--buttonCornerRadius);
+  object-fit: cover;
+  object-position: top;
+  aspect-ratio: 16/9;
+  width: 100%;
+}
+.matching__card-info{
+  padding: 0 1rem;
+}
+
+.matching__card-request h4 {
   font-family: var(--montserratFont);
   font-size: var(--headerTextSize);
   color: var(--accentColorGray);
   padding: 0 1rem;
+}
+.matching__card-request{
+  width: 335px;
 }
 
 /* --- Notificatie Bolletje --- */
@@ -195,7 +217,6 @@
 }
 
 .matching__btn {
-  width: 100%;
   padding: 1em;
   border-radius: 2em;
   font-family: var(--montserratFont);
@@ -210,7 +231,7 @@
 }
 
 .matching__accept {
-  background-color: #2ecc71; /* Groen */
+  background-color: #2ecc71;
 }
 
 .matching__decline {
@@ -224,7 +245,6 @@
   border-radius: var(--buttonCornerRadius);
   cursor: pointer;
   text-align: center;
-  width: 90%;
   margin: 0 auto;
 }
 
