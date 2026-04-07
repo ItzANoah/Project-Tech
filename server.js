@@ -385,8 +385,7 @@ app.post('/save-project', checkInlog, upload.array('projectImages'), async (req,
       subtitle: req.body.subtitle,
       bio: req.body.description,
       productionDescription: req.body.productionDescription,
-      type: req.body.type,
-      genre: req.body.genre,
+      director: req.session.username, // Slaat de naam nu écht op in de projects database voor je teamgenoot!
       images: finalImages,
       relatedProjects: req.body.relatedProjects ? req.body.relatedProjects.split(',').filter(id => id !== "") : [],
       openRoles: openRoles, // <--- Opgeslagen direct in de projects collectie!
@@ -675,7 +674,7 @@ app.post('/update-project-details', checkInlog, upload.fields([
       { _id: new ObjectId(projectId) },
       { $set: {
           name: title, title: title, type: type, bio: contribution,
-          description: contribution, genres: JSON.parse(genres),
+          description: contribution, genre: JSON.parse(genres),
           mainImage: finalMainImage, image: finalMainImage, images: updatedGalerij
         }}
     );
@@ -716,7 +715,7 @@ app.post('/add-project-manual', checkInlog, upload.single('projectImage'), async
       role,
       mainImage: imagePath,
       images: [],
-      genres: [role || type],
+      genre: [role || type],
       createdAt: new Date()
     };
 
@@ -767,7 +766,7 @@ app.post('/add-existing-project', checkInlog, async (req, res) => {
     // 2. Voeg de rol van de gebruiker toe aan de genres van het project
     await projectsCollection.updateOne(
       { _id: new ObjectId(projectId) },
-      { $addToSet: { genres: userRole } }
+      { $addToSet: { genre: userRole } }
     );
 
     res.json({ success: true });
