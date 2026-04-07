@@ -990,7 +990,12 @@ app.get('/matching', async (req, res) => {
 
       const hasFilteredGenres = projectGenres.some(genre => filtersQuery[genre] === 'on')
       if (hasFilteredGenres) {
-        matchingItems = matchingItems.filter(item => filtersQuery[item.genre] === 'on');
+        matchingItems = matchingItems.filter(item => {
+          if (Array.isArray(item.genre)) {
+            return item.genre.some(genre => filtersQuery[genre] === 'on');
+          }
+          return filtersQuery[item.genre] === 'on';
+        });
       }
 
       const hasFilteredDirector = filtersQuery['director'];
