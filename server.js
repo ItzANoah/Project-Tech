@@ -385,8 +385,7 @@ app.post('/save-project', checkInlog, upload.array('projectImages'), async (req,
       subtitle: req.body.subtitle,
       bio: req.body.description,
       productionDescription: req.body.productionDescription,
-      type: req.body.type,
-      genre: req.body.genre,
+      director: req.session.username, // Slaat de naam nu écht op in de projects database voor je teamgenoot!
       images: finalImages,
       relatedProjects: req.body.relatedProjects ? req.body.relatedProjects.split(',').filter(id => id !== "") : [],
       openRoles: openRoles, // <--- Opgeslagen direct in de projects collectie!
